@@ -1,25 +1,18 @@
-﻿namespace hospital_api.Models.StaffAggregate;
+﻿using System.ComponentModel.DataAnnotations;
+using hospital_api.Models.ClinicAggregate;
+using hospital_api.Models.HospitalAggregate;
 
-public class Staff
+namespace hospital_api.Models.StaffAggregate;
+
+public abstract class Staff
 {
-    public int Id { get; set; }
-    public string FullName { get; set; }
-    public string Position { get; set; }
-    public string Specialty { get; set; }
+    [Key] public int Id { get; set; }
+    public string FullName { get; set; } = string.Empty;
     public int WorkExperienceYears { get; set; }
     
-    public string AcademicDegree { get; set; }
-    public string AcademicTitle { get; set; }
-    
-    public int? OperationCount { get; set; }
-    public int? FatalOperationCount { get; set; }
-    
-    public float? HazardPayCoefficient { get; set; }
-    public int? ExtendedVacationDays { get; set; }
-    
-    public int? HospitalId { get; set; }
-    public HospitalAggregate.Hospital Hospital { get; set; }
-
     public int? ClinicId { get; set; }
-    public ClinicAggregate.Clinic Clinic { get; set; }
+    public Clinic? Clinic { get; set; }
+
+    public int? HospitalId { get; set; }
+    public Hospital? Hospital { get; set; }
 }
