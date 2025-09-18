@@ -6,7 +6,11 @@ using hospital_api.Repositories.Interfaces;
 using hospital_api.Repositories.Interfaces.HospitalRepo;
 using hospital_api.Repositories.Interfaces.StaffRepo;
 using hospital_api.Services.Implementations;
+using hospital_api.Services.Implementations.HospitalServices;
+using hospital_api.Services.Implementations.StaffServices;
 using hospital_api.Services.Interfaces;
+using hospital_api.Services.Interfaces.HospitalServices;
+using hospital_api.Services.Interfaces.StaffServices;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,6 +45,23 @@ builder.Services.AddScoped<ISupportStaffRepository, SupportStaffRepository>();
 //services
 builder.Services.AddScoped<IHospitalService, HospitalService>();
 builder.Services.AddScoped<IClinicService, ClinicService>();
+builder.Services.AddScoped<IStaffService, StaffService>();
+builder.Services.AddScoped<IDoctorService, DoctorService>();
+builder.Services.AddScoped<ICardiologistService, CardiologistService>();
+builder.Services.AddScoped<IDentistService, DentistService>();
+builder.Services.AddScoped<IGynecologistService, GynecologistService>();
+builder.Services.AddScoped<INeurologistService, NeurologistService>();
+builder.Services.AddScoped<IOphthalmologistService, OphthalmologistService>();
+builder.Services.AddScoped<IRadiologistService, RadiologistService>();
+builder.Services.AddScoped<ISupportStaffService, SupportStaffService>();
+builder.Services.AddScoped<ISurgeonService, SurgeonService>();
+builder.Services.AddScoped<IBedService, BedService>();
+builder.Services.AddScoped<IBuildingService, BuildingService>();
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<IRoomService, RoomService>();
+builder.Services.AddScoped<ILaboratoryService, LaboratoryService>();
+builder.Services.AddScoped<IOperationService, OperationService>();
+builder.Services.AddScoped<IPatientService, PatientService>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));

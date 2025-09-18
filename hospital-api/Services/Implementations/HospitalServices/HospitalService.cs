@@ -1,8 +1,8 @@
 ﻿using hospital_api.Models.HospitalAggregate;
 using hospital_api.Repositories.Interfaces.HospitalRepo;
-using hospital_api.Services.Interfaces;
+using hospital_api.Services.Interfaces.HospitalServices;
 
-namespace hospital_api.Services.Implementations;
+namespace hospital_api.Services.Implementations.HospitalServices;
 
 public class HospitalService : IHospitalService
 {

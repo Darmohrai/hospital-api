@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using hospital_api.Models.HospitalAggregate;
 
-namespace hospital_api.Services.Interfaces;
+namespace hospital_api.Services.Interfaces.HospitalServices;
 
 public interface IHospitalService
 {

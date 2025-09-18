@@ -1,8 +1,6 @@
-﻿using hospital_api.Models;
-using hospital_api.Services.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Mvc;
 using hospital_api.Models.HospitalAggregate;
+using hospital_api.Services.Interfaces.HospitalServices;
 
 namespace hospital_api.Controllers;
 

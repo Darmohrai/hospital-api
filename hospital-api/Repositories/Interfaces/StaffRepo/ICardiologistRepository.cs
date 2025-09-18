@@ -4,6 +4,12 @@ namespace hospital_api.Repositories.Interfaces.StaffRepo;
 
 public interface ICardiologistRepository : IRepository<Cardiologist>
 {
-    Task<IEnumerable<Cardiologist>> GetByOperationCountAsync(int minOperations);
+    // Отримати всіх кардіологів з певною мінімальною кількістю операцій
+    Task<IEnumerable<Cardiologist>> GetByOperationCountAsync(int minOperationCount);
+
+    // Отримати всіх кардіологів з певною мінімальною кількістю летальних операцій
     Task<IEnumerable<Cardiologist>> GetByFatalOperationCountAsync(int minFatalOperations);
+
+    // Отримати всіх кардіологів разом з їхніми операціями
+    Task<IEnumerable<Cardiologist>> GetAllWithOperationsAsync();
 }
