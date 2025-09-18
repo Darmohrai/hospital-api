@@ -2,7 +2,7 @@
 using hospital_api.Models.HospitalAggregate;
 using hospital_api.Services.Interfaces.HospitalServices;
 
-namespace hospital_api.Controllers;
+namespace hospital_api.Controllers.HospitalControllers;
 
 [ApiController]
 [Route("api/[controller]")]
