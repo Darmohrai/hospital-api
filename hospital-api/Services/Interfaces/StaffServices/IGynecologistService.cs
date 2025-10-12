@@ -4,14 +4,13 @@ namespace hospital_api.Services.Interfaces.StaffServices;
 
 public interface IGynecologistService
 {
-    Task<IEnumerable<Gynecologist>> GetAllGynecologistsAsync();
-    Task<Gynecologist?> GetGynecologistByIdAsync(int id);
-    Task AddGynecologistAsync(Gynecologist gynecologist);
-    Task UpdateGynecologistAsync(Gynecologist gynecologist);
-    Task DeleteGynecologistAsync(int id);
-
-    Task<IEnumerable<Gynecologist>> GetTopSurgeonsByOperationsAsync(int minOperations);
-    Task<IEnumerable<Gynecologist>> GetAllWithOperationsAsync();
-
-    Task<string> GetGynecologistProfileSummaryAsync(int gynecologistId);
+    Task<IEnumerable<Gynecologist>> GetAllAsync();
+    Task<Gynecologist?> GetByIdAsync(int id);
+    Task<ServiceResponse<Gynecologist>> CreateAsync(Gynecologist gynecologist);
+    Task<ServiceResponse<Gynecologist>> UpdateAsync(Gynecologist gynecologist);
+    Task<ServiceResponse<bool>> DeleteAsync(int id);
+        
+    Task<IEnumerable<Gynecologist>> GetByMinimumOperationCountAsync(int minOperations);
+        
+    Task<string> GetProfileSummaryAsync(int gynecologistId);
 }

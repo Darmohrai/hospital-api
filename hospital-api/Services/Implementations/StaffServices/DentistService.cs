@@ -1,80 +1,119 @@
-﻿using hospital_api.Models.StaffAggregate.DoctorAggregate;
+﻿using System.Text;
+using hospital_api.Models.StaffAggregate.DoctorAggregate;
 using hospital_api.Repositories.Interfaces.StaffRepo;
 using hospital_api.Services.Interfaces.StaffServices;
+using Microsoft.EntityFrameworkCore;
 
 namespace hospital_api.Services.Implementations.StaffServices;
 
 public class DentistService : IDentistService
 {
-    private readonly IDentistRepository _dentistRepository;
+    private readonly IStaffRepository _staffRepository;
+    private readonly IEmploymentRepository _employmentRepository;
 
-    public DentistService(IDentistRepository dentistRepository)
+    public DentistService(IStaffRepository staffRepository, IEmploymentRepository employmentRepository)
     {
-        _dentistRepository = dentistRepository;
+        _staffRepository = staffRepository;
+        _employmentRepository = employmentRepository;
     }
 
-    public async Task<IEnumerable<Dentist>> GetAllDentistsAsync()
+    public async Task<IEnumerable<Dentist>> GetAllAsync()
     {
-        return await _dentistRepository.GetAllAsync();
+        return await _staffRepository.GetAll().OfType<Dentist>().ToListAsync();
     }
 
-    public async Task<Dentist?> GetDentistByIdAsync(int id)
+    public async Task<Dentist?> GetByIdAsync(int id)
     {
-        return await _dentistRepository.GetByIdAsync(id);
+        var staff = await _staffRepository.GetByIdAsync(id);
+        return staff as Dentist;
     }
 
-    public async Task AddDentistAsync(Dentist dentist)
+    public async Task<ServiceResponse<Dentist>> CreateAsync(Dentist dentist)
     {
-        // Приклад бізнес-валідації перед додаванням
         if (dentist.HazardPayCoefficient < 0)
         {
-            throw new ArgumentException("Hazard pay coefficient cannot be negative.");
+            return ServiceResponse<Dentist>.Fail("Hazard pay coefficient cannot be negative.");
         }
-        await _dentistRepository.AddAsync(dentist);
+
+        dentist.Specialty = "Dentist"; // Встановлюємо спеціальність
+        await _staffRepository.AddAsync(dentist);
+        return ServiceResponse<Dentist>.Success(dentist);
     }
 
-    public async Task UpdateDentistAsync(Dentist dentist)
+    public async Task<ServiceResponse<Dentist>> UpdateAsync(Dentist dentist)
     {
-        var existingDentist = await _dentistRepository.GetByIdAsync(dentist.Id);
-        if (existingDentist == null)
+        var existing = await GetByIdAsync(dentist.Id);
+        if (existing == null)
         {
-            throw new InvalidOperationException("Dentist not found.");
+            return ServiceResponse<Dentist>.Fail("Dentist not found.");
         }
-        await _dentistRepository.UpdateAsync(dentist);
+
+        await _staffRepository.UpdateAsync(dentist);
+        return ServiceResponse<Dentist>.Success(dentist);
     }
 
-    public async Task DeleteDentistAsync(int id)
+    public async Task<ServiceResponse<bool>> DeleteAsync(int id)
     {
-        await _dentistRepository.DeleteAsync(id);
+        var existing = await GetByIdAsync(id);
+        if (existing == null)
+        {
+            return ServiceResponse<bool>.Fail("Dentist not found.");
+        }
+
+        await _staffRepository.DeleteAsync(id);
+        return ServiceResponse<bool>.Success(true);
     }
 
-    public async Task<IEnumerable<Dentist>> GetTopPerformingDentistsAsync(int minOperationCount)
+    public async Task<IEnumerable<Dentist>> GetByMinimumOperationCountAsync(int minOperationCount)
     {
-        // Використовуємо спеціалізований метод репозиторію
-        return await _dentistRepository.GetByOperationCountAsync(minOperationCount);
+        return await _staffRepository.GetAll()
+            .OfType<Dentist>()
+            .Where(d => d.OperationCount >= minOperationCount)
+            .ToListAsync();
     }
 
-    public async Task<IEnumerable<Dentist>> GetDentistsWithHighHazardPayAsync(float minCoefficient)
+    public async Task<IEnumerable<Dentist>> GetByHazardPayCoefficientAsync(float minCoefficient)
     {
-        // Використовуємо спеціалізований метод репозиторію
-        return await _dentistRepository.GetByHazardPayCoefficientAsync(minCoefficient);
+        return await _staffRepository.GetAll()
+            .OfType<Dentist>()
+            .Where(d => d.HazardPayCoefficient >= minCoefficient)
+            .ToListAsync();
     }
-    
-    public async Task<string> GetDentistSummaryAsync(int dentistId)
+
+    public async Task<string> GetSummaryAsync(int dentistId)
     {
-        // Завантажуємо дантиста разом з операціями
-        var dentist = await _dentistRepository.GetByIdAsync(dentistId);
-        
+        var dentist = await GetByIdAsync(dentistId);
         if (dentist == null)
         {
             return "Dentist not found.";
         }
-        
-        // Формуємо текстовий звіт, що є частиною бізнес-логіки
-        return $"Профіль: {dentist.FullName}\n" +
-               $"Спеціальність: {dentist.Specialty}\n" +
-               $"Кількість операцій: {dentist.OperationCount}\n" +
-               $"Летальних операцій: {dentist.FatalOperationCount}\n" +
-               $"Коефіцієнт шкідливості: {dentist.HazardPayCoefficient}";
+
+        var summaryBuilder = new StringBuilder();
+        summaryBuilder.AppendLine($"Профіль: {dentist.FullName}");
+        summaryBuilder.AppendLine($"Спеціальність: {dentist.Specialty}");
+        summaryBuilder.AppendLine($"Кількість операцій: {dentist.OperationCount}");
+        summaryBuilder.AppendLine($"Летальних операцій: {dentist.FatalOperationCount}");
+        summaryBuilder.AppendLine($"Коефіцієнт шкідливості: {dentist.HazardPayCoefficient}");
+
+        var employments = await _employmentRepository.GetEmploymentsByStaffIdAsync(dentistId);
+        summaryBuilder.AppendLine("Місця роботи:");
+
+        var employmentList = employments.ToList();
+        if (!employmentList.Any())
+        {
+            summaryBuilder.AppendLine("- Наразі не працевлаштований.");
+        }
+        else
+        {
+            foreach (var employment in employmentList)
+            {
+                if (employment.Hospital != null)
+                    summaryBuilder.AppendLine($"- Лікарня: {employment.Hospital.Name}");
+                if (employment.Clinic != null)
+                    summaryBuilder.AppendLine($"- Поліклініка: {employment.Clinic.Name}");
+            }
+        }
+
+        return summaryBuilder.ToString();
     }
 }

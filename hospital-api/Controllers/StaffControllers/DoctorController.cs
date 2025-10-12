@@ -2,100 +2,75 @@
 using hospital_api.Services.Interfaces.StaffServices;
 using Microsoft.AspNetCore.Mvc;
 
-namespace hospital_api.Controllers.StaffControllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public class DoctorController : ControllerBase
+namespace hospital_api.Controllers.StaffControllers
 {
-    private readonly IDoctorService _doctorService;
-
-    public DoctorController(IDoctorService doctorService)
+    [ApiController]
+    [Route("api/staff/doctors")] // Більш чіткий та REST-сумісний маршрут
+    public class DoctorController : ControllerBase
     {
-        _doctorService = doctorService;
-    }
+        private readonly IDoctorService _doctorService;
 
-    // GET: api/Doctor
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-        var doctors = await _doctorService.GetAllDoctorsAsync();
-        return Ok(doctors);
-    }
-
-    // GET: api/Doctor/{id}
-    [HttpGet("{id}")]
-    public async Task<IActionResult> Get(int id)
-    {
-        var doctor = await _doctorService.GetDoctorByIdAsync(id);
-        if (doctor == null)
-            return NotFound();
-
-        return Ok(doctor);
-    }
-
-    // POST: api/Doctor
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Doctor doctor)
-    {
-        try
+        public DoctorController(IDoctorService doctorService)
         {
-            await _doctorService.AddDoctorAsync(doctor);
-            return CreatedAtAction(nameof(Get), new { id = doctor.Id }, doctor);
+            _doctorService = doctorService;
         }
-        catch (ArgumentException ex)
+
+        /// <summary>
+        /// Отримує список всіх лікарів (усіх спеціальностей).
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
         {
-            return BadRequest(ex.Message);
+            var doctors = await _doctorService.GetAllAsync();
+            return Ok(doctors);
         }
-    }
 
-    // PUT: api/Doctor/{id}
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] Doctor doctor)
-    {
-        if (id != doctor.Id)
-            return BadRequest("ID mismatch.");
-
-        try
+        /// <summary>
+        /// Отримує лікаря за його ID.
+        /// </summary>
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
         {
-            await _doctorService.UpdateDoctorAsync(doctor);
-            return NoContent();
+            var doctor = await _doctorService.GetByIdAsync(id);
+            if (doctor == null)
+                return NotFound();
+
+            return Ok(doctor);
         }
-        catch (InvalidOperationException ex)
+
+        /// <summary>
+        /// Отримує лікарів за вказаною спеціальністю.
+        /// </summary>
+        [HttpGet("by-specialty")]
+        public async Task<IActionResult> GetBySpecialty([FromQuery] string specialty)
         {
-            return NotFound(ex.Message);
+            var doctors = await _doctorService.GetBySpecialtyAsync(specialty);
+            return Ok(doctors);
         }
-    }
 
-    // DELETE: api/Doctor/{id}
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        await _doctorService.DeleteDoctorAsync(id);
-        return NoContent();
-    }
+        /// <summary>
+        /// Отримує лікарів за вказаним науковим ступенем.
+        /// </summary>
+        [HttpGet("by-degree")]
+        public async Task<IActionResult> GetByDegree([FromQuery] AcademicDegree degree)
+        {
+            var doctors = await _doctorService.GetByDegreeAsync(degree);
+            return Ok(doctors);
+        }
 
-    // GET: api/Doctor/by-specialty?specialty=Cardiology
-    [HttpGet("by-specialty")]
-    public async Task<IActionResult> GetBySpecialty([FromQuery] string specialty)
-    {
-        var doctors = await _doctorService.GetDoctorsBySpecialtyAsync(specialty);
-        return Ok(doctors);
-    }
+        /// <summary>
+        /// Отримує лікарів за вказаним вченим званням.
+        /// </summary>
+        [HttpGet("by-title")]
+        public async Task<IActionResult> GetByTitle([FromQuery] AcademicTitle title)
+        {
+            var doctors = await _doctorService.GetByTitleAsync(title);
+            return Ok(doctors);
+        }
 
-    // GET: api/Doctor/by-degree?degree=Doctor
-    [HttpGet("by-degree")]
-    public async Task<IActionResult> GetByDegree([FromQuery] AcademicDegree degree)
-    {
-        var doctors = await _doctorService.GetDoctorsByDegreeAsync(degree);
-        return Ok(doctors);
-    }
-
-    // GET: api/Doctor/by-title?title=Professor
-    [HttpGet("by-title")]
-    public async Task<IActionResult> GetByTitle([FromQuery] AcademicTitle title)
-    {
-        var doctors = await _doctorService.GetDoctorsByTitleAsync(title);
-        return Ok(doctors);
+        // ❌ Методи Create, Update та Delete були видалені.
+        // Це архітектурно правильне рішення, оскільки Doctor - абстрактний клас.
+        // Створення відбувається через специфічні контролери (наприклад, POST /api/staff/surgeons),
+        // а видалення - через загальний StaffController (DELETE /api/staff/{id}).
     }
 }

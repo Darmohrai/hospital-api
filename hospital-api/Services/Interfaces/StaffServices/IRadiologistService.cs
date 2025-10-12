@@ -4,15 +4,15 @@ namespace hospital_api.Services.Interfaces.StaffServices;
 
 public interface IRadiologistService
 {
-    Task<IEnumerable<Radiologist>> GetAllRadiologistsAsync();
-    Task<Radiologist?> GetRadiologistByIdAsync(int id);
-    Task AddRadiologistAsync(Radiologist radiologist);
-    Task UpdateRadiologistAsync(Radiologist radiologist);
-    Task DeleteRadiologistAsync(int id);
+    Task<IEnumerable<Radiologist>> GetAllAsync();
+    Task<Radiologist?> GetByIdAsync(int id);
+    Task<ServiceResponse<Radiologist>> CreateAsync(Radiologist radiologist);
+    Task<ServiceResponse<Radiologist>> UpdateAsync(Radiologist radiologist);
+    Task<ServiceResponse<bool>> DeleteAsync(int id);
 
     Task<IEnumerable<Radiologist>> GetByHazardPayCoefficientAsync(float minCoefficient);
     Task<IEnumerable<Radiologist>> GetByExtendedVacationDaysAsync(int minDays);
     Task<IEnumerable<Radiologist>> GetByHazardPayAndVacationAsync(float minCoefficient, int minDays);
 
-    Task<string> GetRadiologistProfileSummaryAsync(int radiologistId);
+    Task<string> GetProfileSummaryAsync(int radiologistId);
 }

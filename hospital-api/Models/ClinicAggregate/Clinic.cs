@@ -20,7 +20,7 @@ public class Clinic
     public int? HospitalId { get; set; }
     public Hospital? Hospital { get; set; }
 
-    public List<Staff> Staff { get; set; } = new();
+    public List<Employment> Employments { get; set; } = new();
 
     public List<Patient> Patients { get; set; } = new();
 }

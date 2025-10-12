@@ -6,6 +6,15 @@ public class Gynecologist : Doctor
 {
     public List<Operation> Operations { get; set; } = new();
 
-    public int OperationCount => Operations.Count;
-    public int FatalOperationCount => Operations.Count(op => op.IsFatal);
+    public int OperationCount
+    {
+        get => Operations.Count;
+        init => throw new NotImplementedException();
+    }
+
+    public int FatalOperationCount
+    {
+        get => Operations.Count(op => op.IsFatal);
+        init => throw new NotImplementedException();
+    }
 }

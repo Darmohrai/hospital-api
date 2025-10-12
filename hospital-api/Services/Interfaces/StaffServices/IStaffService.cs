@@ -4,31 +4,29 @@ namespace hospital_api.Services.Interfaces.StaffServices;
 
 public interface IStaffService
 {
-    // Отримати весь персонал
-    Task<IEnumerable<Staff>> GetAllStaffAsync();
+    Task<IEnumerable<Staff>> GetAllAsync();
+    Task<Staff?> GetByIdAsync(int id);
+    Task<ServiceResponse<Staff>> CreateAsync(Staff staff);
+    Task<ServiceResponse<Staff>> UpdateAsync(Staff staff);
+    Task<ServiceResponse<bool>> DeleteAsync(int id);
 
-    // Отримати персонал за ID
-    Task<Staff?> GetStaffByIdAsync(int id);
+    /// <summary>
+    /// Отримує список співробітників, що працюють у вказаній клініці.
+    /// </summary>
+    Task<IEnumerable<Staff>> GetByClinicAsync(int clinicId);
 
-    // Додати новий персонал
-    Task AddStaffAsync(Staff staff);
+    /// <summary>
+    /// Отримує список співробітників, що працюють у вказаній лікарні.
+    /// </summary>
+    Task<IEnumerable<Staff>> GetByHospitalAsync(int hospitalId);
 
-    // Оновити дані персоналу
-    Task UpdateStaffAsync(Staff staff);
-
-    // Видалити персонал
-    Task DeleteStaffAsync(int id);
-
-    // Отримати персонал за ID клініки
-    Task<IEnumerable<Staff>> GetStaffByClinicIdAsync(int clinicId);
-
-    // Отримати персонал за ID лікарні
-    Task<IEnumerable<Staff>> GetStaffByHospitalIdAsync(int hospitalId);
-
-    // Отримати персонал з великим досвідом роботи
+    /// <summary>
+    /// Отримує список співробітників з досвідом роботи не менше вказаного.
+    /// </summary>
     Task<IEnumerable<Staff>> GetExperiencedStaffAsync(int minExperienceYears);
-
-    // Застосувати логіку до даних про персонал
-    // Наприклад, розрахувати річний бонус на основі досвіду
-    Task<decimal> CalculateAnnualBonusAsync(int staffId);
+        
+    /// <summary>
+    /// Розраховує річний бонус для співробітника на основі бізнес-правил.
+    /// </summary>
+    Task<ServiceResponse<decimal>> CalculateAnnualBonusAsync(int staffId);
 }

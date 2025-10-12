@@ -4,15 +4,14 @@ namespace hospital_api.Services.Interfaces.StaffServices;
 
 public interface IDoctorService
 {
-    // CRUD
-    Task<IEnumerable<Doctor>> GetAllDoctorsAsync();
-    Task<Doctor?> GetDoctorByIdAsync(int id);
-    Task AddDoctorAsync(Doctor doctor);
-    Task UpdateDoctorAsync(Doctor doctor);
-    Task DeleteDoctorAsync(int id);
-
-    // Фільтрація
-    Task<IEnumerable<Doctor>> GetDoctorsBySpecialtyAsync(string specialty);
-    Task<IEnumerable<Doctor>> GetDoctorsByDegreeAsync(AcademicDegree degree);
-    Task<IEnumerable<Doctor>> GetDoctorsByTitleAsync(AcademicTitle title);
+    Task<IEnumerable<Doctor>> GetAllAsync();
+    Task<Doctor?> GetByIdAsync(int id);
+    Task<IEnumerable<Doctor>> GetBySpecialtyAsync(string specialty);
+    Task<IEnumerable<Doctor>> GetByDegreeAsync(AcademicDegree degree);
+    Task<IEnumerable<Doctor>> GetByTitleAsync(AcademicTitle title);
+        
+    // --- Специфічна бізнес-логіка ---
+    Task<IEnumerable<Doctor>> GetWithHazardPayAsync();
+    Task<IEnumerable<Doctor>> GetWithExtendedVacationAsync();
+    Task<IEnumerable<Doctor>> GetProfessorsWithMultipleAssignmentsAsync();
 }

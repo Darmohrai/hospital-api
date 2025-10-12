@@ -1,104 +1,121 @@
-﻿using hospital_api.Models.StaffAggregate.DoctorAggregate;
+﻿using hospital_api.DTOs.Staff;
+using hospital_api.Models.StaffAggregate.DoctorAggregate;
 using hospital_api.Services.Interfaces.StaffServices;
 using Microsoft.AspNetCore.Mvc;
 
-namespace hospital_api.Controllers.StaffControllers;
-
-[ApiController]
-[Route("api/staff/[controller]")]
-public class CardiologistController : ControllerBase
+namespace hospital_api.Controllers.StaffControllers
 {
-    private readonly ICardiologistService _cardiologistService;
-
-    public CardiologistController(ICardiologistService cardiologistService)
+    [ApiController]
+    [Route("api/staff/cardiologists")] // Більш чіткий та REST-сумісний маршрут
+    public class CardiologistController : ControllerBase
     {
-        _cardiologistService = cardiologistService;
-    }
+        private readonly ICardiologistService _cardiologistService;
 
-    // GET: api/Cardiologist
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-        var cardiologists = await _cardiologistService.GetAllCardiologistsAsync();
-        return Ok(cardiologists);
-    }
-
-    // GET: api/Cardiologist/{id}
-    [HttpGet("{id}")]
-    public async Task<IActionResult> Get(int id)
-    {
-        var cardiologist = await _cardiologistService.GetCardiologistByIdAsync(id);
-        if (cardiologist == null)
-            return NotFound();
-
-        return Ok(cardiologist);
-    }
-
-    // POST: api/Cardiologist
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Cardiologist cardiologist)
-    {
-        try
+        public CardiologistController(ICardiologistService cardiologistService)
         {
-            await _cardiologistService.AddCardiologistAsync(cardiologist);
-            return CreatedAtAction(nameof(Get), new { id = cardiologist.Id }, cardiologist);
+            _cardiologistService = cardiologistService;
         }
-        catch (ArgumentException ex)
+
+        /// <summary>
+        /// Отримує список всіх кардіологів.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
         {
-            return BadRequest(ex.Message);
+            var cardiologists = await _cardiologistService.GetAllAsync();
+            return Ok(cardiologists);
         }
-    }
 
-    // PUT: api/Cardiologist/{id}
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] Cardiologist cardiologist)
-    {
-        if (id != cardiologist.Id)
-            return BadRequest("ID mismatch.");
-
-        try
+        /// <summary>
+        /// Отримує кардіолога за його ID.
+        /// </summary>
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
         {
-            await _cardiologistService.UpdateCardiologistAsync(cardiologist);
+            var cardiologist = await _cardiologistService.GetByIdAsync(id);
+            if (cardiologist == null)
+                return NotFound();
+
+            return Ok(cardiologist);
+        }
+
+        /// <summary>
+        /// Створює нового кардіолога.
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreateCardiologistDto dto)
+        {
+            var cardiologist = new Cardiologist
+            {
+                FullName = dto.FullName,
+                WorkExperienceYears = dto.WorkExperienceYears,
+                AcademicDegree = dto.AcademicDegree,
+                AcademicTitle = dto.AcademicTitle,
+                OperationCount = dto.OperationCount,
+                FatalOperationCount = dto.FatalOperationCount
+            };
+
+            var result = await _cardiologistService.CreateAsync(cardiologist);
+
+            if (!result.IsSuccess)
+                return BadRequest(new { message = result.ErrorMessage });
+
+            return CreatedAtAction(nameof(GetById), new { id = result.Data!.Id }, result.Data);
+        }
+
+        /// <summary>
+        /// Оновлює дані існуючого кардіолога.
+        /// </summary>
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] Cardiologist cardiologist)
+        {
+            if (id != cardiologist.Id)
+                return BadRequest("ID mismatch.");
+
+            var result = await _cardiologistService.UpdateAsync(cardiologist);
+
+            if (!result.IsSuccess)
+                return NotFound(new { message = result.ErrorMessage });
+
             return NoContent();
         }
-        catch (InvalidOperationException ex)
+
+        /// <summary>
+        /// Видаляє кардіолога за його ID.
+        /// </summary>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
         {
-            return NotFound(ex.Message);
+            var result = await _cardiologistService.DeleteAsync(id);
+
+            if (!result.IsSuccess)
+                return NotFound(new { message = result.ErrorMessage });
+
+            return NoContent();
         }
-    }
 
-    // DELETE: api/Cardiologist/{id}
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        await _cardiologistService.DeleteCardiologistAsync(id);
-        return NoContent();
-    }
+        /// <summary>
+        /// Отримує кардіологів з кількістю операцій не менше вказаної.
+        /// </summary>
+        [HttpGet("min-operations")]
+        public async Task<IActionResult> GetByMinimumOperationCount([FromQuery] int minOperations)
+        {
+            var cardiologists = await _cardiologistService.GetByMinimumOperationCountAsync(minOperations);
+            return Ok(cardiologists);
+        }
 
-    // GET: api/Cardiologist/top-surgeons?minOperations=10
-    [HttpGet("top-surgeons")]
-    public async Task<IActionResult> GetTopSurgeons([FromQuery] int minOperations)
-    {
-        var topSurgeons = await _cardiologistService.GetTopSurgeonsByOperationsAsync(minOperations);
-        return Ok(topSurgeons);
-    }
+        /// <summary>
+        /// Отримує профіль кардіолога у вигляді текстового звіту.
+        /// </summary>
+        [HttpGet("{id}/profile-summary")]
+        public async Task<IActionResult> GetProfileSummary(int id)
+        {
+            var summary = await _cardiologistService.GetProfileSummaryAsync(id);
 
-    // GET: api/Cardiologist/fatal-operations
-    [HttpGet("fatal-operations")]
-    public async Task<IActionResult> GetCardiologistsWithFatalOperations()
-    {
-        var cardiologists = await _cardiologistService.GetCardiologistsWithFatalOperationsAsync();
-        return Ok(cardiologists);
-    }
+            if (summary.Contains("not found"))
+                return NotFound(summary);
 
-    // GET: api/Cardiologist/{id}/profile-summary
-    [HttpGet("{id}/profile-summary")]
-    public async Task<IActionResult> GetProfileSummary(int id)
-    {
-        var summary = await _cardiologistService.GetCardiologistProfileSummaryAsync(id);
-        if (summary == "Cardiologist not found.")
-            return NotFound(summary);
-
-        return Ok(summary);
+            return Ok(summary);
+        }
     }
 }

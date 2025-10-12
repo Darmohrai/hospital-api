@@ -22,7 +22,7 @@ public class Hospital
     
     public List<Department> Departments { get; set; } = new();
 
-    public List<Staff> Staff { get; set; } = new();
+    public List<Employment> Employments { get; set; } = new();
 
     public List<Patient> Patients { get; set; } = new();
 

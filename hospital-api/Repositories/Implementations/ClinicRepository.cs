@@ -16,7 +16,7 @@ public class ClinicRepository : GenericRepository<Clinic>, IClinicRepository
     {
         return await _context.Clinics
             .Include(c => c.Hospital)
-            .Include(c => c.Staff)
+            .Include(c => c.Employments)
             .Include(c => c.Patients)
             .ToListAsync();
     }
@@ -26,7 +26,7 @@ public class ClinicRepository : GenericRepository<Clinic>, IClinicRepository
     {
         return await _context.Clinics
             .Include(c => c.Hospital)
-            .Include(c => c.Staff)
+            .Include(c => c.Employments)
             .Include(c => c.Patients)
             .FirstOrDefaultAsync(c => c.Id == id);
     }

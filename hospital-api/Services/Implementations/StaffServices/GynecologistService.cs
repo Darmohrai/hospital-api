@@ -1,75 +1,110 @@
-﻿using hospital_api.Models.StaffAggregate.DoctorAggregate;
+﻿using System.Text;
+using hospital_api.Models.StaffAggregate.DoctorAggregate;
 using hospital_api.Repositories.Interfaces.StaffRepo;
 using hospital_api.Services.Interfaces.StaffServices;
+using Microsoft.EntityFrameworkCore;
 
 namespace hospital_api.Services.Implementations.StaffServices;
 
 public class GynecologistService : IGynecologistService
 {
-    private readonly IGynecologistRepository _gynecologistRepository;
+    private readonly IStaffRepository _staffRepository;
+    private readonly IEmploymentRepository _employmentRepository;
 
-    public GynecologistService(IGynecologistRepository gynecologistRepository)
+    public GynecologistService(IStaffRepository staffRepository, IEmploymentRepository employmentRepository)
     {
-        _gynecologistRepository = gynecologistRepository;
+        _staffRepository = staffRepository;
+        _employmentRepository = employmentRepository;
     }
 
-    public async Task<IEnumerable<Gynecologist>> GetAllGynecologistsAsync()
+    public async Task<IEnumerable<Gynecologist>> GetAllAsync()
     {
-        return await _gynecologistRepository.GetAllAsync();
+        return await _staffRepository.GetAll().OfType<Gynecologist>().ToListAsync();
     }
 
-    public async Task<Gynecologist?> GetGynecologistByIdAsync(int id)
+    public async Task<Gynecologist?> GetByIdAsync(int id)
     {
-        return await _gynecologistRepository.GetByIdAsync(id);
+        var staff = await _staffRepository.GetByIdAsync(id);
+        return staff as Gynecologist;
     }
 
-    public async Task AddGynecologistAsync(Gynecologist gynecologist)
+    public async Task<ServiceResponse<Gynecologist>> CreateAsync(Gynecologist gynecologist)
     {
         if (string.IsNullOrWhiteSpace(gynecologist.FullName))
         {
-            throw new ArgumentException("Gynecologist's full name is required.");
+            return ServiceResponse<Gynecologist>.Fail("Gynecologist's full name is required.");
         }
 
-        await _gynecologistRepository.AddAsync(gynecologist);
+        gynecologist.Specialty = "Gynecologist";
+        await _staffRepository.AddAsync(gynecologist);
+        return ServiceResponse<Gynecologist>.Success(gynecologist);
     }
 
-    public async Task UpdateGynecologistAsync(Gynecologist gynecologist)
+    public async Task<ServiceResponse<Gynecologist>> UpdateAsync(Gynecologist gynecologist)
     {
-        var existingGynecologist = await _gynecologistRepository.GetByIdAsync(gynecologist.Id);
-        if (existingGynecologist == null)
+        var existing = await GetByIdAsync(gynecologist.Id);
+        if (existing == null)
         {
-            throw new InvalidOperationException("Gynecologist not found.");
+            return ServiceResponse<Gynecologist>.Fail("Gynecologist not found.");
         }
 
-        await _gynecologistRepository.UpdateAsync(gynecologist);
+        await _staffRepository.UpdateAsync(gynecologist);
+        return ServiceResponse<Gynecologist>.Success(gynecologist);
     }
 
-    public async Task DeleteGynecologistAsync(int id)
+    public async Task<ServiceResponse<bool>> DeleteAsync(int id)
     {
-        await _gynecologistRepository.DeleteAsync(id);
+        var existing = await GetByIdAsync(id);
+        if (existing == null)
+        {
+            return ServiceResponse<bool>.Fail("Gynecologist not found.");
+        }
+
+        await _staffRepository.DeleteAsync(id);
+        return ServiceResponse<bool>.Success(true);
     }
 
-    public async Task<IEnumerable<Gynecologist>> GetTopSurgeonsByOperationsAsync(int minOperations)
+    public async Task<IEnumerable<Gynecologist>> GetByMinimumOperationCountAsync(int minOperations)
     {
-        return await _gynecologistRepository.GetByOperationCountAsync(minOperations);
+        return await _staffRepository.GetAll()
+            .OfType<Gynecologist>()
+            .Where(g => g.OperationCount >= minOperations)
+            .ToListAsync();
     }
 
-    public async Task<IEnumerable<Gynecologist>> GetAllWithOperationsAsync()
+    public async Task<string> GetProfileSummaryAsync(int gynecologistId)
     {
-        return await _gynecologistRepository.GetAllWithOperationsAsync();
-    }
-
-    public async Task<string> GetGynecologistProfileSummaryAsync(int gynecologistId)
-    {
-        var gynecologist = await _gynecologistRepository.GetByIdAsync(gynecologistId);
-
+        var gynecologist = await GetByIdAsync(gynecologistId);
         if (gynecologist == null)
         {
             return "Gynecologist not found.";
         }
 
-        return $"Профіль лікаря: {gynecologist.FullName}\n" +
-               $"Спеціалізація: {gynecologist.Specialty}\n" +
-               $"Кількість операцій: {gynecologist.Operations?.Count ?? 0}";
+        var summaryBuilder = new StringBuilder();
+        summaryBuilder.AppendLine($"Профіль лікаря: {gynecologist.FullName}");
+        summaryBuilder.AppendLine($"Спеціалізація: {gynecologist.Specialty}");
+        summaryBuilder.AppendLine($"Кількість операцій: {gynecologist.OperationCount}");
+        summaryBuilder.AppendLine($"Кількість летальних операцій: {gynecologist.FatalOperationCount}");
+
+        var employments = await _employmentRepository.GetEmploymentsByStaffIdAsync(gynecologistId);
+        summaryBuilder.AppendLine("Місця роботи:");
+
+        var employmentList = employments.ToList();
+        if (!employmentList.Any())
+        {
+            summaryBuilder.AppendLine("- Наразі не працевлаштований.");
+        }
+        else
+        {
+            foreach (var employment in employmentList)
+            {
+                if (employment.Hospital != null)
+                    summaryBuilder.AppendLine($"- Лікарня: {employment.Hospital.Name}");
+                if (employment.Clinic != null)
+                    summaryBuilder.AppendLine($"- Поліклініка: {employment.Clinic.Name}");
+            }
+        }
+
+        return summaryBuilder.ToString();
     }
 }

@@ -1,4 +1,5 @@
-﻿using hospital_api.Models.ClinicAggregate;
+﻿using hospital_api.DTOs;
+using hospital_api.Models.ClinicAggregate;
 using hospital_api.Models.HospitalAggregate;
 using hospital_api.Models.PatientAggregate;
 using hospital_api.Models.StaffAggregate;
@@ -18,83 +19,127 @@ public class ClinicController : ControllerBase
         _clinicService = clinicService;
     }
 
-    // ----------------- CRUD -----------------
+    // --- CRUD Операції ---
 
-    // GET: api/clinics
+    /// <summary>
+    /// Отримує список всіх поліклінік.
+    /// </summary>
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var clinics = await _clinicService.GetAllClinicsAsync();
+        var clinics = await _clinicService.GetAllAsync();
         return Ok(clinics);
     }
 
-    // GET: api/clinics/5
+    /// <summary>
+    /// Отримує поліклініку за її ID.
+    /// </summary>
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        var clinic = await _clinicService.GetClinicByIdAsync(id);
-        if (clinic == null) return NotFound();
+        var clinic = await _clinicService.GetByIdAsync(id);
+        if (clinic == null)
+            return NotFound();
+
         return Ok(clinic);
     }
 
-    // POST: api/clinics
+    /// <summary>
+    /// Створює нову поліклініку.
+    /// </summary>
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Clinic clinic)
+    public async Task<IActionResult> Create([FromBody] CreateClinicDto dto)
     {
-        var createdClinic = await _clinicService.CreateClinicAsync(clinic);
-        return CreatedAtAction(nameof(GetById), new { id = createdClinic.Id }, createdClinic);
+        var clinic = new Clinic
+        {
+            Name = dto.Name,
+            Address = dto.Address,
+            HospitalId = dto.HospitalId
+        };
+
+        await _clinicService.CreateAsync(clinic);
+        return CreatedAtAction(nameof(GetById), new { id = clinic.Id }, clinic);
     }
 
-    // PUT: api/clinics/5
+    /// <summary>
+    /// Оновлює існуючу поліклініку.
+    /// </summary>
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] Clinic clinic)
     {
-        if (id != clinic.Id) return BadRequest();
+        if (id != clinic.Id)
+            return BadRequest("ID mismatch.");
 
-        var updatedClinic = await _clinicService.UpdateClinicAsync(clinic);
-        return Ok(updatedClinic);
+        await _clinicService.UpdateAsync(clinic);
+        return NoContent(); // Стандартна відповідь для успішного оновлення
     }
 
-    // DELETE: api/clinics/5
+    /// <summary>
+    /// Видаляє поліклініку за її ID.
+    /// </summary>
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        await _clinicService.DeleteClinicAsync(id);
+        await _clinicService.DeleteAsync(id);
         return NoContent();
     }
 
-    // ----------------- Бізнес-логіка -----------------
+    // --- Бізнес-логіка ---
 
-    // POST: api/clinics/5/assign-hospital/2
+    /// <summary>
+    /// Призначає поліклініку до лікарні.
+    /// </summary>
     [HttpPost("{clinicId}/assign-hospital/{hospitalId}")]
     public async Task<IActionResult> AssignHospital(int clinicId, int hospitalId)
     {
-        await _clinicService.AssignHospitalAsync(clinicId, hospitalId);
-        return NoContent();
+        var result = await _clinicService.AssignHospitalAsync(clinicId, hospitalId);
+
+        if (!result.IsSuccess)
+            return NotFound(new { message = result.ErrorMessage });
+
+        return Ok(result.Data);
     }
 
-    // POST: api/clinics/5/add-staff
-    [HttpPost("{clinicId}/add-staff")]
-    public async Task<IActionResult> AddStaff(int clinicId, [FromBody] Staff staff)
+    /// <summary>
+    /// Працевлаштовує співробітника в поліклініку.
+    /// </summary>
+    [HttpPost("{clinicId}/staff/{staffId}")] // ✅ REST-сумісний маршрут
+    public async Task<IActionResult> AddStaffToClinic(int clinicId, int staffId)
     {
-        await _clinicService.AddStaffToClinicAsync(clinicId, staff);
-        return NoContent();
+        var result = await _clinicService.AddStaffToClinicAsync(clinicId, staffId);
+
+        if (!result.IsSuccess)
+            return BadRequest(new { message = result.ErrorMessage });
+
+        return Ok(result.Data); // Повертаємо створений об'єкт Employment
     }
 
-    // POST: api/clinics/5/add-patient
-    [HttpPost("{clinicId}/add-patient")]
+    /// <summary>
+    /// Реєструє пацієнта в поліклініці.
+    /// </summary>
+    [HttpPost("{clinicId}/patients")]
     public async Task<IActionResult> AddPatient(int clinicId, [FromBody] Patient patient)
     {
-        await _clinicService.AddPatientAsync(clinicId, patient);
-        return NoContent();
+        var result = await _clinicService.AddPatientAsync(clinicId, patient);
+
+        if (!result.IsSuccess)
+            return NotFound(new { message = result.ErrorMessage });
+
+        // Повертаємо 201 Created з посиланням на нового пацієнта (потрібен PatientController)
+        return CreatedAtAction(nameof(AddPatient), new { id = result.Data!.Id }, result.Data);
     }
 
-    // POST: api/clinics/admit-patient/10?specialization=Cardiologist
-    [HttpPost("admit-patient/{patientId}")]
-    public async Task<IActionResult> AdmitPatient(int patientId, [FromQuery] HospitalSpecialization specialization)
+    /// <summary>
+    /// Направляє пацієнта до лікарні з потрібною спеціалізацією.
+    /// </summary>
+    [HttpPost("refer-patient/{patientId}")]
+    public async Task<IActionResult> ReferPatient(int patientId, [FromQuery] HospitalSpecialization specialization)
     {
-        var hospital = await _clinicService.ReferPatientToHospitalAsync(patientId, specialization);
-        if (hospital == null) return NotFound("No hospital with the required specialization found.");
-        return Ok(hospital);
+        var result = await _clinicService.ReferPatientToHospitalAsync(patientId, specialization);
+
+        if (!result.IsSuccess)
+            return NotFound(new { message = result.ErrorMessage }); // Наприклад, "Лікарню не знайдено"
+
+        return Ok(result.Data);
     }
 }

@@ -4,15 +4,14 @@ namespace hospital_api.Services.Interfaces.StaffServices;
 
 public interface IDentistService
 {
-    // Базові операції CRUD
-    Task<IEnumerable<Dentist>> GetAllDentistsAsync();
-    Task<Dentist?> GetDentistByIdAsync(int id);
-    Task AddDentistAsync(Dentist dentist);
-    Task UpdateDentistAsync(Dentist dentist);
-    Task DeleteDentistAsync(int id);
-
-    // Спеціалізовані методи, що використовують бізнес-логіку
-    Task<IEnumerable<Dentist>> GetTopPerformingDentistsAsync(int minOperationCount);
-    Task<IEnumerable<Dentist>> GetDentistsWithHighHazardPayAsync(float minCoefficient);
-    Task<string> GetDentistSummaryAsync(int dentistId);
+    Task<IEnumerable<Dentist>> GetAllAsync();
+    Task<Dentist?> GetByIdAsync(int id);
+    Task<ServiceResponse<Dentist>> CreateAsync(Dentist dentist);
+    Task<ServiceResponse<Dentist>> UpdateAsync(Dentist dentist);
+    Task<ServiceResponse<bool>> DeleteAsync(int id);
+        
+    Task<IEnumerable<Dentist>> GetByMinimumOperationCountAsync(int minOperationCount);
+    Task<IEnumerable<Dentist>> GetByHazardPayCoefficientAsync(float minCoefficient);
+        
+    Task<string> GetSummaryAsync(int dentistId);
 }

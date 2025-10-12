@@ -1,4 +1,5 @@
-﻿using hospital_api.Models.StaffAggregate.DoctorAggregate;
+﻿using hospital_api.DTOs.Staff;
+using hospital_api.Models.StaffAggregate.DoctorAggregate;
 using hospital_api.Services.Interfaces.StaffServices;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,14 +36,20 @@ public class NeurologistController : ControllerBase
     }
 
     // Додати нового невропатолога
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Neurologist neurologist)
+    [HttpPost("{hospitalId}")]
+    public async Task<IActionResult> Create(int hospitalId, [FromBody] CreateNeurologistDto neurologistDto)
     {
-        await _neurologistService.AddNeurologistAsync(neurologist);
-        return CreatedAtAction(nameof(Get), new { id = neurologist.Id }, neurologist);
+        var result = await _neurologistService.AddNeurologistToHospitalAsync(hospitalId, neurologistDto);
+
+        if (!result.IsSuccess)
+        {
+            return BadRequest(new { message = result.ErrorMessage });
+        }
+
+        return CreatedAtAction(nameof(Get), new { id = result.Data.Id }, result.Data);
     }
 
-    // Оновити невропатолога
+// Оновити невропатолога
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] Neurologist neurologist)
     {
@@ -53,7 +60,7 @@ public class NeurologistController : ControllerBase
         return NoContent();
     }
 
-    // Видалити невропатолога
+// Видалити невропатолога
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -61,7 +68,7 @@ public class NeurologistController : ControllerBase
         return NoContent();
     }
 
-    // Отримати невропатологів з розширеною відпусткою більше заданих днів
+// Отримати невропатологів з розширеною відпусткою більше заданих днів
     [HttpGet("extended-vacation/{minDays}")]
     public async Task<IActionResult> GetByExtendedVacationDays(int minDays)
     {
@@ -69,7 +76,7 @@ public class NeurologistController : ControllerBase
         return Ok(result);
     }
 
-    // Отримати профіль невропатолога у вигляді текстового звіту
+// Отримати профіль невропатолога у вигляді текстового звіту
     [HttpGet("{id}/profile-summary")]
     public async Task<IActionResult> GetProfileSummary(int id)
     {

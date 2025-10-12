@@ -4,13 +4,13 @@ namespace hospital_api.Services.Interfaces.StaffServices;
 
 public interface ISurgeonService
 {
-    Task<IEnumerable<Surgeon>> GetAllSurgeonsAsync();
-    Task<Surgeon?> GetSurgeonByIdAsync(int id);
-    Task AddSurgeonAsync(Surgeon surgeon);
-    Task UpdateSurgeonAsync(Surgeon surgeon);
-    Task DeleteSurgeonAsync(int id);
-
-    Task<IEnumerable<Surgeon>> GetByOperationCountAsync(int minOperationCount);
-    Task<IEnumerable<Surgeon>> GetAllWithOperationsAsync();
-    Task<string> GetSurgeonProfileSummaryAsync(int surgeonId);
+    Task<IEnumerable<Surgeon>> GetAllAsync();
+    Task<Surgeon?> GetByIdAsync(int id);
+    Task<ServiceResponse<Surgeon>> CreateAsync(Surgeon surgeon);
+    Task<ServiceResponse<Surgeon>> UpdateAsync(Surgeon surgeon);
+    Task<ServiceResponse<bool>> DeleteAsync(int id);
+        
+    Task<IEnumerable<Surgeon>> GetByMinimumOperationCountAsync(int minOperationCount);
+        
+    Task<string> GetProfileSummaryAsync(int surgeonId);
 }

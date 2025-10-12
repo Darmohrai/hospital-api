@@ -1,11 +1,12 @@
-﻿using hospital_api.Models.StaffAggregate;
+﻿using hospital_api.DTOs.Staff;
+using hospital_api.Models.StaffAggregate;
 using hospital_api.Services.Interfaces.StaffServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace hospital_api.Controllers.StaffControllers;
 
 [ApiController]
-[Route("api/staff/[controller]")]
+[Route("api/staff/support")] // Більш чіткий базовий маршрут
 public class SupportStaffController : ControllerBase
 {
     private readonly ISupportStaffService _supportStaffService;
@@ -15,53 +16,72 @@ public class SupportStaffController : ControllerBase
         _supportStaffService = supportStaffService;
     }
 
-    // Отримати всіх обслуговуючих співробітників
+    /// <summary>
+    /// Отримує весь допоміжний персонал.
+    /// </summary>
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var staff = await _supportStaffService.GetAllSupportStaffAsync();
+        var staff = await _supportStaffService.GetAllAsync();
         return Ok(staff);
     }
 
-    // Отримати співробітника за ID
+    /// <summary>
+    /// Отримує співробітника за його ID.
+    /// </summary>
     [HttpGet("{id}")]
-    public async Task<IActionResult> Get(int id)
+    public async Task<IActionResult> GetById(int id)
     {
-        var staff = await _supportStaffService.GetSupportStaffByIdAsync(id);
+        var staff = await _supportStaffService.GetByIdAsync(id);
         if (staff == null)
             return NotFound();
 
         return Ok(staff);
     }
 
-    // Додати нового співробітника
+    /// <summary>
+    /// Створює нового співробітника допоміжного персоналу.
+    /// </summary>
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] SupportStaff staff)
+    public async Task<IActionResult> Create([FromBody] CreateSupportStaffDto dto)
     {
-        await _supportStaffService.AddSupportStaffAsync(staff);
-        return CreatedAtAction(nameof(Get), new { id = staff.Id }, staff);
+        var staff = new SupportStaff
+        {
+            FullName = dto.FullName,
+            WorkExperienceYears = dto.WorkExperienceYears,
+            Role = dto.Role
+        };
+
+        await _supportStaffService.CreateAsync(staff);
+        return CreatedAtAction(nameof(GetById), new { id = staff.Id }, staff);
     }
 
-    // Оновити співробітника
+    /// <summary>
+    /// Оновлює дані існуючого співробітника.
+    /// </summary>
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] SupportStaff staff)
     {
         if (id != staff.Id)
-            return BadRequest();
+            return BadRequest("ID mismatch.");
 
-        await _supportStaffService.UpdateSupportStaffAsync(staff);
+        await _supportStaffService.UpdateAsync(staff);
         return NoContent();
     }
 
-    // Видалити співробітника
+    /// <summary>
+    /// Видаляє співробітника за його ID.
+    /// </summary>
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        await _supportStaffService.DeleteSupportStaffAsync(id);
+        await _supportStaffService.DeleteAsync(id);
         return NoContent();
     }
 
-    // Фільтрація за роллю
+    /// <summary>
+    /// Отримує персонал за вказаною роллю.
+    /// </summary>
     [HttpGet("role/{role}")]
     public async Task<IActionResult> GetByRole(SupportRole role)
     {
@@ -69,27 +89,37 @@ public class SupportStaffController : ControllerBase
         return Ok(staff);
     }
 
-    // Фільтрація за клінікою та роллю
-    [HttpGet("clinic/{clinicId}/role/{role}")]
-    public async Task<IActionResult> GetByClinicAndRole(int clinicId, SupportRole role)
+    /// <summary>
+    /// Отримує персонал з вказаної клініки (опціонально - за роллю).
+    /// </summary>
+    [HttpGet("clinic/{clinicId}")]
+    public async Task<IActionResult> GetByClinic(int clinicId, [FromQuery] SupportRole? role)
     {
-        var staff = await _supportStaffService.GetByClinicIdAndRoleAsync(clinicId, role);
+        var staff = await _supportStaffService.GetByClinicAsync(clinicId, role);
         return Ok(staff);
     }
 
-    // Фільтрація за лікарнею та роллю
-    [HttpGet("hospital/{hospitalId}/role/{role}")]
-    public async Task<IActionResult> GetByHospitalAndRole(int hospitalId, SupportRole role)
+    /// <summary>
+    /// Отримує персонал з вказаної лікарні (опціонально - за роллю).
+    /// </summary>
+    [HttpGet("hospital/{hospitalId}")]
+    public async Task<IActionResult> GetByHospital(int hospitalId, [FromQuery] SupportRole? role)
     {
-        var staff = await _supportStaffService.GetByHospitalIdAndRoleAsync(hospitalId, role);
+        var staff = await _supportStaffService.GetByHospitalAsync(hospitalId, role);
         return Ok(staff);
     }
 
-    // Профіль співробітника у вигляді текстового звіту
+    /// <summary>
+    /// Отримує профіль співробітника у вигляді текстового звіту.
+    /// </summary>
     [HttpGet("{id}/profile-summary")]
     public async Task<IActionResult> GetProfileSummary(int id)
     {
-        var summary = await _supportStaffService.GetSupportStaffProfileSummaryAsync(id);
+        var summary = await _supportStaffService.GetProfileSummaryAsync(id);
+
+        if (summary.Contains("not found")) // Проста перевірка на помилку
+            return NotFound(summary);
+
         return Ok(summary);
     }
 }

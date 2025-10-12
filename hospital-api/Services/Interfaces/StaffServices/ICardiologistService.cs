@@ -4,17 +4,11 @@ namespace hospital_api.Services.Interfaces.StaffServices;
 
 public interface ICardiologistService
 {
-    // Базові операції
-    Task<IEnumerable<Cardiologist>> GetAllCardiologistsAsync();
-    Task<Cardiologist?> GetCardiologistByIdAsync(int id);
-    Task AddCardiologistAsync(Cardiologist cardiologist);
-    Task UpdateCardiologistAsync(Cardiologist cardiologist);
-    Task DeleteCardiologistAsync(int id);
-
-    // Спеціалізовані методи, що використовують бізнес-логіку
-    Task<IEnumerable<Cardiologist>> GetTopSurgeonsByOperationsAsync(int minOperations);
-    Task<IEnumerable<Cardiologist>> GetCardiologistsWithFatalOperationsAsync();
-    
-    // Приклад методу, що поєднує дані з кількох джерел або виконує обчислення
-    Task<string> GetCardiologistProfileSummaryAsync(int cardiologistId);
+    Task<IEnumerable<Cardiologist>> GetAllAsync();
+    Task<Cardiologist?> GetByIdAsync(int id);
+    Task<ServiceResponse<Cardiologist>> CreateAsync(Cardiologist cardiologist);
+    Task<ServiceResponse<Cardiologist>> UpdateAsync(Cardiologist cardiologist);
+    Task<ServiceResponse<bool>> DeleteAsync(int id);
+    Task<IEnumerable<Cardiologist>> GetByMinimumOperationCountAsync(int minOperations);
+    Task<string> GetProfileSummaryAsync(int cardiologistId);
 }

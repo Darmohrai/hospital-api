@@ -1,11 +1,12 @@
-﻿using hospital_api.Models.StaffAggregate.DoctorAggregate;
+﻿using hospital_api.DTOs.Staff;
+using hospital_api.Models.StaffAggregate.DoctorAggregate;
 using hospital_api.Services.Interfaces.StaffServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace hospital_api.Controllers.StaffControllers;
 
 [ApiController]
-[Route("api/staff/[controller]")]
+[Route("api/staff/surgeons")] // Більш чіткий та REST-сумісний маршрут
 public class SurgeonController : ControllerBase
 {
     private readonly ISurgeonService _surgeonService;
@@ -15,73 +16,105 @@ public class SurgeonController : ControllerBase
         _surgeonService = surgeonService;
     }
 
-    // Отримати всіх хірургів
+    /// <summary>
+    /// Отримує список всіх хірургів.
+    /// </summary>
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var surgeons = await _surgeonService.GetAllSurgeonsAsync();
+        var surgeons = await _surgeonService.GetAllAsync();
         return Ok(surgeons);
     }
 
-    // Отримати хірурга за ID
+    /// <summary>
+    /// Отримує хірурга за його ID.
+    /// </summary>
     [HttpGet("{id}")]
-    public async Task<IActionResult> Get(int id)
+    public async Task<IActionResult> GetById(int id)
     {
-        var surgeon = await _surgeonService.GetSurgeonByIdAsync(id);
+        var surgeon = await _surgeonService.GetByIdAsync(id);
         if (surgeon == null)
             return NotFound();
 
         return Ok(surgeon);
     }
 
-    // Додати нового хірурга
+    /// <summary>
+    /// Створює нового хірурга.
+    /// </summary>
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Surgeon surgeon)
+    public async Task<IActionResult> Create([FromBody] CreateSurgeonDto dto)
     {
-        await _surgeonService.AddSurgeonAsync(surgeon);
-        return CreatedAtAction(nameof(Get), new { id = surgeon.Id }, surgeon);
+        var surgeon = new Surgeon
+        {
+            FullName = dto.FullName,
+            WorkExperienceYears = dto.WorkExperienceYears,
+            AcademicDegree = dto.AcademicDegree,
+            AcademicTitle = dto.AcademicTitle,
+            OperationCount = dto.OperationCount,
+            FatalOperationCount = dto.FatalOperationCount
+        };
+
+        var result = await _surgeonService.CreateAsync(surgeon);
+
+        if (!result.IsSuccess)
+            return BadRequest(new { message = result.ErrorMessage });
+
+        return CreatedAtAction(nameof(GetById), new { id = result.Data!.Id }, result.Data);
     }
 
-    // Оновити хірурга
+    /// <summary>
+    /// Оновлює дані існуючого хірурга.
+    /// </summary>
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] Surgeon surgeon)
     {
         if (id != surgeon.Id)
-            return BadRequest();
+            return BadRequest("ID mismatch.");
 
-        await _surgeonService.UpdateSurgeonAsync(surgeon);
+        var result = await _surgeonService.UpdateAsync(surgeon);
+
+        if (!result.IsSuccess)
+            return NotFound(new { message = result.ErrorMessage });
+
         return NoContent();
     }
 
-    // Видалити хірурга
+    /// <summary>
+    /// Видаляє хірурга за його ID.
+    /// </summary>
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        await _surgeonService.DeleteSurgeonAsync(id);
+        var result = await _surgeonService.DeleteAsync(id);
+
+        if (!result.IsSuccess)
+            return NotFound(new { message = result.ErrorMessage });
+
         return NoContent();
     }
 
-    // Отримати хірургів з мінімальною кількістю операцій
+    /// <summary>
+    /// Отримує хірургів з кількістю операцій не менше вказаної.
+    /// </summary>
     [HttpGet("min-operations/{count}")]
-    public async Task<IActionResult> GetByOperationCount(int count)
+    public async Task<IActionResult> GetByMinimumOperationCount(int count)
     {
-        var surgeons = await _surgeonService.GetByOperationCountAsync(count);
+        var surgeons = await _surgeonService.GetByMinimumOperationCountAsync(count);
         return Ok(surgeons);
     }
 
-    // Отримати всіх хірургів разом з операціями
-    [HttpGet("with-operations")]
-    public async Task<IActionResult> GetAllWithOperations()
-    {
-        var surgeons = await _surgeonService.GetAllWithOperationsAsync();
-        return Ok(surgeons);
-    }
-
-    // Профіль хірурга у вигляді текстового звіту
+    /// <summary>
+    /// Отримує профіль хірурга у вигляді текстового звіту.
+    /// </summary>
     [HttpGet("{id}/profile-summary")]
     public async Task<IActionResult> GetProfileSummary(int id)
     {
-        var summary = await _surgeonService.GetSurgeonProfileSummaryAsync(id);
+        var summary = await _surgeonService.GetProfileSummaryAsync(id);
+
+        if (summary.Contains("not found"))
+            return NotFound(summary);
+
         return Ok(summary);
     }
 }

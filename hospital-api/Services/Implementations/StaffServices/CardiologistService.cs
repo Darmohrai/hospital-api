@@ -1,79 +1,110 @@
-﻿using hospital_api.Models.StaffAggregate.DoctorAggregate;
+﻿using System.Text;
+using hospital_api.Models.StaffAggregate.DoctorAggregate;
 using hospital_api.Repositories.Interfaces.StaffRepo;
 using hospital_api.Services.Interfaces.StaffServices;
+using Microsoft.EntityFrameworkCore;
 
 namespace hospital_api.Services.Implementations.StaffServices;
 
 public class CardiologistService : ICardiologistService
 {
-    private readonly ICardiologistRepository _cardiologistRepository;
+    private readonly IStaffRepository _staffRepository;
+    private readonly IEmploymentRepository _employmentRepository;
 
-    public CardiologistService(ICardiologistRepository cardiologistRepository)
+    public CardiologistService(IStaffRepository staffRepository, IEmploymentRepository employmentRepository)
     {
-        _cardiologistRepository = cardiologistRepository;
+        _staffRepository = staffRepository;
+        _employmentRepository = employmentRepository;
     }
 
-    public async Task<IEnumerable<Cardiologist>> GetAllCardiologistsAsync()
+    public async Task<IEnumerable<Cardiologist>> GetAllAsync()
     {
-        return await _cardiologistRepository.GetAllAsync();
+        return await _staffRepository.GetAll().OfType<Cardiologist>().ToListAsync();
     }
 
-    public async Task<Cardiologist?> GetCardiologistByIdAsync(int id)
+    public async Task<Cardiologist?> GetByIdAsync(int id)
     {
-        return await _cardiologistRepository.GetByIdAsync(id);
+        var staff = await _staffRepository.GetByIdAsync(id);
+        return staff as Cardiologist;
     }
 
-    public async Task AddCardiologistAsync(Cardiologist cardiologist)
+    public async Task<ServiceResponse<Cardiologist>> CreateAsync(Cardiologist cardiologist)
     {
-        // Бізнес-логіка перед додаванням, наприклад, валідація
         if (string.IsNullOrWhiteSpace(cardiologist.FullName))
         {
-            throw new ArgumentException("Cardiologist's full name is required.");
+            return ServiceResponse<Cardiologist>.Fail("Cardiologist's full name is required.");
         }
-        await _cardiologistRepository.AddAsync(cardiologist);
+
+        cardiologist.Specialty = "Cardiologist"; // Забезпечуємо правильність спеціальності
+        await _staffRepository.AddAsync(cardiologist);
+        return ServiceResponse<Cardiologist>.Success(cardiologist);
     }
 
-    public async Task UpdateCardiologistAsync(Cardiologist cardiologist)
+    public async Task<ServiceResponse<Cardiologist>> UpdateAsync(Cardiologist cardiologist)
     {
-        var existingCardiologist = await _cardiologistRepository.GetByIdAsync(cardiologist.Id);
-        if (existingCardiologist == null)
+        var existing = await GetByIdAsync(cardiologist.Id);
+        if (existing == null)
         {
-            throw new InvalidOperationException("Cardiologist not found.");
+            return ServiceResponse<Cardiologist>.Fail("Cardiologist not found.");
         }
-        await _cardiologistRepository.UpdateAsync(cardiologist);
+
+        await _staffRepository.UpdateAsync(cardiologist);
+        return ServiceResponse<Cardiologist>.Success(cardiologist);
     }
 
-    public async Task DeleteCardiologistAsync(int id)
+    public async Task<ServiceResponse<bool>> DeleteAsync(int id)
     {
-        await _cardiologistRepository.DeleteAsync(id);
+        var existing = await GetByIdAsync(id);
+        if (existing == null)
+        {
+            return ServiceResponse<bool>.Fail("Cardiologist not found.");
+        }
+
+        await _staffRepository.DeleteAsync(id);
+        return ServiceResponse<bool>.Success(true);
     }
 
-    public async Task<IEnumerable<Cardiologist>> GetTopSurgeonsByOperationsAsync(int minOperations)
+    public async Task<IEnumerable<Cardiologist>> GetByMinimumOperationCountAsync(int minOperations)
     {
-        // Використовуємо метод репозиторію для фільтрації
-        return await _cardiologistRepository.GetByOperationCountAsync(minOperations);
+        return await _staffRepository.GetAll()
+            .OfType<Cardiologist>()
+            .Where(c => c.OperationCount >= minOperations)
+            .ToListAsync();
     }
 
-    public async Task<IEnumerable<Cardiologist>> GetCardiologistsWithFatalOperationsAsync()
+    public async Task<string> GetProfileSummaryAsync(int cardiologistId)
     {
-        // Використовуємо метод репозиторію для фільтрації
-        return await _cardiologistRepository.GetByFatalOperationCountAsync(1);
-    }
-
-    public async Task<string> GetCardiologistProfileSummaryAsync(int cardiologistId)
-    {
-        // Використовуємо метод репозиторію, який завантажує операції
-        var cardiologist = await _cardiologistRepository.GetByIdAsync(cardiologistId);
-        
+        var cardiologist = await GetByIdAsync(cardiologistId);
         if (cardiologist == null)
         {
             return "Cardiologist not found.";
         }
-        
-        // Тут відбувається бізнес-логіка, наприклад, формування текстового звіту
-        return $"Профіль лікаря: {cardiologist.FullName}\n" +
-               $"Спеціалізація: {cardiologist.Specialty}\n" +
-               $"Кількість операцій: {cardiologist.OperationCount}\n" +
-               $"Кількість летальних операцій: {cardiologist.FatalOperationCount}";
+
+        var summaryBuilder = new StringBuilder();
+        summaryBuilder.AppendLine($"Профіль лікаря: {cardiologist.FullName}");
+        summaryBuilder.AppendLine($"Спеціалізація: {cardiologist.Specialty}");
+        summaryBuilder.AppendLine($"Кількість операцій: {cardiologist.OperationCount}");
+        summaryBuilder.AppendLine($"Кількість летальних операцій: {cardiologist.FatalOperationCount}");
+
+        var employments = await _employmentRepository.GetEmploymentsByStaffIdAsync(cardiologistId);
+        summaryBuilder.AppendLine("Місця роботи:");
+
+        var employmentList = employments.ToList();
+        if (!employmentList.Any())
+        {
+            summaryBuilder.AppendLine("- Наразі не працевлаштований.");
+        }
+        else
+        {
+            foreach (var employment in employmentList)
+            {
+                if (employment.Hospital != null)
+                    summaryBuilder.AppendLine($"- Лікарня: {employment.Hospital.Name}");
+                if (employment.Clinic != null)
+                    summaryBuilder.AppendLine($"- Поліклініка: {employment.Clinic.Name}");
+            }
+        }
+
+        return summaryBuilder.ToString();
     }
 }

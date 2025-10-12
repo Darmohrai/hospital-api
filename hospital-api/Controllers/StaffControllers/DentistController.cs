@@ -1,104 +1,132 @@
-﻿using hospital_api.Models.StaffAggregate.DoctorAggregate;
+﻿using hospital_api.DTOs.Staff;
+using hospital_api.Models.StaffAggregate.DoctorAggregate;
 using hospital_api.Services.Interfaces.StaffServices;
 using Microsoft.AspNetCore.Mvc;
 
-namespace hospital_api.Controllers.StaffControllers;
-
-[ApiController]
-[Route("api/staff/[controller]")]
-public class DentistController : ControllerBase
+namespace hospital_api.Controllers.StaffControllers
 {
-    private readonly IDentistService _dentistService;
-
-    public DentistController(IDentistService dentistService)
+    [ApiController]
+    [Route("api/staff/dentists")] // Більш чіткий та REST-сумісний маршрут
+    public class DentistController : ControllerBase
     {
-        _dentistService = dentistService;
-    }
+        private readonly IDentistService _dentistService;
 
-    // GET: api/Dentist
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-        var dentists = await _dentistService.GetAllDentistsAsync();
-        return Ok(dentists);
-    }
-
-    // GET: api/Dentist/{id}
-    [HttpGet("{id}")]
-    public async Task<IActionResult> Get(int id)
-    {
-        var dentist = await _dentistService.GetDentistByIdAsync(id);
-        if (dentist == null)
-            return NotFound();
-
-        return Ok(dentist);
-    }
-
-    // POST: api/Dentist
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Dentist dentist)
-    {
-        try
+        public DentistController(IDentistService dentistService)
         {
-            await _dentistService.AddDentistAsync(dentist);
-            return CreatedAtAction(nameof(Get), new { id = dentist.Id }, dentist);
+            _dentistService = dentistService;
         }
-        catch (ArgumentException ex)
+
+        /// <summary>
+        /// Отримує список всіх стоматологів.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
         {
-            return BadRequest(ex.Message);
+            var dentists = await _dentistService.GetAllAsync();
+            return Ok(dentists);
         }
-    }
 
-    // PUT: api/Dentist/{id}
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] Dentist dentist)
-    {
-        if (id != dentist.Id)
-            return BadRequest("ID mismatch.");
-
-        try
+        /// <summary>
+        /// Отримує стоматолога за його ID.
+        /// </summary>
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
         {
-            await _dentistService.UpdateDentistAsync(dentist);
+            var dentist = await _dentistService.GetByIdAsync(id);
+            if (dentist == null)
+                return NotFound();
+
+            return Ok(dentist);
+        }
+
+        /// <summary>
+        /// Створює нового стоматолога.
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreateDentistDto dto)
+        {
+            var dentist = new Dentist
+            {
+                FullName = dto.FullName,
+                WorkExperienceYears = dto.WorkExperienceYears,
+                AcademicDegree = dto.AcademicDegree,
+                AcademicTitle = dto.AcademicTitle,
+                OperationCount = dto.OperationCount,
+                FatalOperationCount = dto.FatalOperationCount,
+                HazardPayCoefficient = dto.HazardPayCoefficient
+            };
+
+            var result = await _dentistService.CreateAsync(dentist);
+
+            if (!result.IsSuccess)
+                return BadRequest(new { message = result.ErrorMessage });
+
+            return CreatedAtAction(nameof(GetById), new { id = result.Data!.Id }, result.Data);
+        }
+
+        /// <summary>
+        /// Оновлює дані існуючого стоматолога.
+        /// </summary>
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] Dentist dentist)
+        {
+            if (id != dentist.Id)
+                return BadRequest("ID mismatch.");
+
+            var result = await _dentistService.UpdateAsync(dentist);
+
+            if (!result.IsSuccess)
+                return NotFound(new { message = result.ErrorMessage });
+
             return NoContent();
         }
-        catch (InvalidOperationException ex)
+
+        /// <summary>
+        /// Видаляє стоматолога за його ID.
+        /// </summary>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
         {
-            return NotFound(ex.Message);
+            var result = await _dentistService.DeleteAsync(id);
+
+            if (!result.IsSuccess)
+                return NotFound(new { message = result.ErrorMessage });
+
+            return NoContent();
         }
-    }
 
-    // DELETE: api/Dentist/{id}
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        await _dentistService.DeleteDentistAsync(id);
-        return NoContent();
-    }
+        /// <summary>
+        /// Отримує стоматологів з кількістю операцій не менше вказаної.
+        /// </summary>
+        [HttpGet("min-operations")]
+        public async Task<IActionResult> GetByMinimumOperationCount([FromQuery] int minOperationCount)
+        {
+            var dentists = await _dentistService.GetByMinimumOperationCountAsync(minOperationCount);
+            return Ok(dentists);
+        }
 
-    // GET: api/Dentist/top-performing?minOperationCount=10
-    [HttpGet("top-performing")]
-    public async Task<IActionResult> GetTopPerforming([FromQuery] int minOperationCount)
-    {
-        var dentists = await _dentistService.GetTopPerformingDentistsAsync(minOperationCount);
-        return Ok(dentists);
-    }
+        /// <summary>
+        /// Отримує стоматологів з коефіцієнтом шкідливості не менше вказаного.
+        /// </summary>
+        [HttpGet("high-hazard-pay")]
+        public async Task<IActionResult> GetByHazardPay([FromQuery] float minCoefficient)
+        {
+            var dentists = await _dentistService.GetByHazardPayCoefficientAsync(minCoefficient);
+            return Ok(dentists);
+        }
 
-    // GET: api/Dentist/high-hazard?minCoefficient=0.1
-    [HttpGet("high-hazard")]
-    public async Task<IActionResult> GetHighHazardDentists([FromQuery] float minCoefficient)
-    {
-        var dentists = await _dentistService.GetDentistsWithHighHazardPayAsync(minCoefficient);
-        return Ok(dentists);
-    }
+        /// <summary>
+        /// Отримує профіль стоматолога у вигляді текстового звіту.
+        /// </summary>
+        [HttpGet("{id}/summary")]
+        public async Task<IActionResult> GetSummary(int id)
+        {
+            var summary = await _dentistService.GetSummaryAsync(id);
 
-    // GET: api/Dentist/{id}/summary
-    [HttpGet("{id}/summary")]
-    public async Task<IActionResult> GetSummary(int id)
-    {
-        var summary = await _dentistService.GetDentistSummaryAsync(id);
-        if (summary == "Dentist not found.")
-            return NotFound(summary);
+            if (summary.Contains("not found"))
+                return NotFound(summary);
 
-        return Ok(summary);
+            return Ok(summary);
+        }
     }
 }

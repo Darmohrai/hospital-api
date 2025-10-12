@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace hospital_api.Controllers.StaffControllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/staff")] // Спрощений та більш чіткий маршрут
 public class StaffController : ControllerBase
 {
     private readonly IStaffService _staffService;
@@ -15,83 +15,65 @@ public class StaffController : ControllerBase
         _staffService = staffService;
     }
 
-    // GET: api/Staff
+    /// <summary>
+    /// Отримує список всього персоналу (всіх типів).
+    /// </summary>
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var staff = await _staffService.GetAllStaffAsync();
+        var staff = await _staffService.GetAllAsync();
         return Ok(staff);
     }
 
-    // GET: api/Staff/{id}
+    /// <summary>
+    /// Отримує співробітника за його ID.
+    /// </summary>
     [HttpGet("{id}")]
-    public async Task<IActionResult> Get(int id)
+    public async Task<IActionResult> GetById(int id)
     {
-        var staff = await _staffService.GetStaffByIdAsync(id);
+        var staff = await _staffService.GetByIdAsync(id);
         if (staff == null)
             return NotFound();
 
         return Ok(staff);
     }
 
-    // POST: api/Staff
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Staff staff)
-    {
-        try
-        {
-            await _staffService.AddStaffAsync(staff);
-            return CreatedAtAction(nameof(Get), new { id = staff.Id }, staff);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
-
-    // PUT: api/Staff/{id}
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] Staff staff)
-    {
-        if (id != staff.Id)
-            return BadRequest("ID mismatch.");
-
-        try
-        {
-            await _staffService.UpdateStaffAsync(staff);
-            return NoContent();
-        }
-        catch (InvalidOperationException ex)
-        {
-            return NotFound(ex.Message);
-        }
-    }
-
-    // DELETE: api/Staff/{id}
+    /// <summary>
+    /// Видаляє співробітника за його ID.
+    /// </summary>
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        await _staffService.DeleteStaffAsync(id);
+        var result = await _staffService.DeleteAsync(id);
+        if (!result.IsSuccess)
+            return NotFound(new { message = result.ErrorMessage });
+
         return NoContent();
     }
 
-    // GET: api/Staff/clinic/{clinicId}
+    /// <summary>
+    /// Отримує всіх співробітників, що працюють у вказаній клініці.
+    /// </summary>
     [HttpGet("clinic/{clinicId}")]
     public async Task<IActionResult> GetByClinic(int clinicId)
     {
-        var staff = await _staffService.GetStaffByClinicIdAsync(clinicId);
+        var staff = await _staffService.GetByClinicAsync(clinicId);
         return Ok(staff);
     }
 
-    // GET: api/Staff/hospital/{hospitalId}
+    /// <summary>
+    /// Отримує всіх співробітників, що працюють у вказаній лікарні.
+    /// </summary>
     [HttpGet("hospital/{hospitalId}")]
     public async Task<IActionResult> GetByHospital(int hospitalId)
     {
-        var staff = await _staffService.GetStaffByHospitalIdAsync(hospitalId);
+        var staff = await _staffService.GetByHospitalAsync(hospitalId);
         return Ok(staff);
     }
 
-    // GET: api/Staff/experienced?minYears=5
+    /// <summary>
+    /// Отримує співробітників з досвідом роботи не менше вказаної кількості років.
+    /// </summary>
     [HttpGet("experienced")]
     public async Task<IActionResult> GetExperienced([FromQuery] int minYears)
     {
@@ -99,18 +81,24 @@ public class StaffController : ControllerBase
         return Ok(staff);
     }
 
-    // GET: api/Staff/{id}/annual-bonus
+    /// <summary>
+    /// Розраховує річний бонус для співробітника.
+    /// </summary>
     [HttpGet("{id}/annual-bonus")]
     public async Task<IActionResult> GetAnnualBonus(int id)
     {
-        try
-        {
-            var bonus = await _staffService.CalculateAnnualBonusAsync(id);
-            return Ok(new { StaffId = id, AnnualBonus = bonus });
-        }
-        catch (InvalidOperationException ex)
-        {
-            return NotFound(ex.Message);
-        }
+        var result = await _staffService.CalculateAnnualBonusAsync(id);
+
+        if (!result.IsSuccess)
+            return NotFound(new { message = result.ErrorMessage });
+
+        return Ok(new { StaffId = id, AnnualBonus = result.Data });
     }
+
+    // ❌ Методи Create та Update були видалені, оскільки вони не можуть
+    // коректно працювати з абстрактним класом Staff.
+    // Створення та оновлення відбувається через специфічні контролери:
+    // POST /api/staff/support (в SupportStaffController)
+    // POST /api/hospitals/{id}/neurologists (в NeurologistController)
+    // і так далі.
 }

@@ -10,9 +10,6 @@ public abstract class Staff
     public string FullName { get; set; } = string.Empty;
     public int WorkExperienceYears { get; set; }
     
-    public int? ClinicId { get; set; }
-    public Clinic? Clinic { get; set; }
+    public List<Employment> Employments { get; set; } = new();
 
-    public int? HospitalId { get; set; }
-    public Hospital? Hospital { get; set; }
 }

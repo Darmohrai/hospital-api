@@ -1,81 +1,117 @@
-﻿using hospital_api.Models.StaffAggregate;
+﻿using System.Text;
+using hospital_api.Models.StaffAggregate;
 using hospital_api.Repositories.Interfaces.StaffRepo;
 using hospital_api.Services.Interfaces.StaffServices;
+using Microsoft.EntityFrameworkCore;
 
 namespace hospital_api.Services.Implementations.StaffServices;
 
 public class SupportStaffService : ISupportStaffService
 {
-    private readonly ISupportStaffRepository _supportStaffRepository;
+    private readonly IStaffRepository _staffRepository;
+    private readonly IEmploymentRepository _employmentRepository;
 
-    public SupportStaffService(ISupportStaffRepository supportStaffRepository)
+    public SupportStaffService(
+        IStaffRepository staffRepository,
+        IEmploymentRepository employmentRepository)
     {
-        _supportStaffRepository = supportStaffRepository;
+        _staffRepository = staffRepository;
+        _employmentRepository = employmentRepository;
     }
 
-    public async Task<IEnumerable<SupportStaff>> GetAllSupportStaffAsync()
+    // --- Реалізація методів ---
+
+    public async Task<IEnumerable<SupportStaff>> GetAllAsync()
     {
-        return await _supportStaffRepository.GetAllAsync();
+        // Використовуємо загальний репозиторій і фільтруємо за типом
+        return await _staffRepository.GetAll().OfType<SupportStaff>().ToListAsync();
     }
 
-    public async Task<SupportStaff?> GetSupportStaffByIdAsync(int id)
+    public async Task<SupportStaff?> GetByIdAsync(int id)
     {
-        return await _supportStaffRepository.GetByIdAsync(id);
+        // Отримуємо Staff і перевіряємо, чи він є типу SupportStaff
+        var staff = await _staffRepository.GetByIdAsync(id);
+        return staff as SupportStaff;
     }
 
-    public async Task AddSupportStaffAsync(SupportStaff staff)
+    public async Task CreateAsync(SupportStaff staff)
     {
         if (string.IsNullOrWhiteSpace(staff.FullName))
         {
             throw new ArgumentException("Support staff full name is required.");
         }
 
-        await _supportStaffRepository.AddAsync(staff);
+        // Додаємо через загальний репозиторій
+        await _staffRepository.AddAsync(staff);
     }
 
-    public async Task UpdateSupportStaffAsync(SupportStaff staff)
+    public async Task UpdateAsync(SupportStaff staff)
     {
-        var existingStaff = await _supportStaffRepository.GetByIdAsync(staff.Id);
+        var existingStaff = await GetByIdAsync(staff.Id);
         if (existingStaff == null)
         {
             throw new InvalidOperationException("Support staff not found.");
         }
 
-        await _supportStaffRepository.UpdateAsync(staff);
+        // Оновлюємо через загальний репозиторій
+        await _staffRepository.UpdateAsync(staff);
     }
 
-    public async Task DeleteSupportStaffAsync(int id)
+    public async Task DeleteAsync(int id)
     {
-        await _supportStaffRepository.DeleteAsync(id);
+        // Видаляємо через загальний репозиторій
+        await _staffRepository.DeleteAsync(id);
     }
 
     public async Task<IEnumerable<SupportStaff>> GetByRoleAsync(SupportRole role)
     {
-        return await _supportStaffRepository.GetByRoleAsync(role);
+        // Викликаємо відповідний метод з IStaffRepository
+        return await _staffRepository.GetSupportStaffByRoleAsync(role);
     }
 
-    public async Task<IEnumerable<SupportStaff>> GetByClinicIdAndRoleAsync(int clinicId, SupportRole role)
+    public async Task<IEnumerable<SupportStaff>> GetByClinicAsync(int clinicId, SupportRole? role = null)
     {
-        return await _supportStaffRepository.GetByClinicIdAndRoleAsync(clinicId, role);
+        // Викликаємо відповідний метод з IStaffRepository
+        return await _staffRepository.GetSupportStaffByClinicAsync(clinicId, role);
     }
 
-    public async Task<IEnumerable<SupportStaff>> GetByHospitalIdAndRoleAsync(int hospitalId, SupportRole role)
+    public async Task<IEnumerable<SupportStaff>> GetByHospitalAsync(int hospitalId, SupportRole? role = null)
     {
-        return await _supportStaffRepository.GetByHospitalIdAndRoleAsync(hospitalId, role);
+        // Викликаємо відповідний метод з IStaffRepository
+        return await _staffRepository.GetSupportStaffByHospitalAsync(hospitalId, role);
     }
 
-    public async Task<string> GetSupportStaffProfileSummaryAsync(int staffId)
+    public async Task<string> GetProfileSummaryAsync(int staffId)
     {
-        var staff = await _supportStaffRepository.GetByIdAsync(staffId);
-
+        var staff = await GetByIdAsync(staffId);
         if (staff == null)
         {
             return "Support staff not found.";
         }
 
-        return $"Профіль співробітника: {staff.FullName}\n" +
-               $"Роль: {staff.Role}\n" +
-               $"Клініка ID: {staff.ClinicId}\n" +
-               $"Лікарня ID: {staff.HospitalId}";
+        var summaryBuilder = new StringBuilder();
+        summaryBuilder.AppendLine($"Профіль співробітника: {staff.FullName}");
+        summaryBuilder.AppendLine($"Роль: {staff.Role}");
+
+        var employments = await _employmentRepository.GetEmploymentsByStaffIdAsync(staffId);
+        summaryBuilder.AppendLine("Місця роботи:");
+
+        var employmentList = employments.ToList();
+        if (!employmentList.Any())
+        {
+            summaryBuilder.AppendLine("- Наразі не працевлаштований.");
+        }
+        else
+        {
+            foreach (var employment in employmentList)
+            {
+                if (employment.Hospital != null)
+                    summaryBuilder.AppendLine($"- Лікарня: {employment.Hospital.Name}");
+                if (employment.Clinic != null)
+                    summaryBuilder.AppendLine($"- Поліклініка: {employment.Clinic.Name}");
+            }
+        }
+
+        return summaryBuilder.ToString();
     }
 }

@@ -1,87 +1,121 @@
-﻿using hospital_api.Models.StaffAggregate.DoctorAggregate;
+﻿using hospital_api.DTOs.Staff;
+using hospital_api.Models.StaffAggregate.DoctorAggregate;
 using hospital_api.Services.Interfaces.StaffServices;
 using Microsoft.AspNetCore.Mvc;
 
-namespace hospital_api.Controllers.StaffControllers;
-
-[ApiController]
-[Route("api/staff/[controller]")]
-public class GynecologistController : ControllerBase
+namespace hospital_api.Controllers.StaffControllers
 {
-    private readonly IGynecologistService _gynecologistService;
-
-    public GynecologistController(IGynecologistService gynecologistService)
+    [ApiController]
+    [Route("api/staff/gynecologists")] // Більш чіткий маршрут
+    public class GynecologistController : ControllerBase
     {
-        _gynecologistService = gynecologistService;
-    }
+        private readonly IGynecologistService _gynecologistService;
 
-    // Отримати всіх гінекологів
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-        var gynecologists = await _gynecologistService.GetAllGynecologistsAsync();
-        return Ok(gynecologists);
-    }
+        public GynecologistController(IGynecologistService gynecologistService)
+        {
+            _gynecologistService = gynecologistService;
+        }
 
-    // Отримати гінеколога за ID
-    [HttpGet("{id}")]
-    public async Task<IActionResult> Get(int id)
-    {
-        var gynecologist = await _gynecologistService.GetGynecologistByIdAsync(id);
-        if (gynecologist == null)
-            return NotFound();
+        /// <summary>
+        /// Отримує список всіх гінекологів.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var gynecologists = await _gynecologistService.GetAllAsync();
+            return Ok(gynecologists);
+        }
 
-        return Ok(gynecologist);
-    }
+        /// <summary>
+        /// Отримує гінеколога за його ID.
+        /// </summary>
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var gynecologist = await _gynecologistService.GetByIdAsync(id);
+            if (gynecologist == null)
+                return NotFound();
 
-    // Додати нового гінеколога
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Gynecologist gynecologist)
-    {
-        await _gynecologistService.AddGynecologistAsync(gynecologist);
-        return CreatedAtAction(nameof(Get), new { id = gynecologist.Id }, gynecologist);
-    }
+            return Ok(gynecologist);
+        }
 
-    // Оновити гінеколога
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] Gynecologist gynecologist)
-    {
-        if (id != gynecologist.Id)
-            return BadRequest();
+        /// <summary>
+        /// Створює нового гінеколога.
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreateGynecologistDto dto)
+        {
+            var gynecologist = new Gynecologist
+            {
+                FullName = dto.FullName,
+                WorkExperienceYears = dto.WorkExperienceYears,
+                AcademicDegree = dto.AcademicDegree,
+                AcademicTitle = dto.AcademicTitle,
+                OperationCount = dto.OperationCount,
+                FatalOperationCount = dto.FatalOperationCount
+            };
 
-        await _gynecologistService.UpdateGynecologistAsync(gynecologist);
-        return NoContent();
-    }
+            var result = await _gynecologistService.CreateAsync(gynecologist);
 
-    // Видалити гінеколога
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        await _gynecologistService.DeleteGynecologistAsync(id);
-        return NoContent();
-    }
+            if (!result.IsSuccess)
+                return BadRequest(new { message = result.ErrorMessage });
 
-    // Отримати топ-хірургів за кількістю операцій
-    [HttpGet("top-surgeons/{minOperations}")]
-    public async Task<IActionResult> GetTopSurgeons(int minOperations)
-    {
-        var result = await _gynecologistService.GetTopSurgeonsByOperationsAsync(minOperations);
-        return Ok(result);
-    }
+            return CreatedAtAction(nameof(GetById), new { id = result.Data!.Id }, result.Data);
+        }
 
-    // Отримати всіх гінекологів з операціями
-    [HttpGet("with-operations")]
-    public async Task<IActionResult> GetAllWithOperations()
-    {
-        var result = await _gynecologistService.GetAllWithOperationsAsync();
-        return Ok(result);
-    }
+        /// <summary>
+        /// Оновлює дані існуючого гінеколога.
+        /// </summary>
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] Gynecologist gynecologist)
+        {
+            if (id != gynecologist.Id)
+                return BadRequest("ID mismatch.");
 
-    // Отримати профіль гінеколога у вигляді текстового звіту
-    [HttpGet("{id}/profile-summary")]
-    public async Task<IActionResult> GetProfileSummary(int id)
-    {
-        var summary = await _gynecologistService.GetGynecologistProfileSummaryAsync(id);
-        return Ok(summary);
+            var result = await _gynecologistService.UpdateAsync(gynecologist);
+
+            if (!result.IsSuccess)
+                return NotFound(new { message = result.ErrorMessage });
+
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Видаляє гінеколога за його ID.
+        /// </summary>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var result = await _gynecologistService.DeleteAsync(id);
+
+            if (!result.IsSuccess)
+                return NotFound(new { message = result.ErrorMessage });
+
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Отримує гінекологів з кількістю операцій не менше вказаної.
+        /// </summary>
+        [HttpGet("min-operations/{count}")]
+        public async Task<IActionResult> GetByMinimumOperationCount(int count)
+        {
+            var result = await _gynecologistService.GetByMinimumOperationCountAsync(count);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Отримує профіль гінеколога у вигляді текстового звіту.
+        /// </summary>
+        [HttpGet("{id}/profile-summary")]
+        public async Task<IActionResult> GetProfileSummary(int id)
+        {
+            var summary = await _gynecologistService.GetProfileSummaryAsync(id);
+
+            if (summary.Contains("not found"))
+                return NotFound(summary);
+
+            return Ok(summary);
+        }
     }
 }
