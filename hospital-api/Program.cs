@@ -28,43 +28,31 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 
 // --- 3. Реєстрація репозиторіїв (Dependency Injection) ---
 #region Repositories
-// Універсальний репозиторій
 builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
-
-// Основні репозиторії
 builder.Services.AddScoped<IHospitalRepository, HospitalRepository>();
 builder.Services.AddScoped<IClinicRepository, ClinicRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<ILaboratoryRepository, LaboratoryRepository>();
 builder.Services.AddScoped<IOperationRepository, OperationRepository>();
-
-// Репозиторії для ієрархії лікарні
 builder.Services.AddScoped<IBuildingRepository, BuildingRepository>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddScoped<IBedRepository, BedRepository>();
-
-// ЄДИНІ репозиторії для персоналу, що відповідають TPH-архітектурі
 builder.Services.AddScoped<IStaffRepository, StaffRepository>();
 builder.Services.AddScoped<IEmploymentRepository, EmploymentRepository>();
 #endregion
 
 // --- 4. Реєстрація сервісів ---
 #region Services
-// Основні сервіси
 builder.Services.AddScoped<IHospitalService, HospitalService>();
 builder.Services.AddScoped<IClinicService, ClinicService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<ILaboratoryService, LaboratoryService>();
 builder.Services.AddScoped<IOperationService, OperationService>();
-
-// Сервіси для ієрархії лікарні
 builder.Services.AddScoped<IBuildingService, BuildingService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IBedService, BedService>();
-
-// Сервіси для персоналу
 builder.Services.AddScoped<IStaffService, StaffService>();
 builder.Services.AddScoped<ISupportStaffService, SupportStaffService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
@@ -77,20 +65,19 @@ builder.Services.AddScoped<IOphthalmologistService, OphthalmologistService>();
 builder.Services.AddScoped<IRadiologistService, RadiologistService>();
 #endregion
 
-// --- 5. Налаштування MVC та API ---
+// --- 5. Налаштування API та Swagger ---
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// --- 6. Налаштування конвеєра обробки запитів ---
+// --- 6. Налаштування конвеєра запитів ---
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();

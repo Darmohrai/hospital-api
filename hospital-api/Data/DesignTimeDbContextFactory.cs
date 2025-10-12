@@ -1,26 +1,25 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using hospital_api.Data;
 
-namespace hospital_api.Data;
-
-public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
+namespace hospital_api.Data
 {
-    public ApplicationDbContext CreateDbContext(string[] args)
+    public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
     {
-        // Створюємо конфігурацію, щоб прочитати appsettings.json
-        IConfigurationRoot configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .Build();
+        public ApplicationDbContext CreateDbContext(string[] args)
+        {
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
 
-        var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
+            var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
 
-        // Отримуємо рядок підключення з appsettings.json
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
+            // ✅ ВИПРАВЛЕНО: Використовуємо правильний провайдер для PostgreSQL
+            builder.UseNpgsql(connectionString);
 
-        // Вказуємо провайдера бази даних (у вашому випадку, скоріш за все, SQL Server)
-        builder.UseSqlServer(connectionString);
-
-        return new ApplicationDbContext(builder.Options);
+            return new ApplicationDbContext(builder.Options);
+        }
     }
 }
