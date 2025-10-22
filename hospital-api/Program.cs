@@ -10,9 +10,11 @@ using hospital_api.Repositories.Interfaces.Tracking;
 using hospital_api.Services.Implementations;
 using hospital_api.Services.Implementations.HospitalServices;
 using hospital_api.Services.Implementations.StaffServices;
+using hospital_api.Services.Implementations.Tracking;
 using hospital_api.Services.Interfaces;
 using hospital_api.Services.Interfaces.HospitalServices;
 using hospital_api.Services.Interfaces.StaffServices;
+using hospital_api.Services.Interfaces.Tracking;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,7 +31,9 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddDefaultTokenProviders();
 
 // --- 3. Реєстрація репозиторіїв (Dependency Injection) ---
+
 #region Repositories
+
 builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IHospitalRepository, HospitalRepository>();
 builder.Services.AddScoped<IClinicRepository, ClinicRepository>();
@@ -46,10 +50,14 @@ builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<ILabAnalysisRepository, LabAnalysisRepository>();
 builder.Services.AddScoped<IAdmissionRepository, AdmissionRepository>();
 builder.Services.AddScoped<IClinicDoctorAssignmentRepository, ClinicDoctorAssignmentRepository>();
+builder.Services.AddScoped<IClinicDoctorAssignmentService, ClinicDoctorAssignmentService>();
+
 #endregion
 
 // --- 4. Реєстрація сервісів ---
+
 #region Services
+
 builder.Services.AddScoped<IHospitalService, HospitalService>();
 builder.Services.AddScoped<IClinicService, ClinicService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
@@ -70,6 +78,10 @@ builder.Services.AddScoped<IGynecologistService, GynecologistService>();
 builder.Services.AddScoped<IOphthalmologistService, OphthalmologistService>();
 builder.Services.AddScoped<IRadiologistService, RadiologistService>();
 builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<IAdmissionService, AdmissionService>();
+builder.Services.AddScoped<ILabAnalysisService, LabAnalysisService>();
+
 #endregion
 
 // --- 5. Налаштування API та Swagger ---
@@ -85,6 +97,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
