@@ -21,4 +21,5 @@ public interface IPatientRepository : IRepository<Patient>
     
     // Отримати всіх пацієнтів з їхніми пов'язаними сутностями (клінікою, лікарнею, лікарем)
     Task<IEnumerable<Patient>> GetAllWithAssociationsAsync();
+    
 }

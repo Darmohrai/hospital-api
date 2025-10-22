@@ -31,4 +31,6 @@ public class Patient
     // Призначений лікар (може бути відсутній)
     public int? AssignedDoctorId { get; set; }
     public Staff? AssignedDoctor { get; set; }
+    
+    public Bed? Bed { get; set; }
 }

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using hospital_api.Models.PatientAggregate;
 
 namespace hospital_api.Models.HospitalAggregate;
 
@@ -14,4 +15,9 @@ public class Bed
 
     // Navigation Property
     public Room Room { get; set; } = null!;
+
+    // ✅ НОВІ ПОЛЯ: Зв'язок з пацієнтом (одне ліжко зайняте одним пацієнтом)
+    [ForeignKey(nameof(Patient))]
+    public int? PatientId { get; set; }
+    public Patient? Patient { get; set; }
 }

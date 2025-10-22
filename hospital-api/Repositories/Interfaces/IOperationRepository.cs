@@ -10,4 +10,6 @@ public interface IOperationRepository : IRepository<Operation>
     Task<IEnumerable<Operation>> GetByClinicIdAsync(int clinicId);
     Task<IEnumerable<Operation>> GetFatalOperationsAsync();
     Task<IEnumerable<Operation>> GetByDateRangeAsync(DateTime startDate, DateTime endDate);
+    
+    Task<IEnumerable<Operation>> GetAllWithAssociationsAsync();
 }

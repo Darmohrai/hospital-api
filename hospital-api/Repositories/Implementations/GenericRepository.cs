@@ -1,4 +1,5 @@
-﻿using hospital_api.Data;
+﻿using System.Linq.Expressions;
+using hospital_api.Data;
 using hospital_api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -44,5 +45,13 @@ public class GenericRepository<T> : IRepository<T> where T : class
             _dbSet.Remove(entity);
             await _context.SaveChangesAsync();
         }
+    }
+    
+    public async Task<IEnumerable<T>> FindByConditionAsync(Expression<Func<T, bool>> expression)
+    {
+        // AsNoTracking() використовується для запитів "тільки для читання",
+        // але оскільки ми в PatientService будемо оновлювати (UpdateAsync),
+        // краще прибрати AsNoTracking(), щоб EF Core відстежував зміни.
+        return await _context.Set<T>().Where(expression).ToListAsync();
     }
 }

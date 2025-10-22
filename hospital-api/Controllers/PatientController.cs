@@ -1,4 +1,6 @@
-﻿using hospital_api.Models.PatientAggregate;
+﻿using hospital_api.DTOs.Patient;
+using hospital_api.DTOs.Reports;
+using hospital_api.Models.PatientAggregate;
 using hospital_api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -96,5 +98,86 @@ public class PatientController : ControllerBase
     {
         var patients = await _patientService.GetAllWithAssociationsAsync();
         return Ok(patients);
+    }
+    
+    /// <summary>
+    /// Призначає пацієнта на вказане ліжко.
+    /// </summary>
+    [HttpPost("{patientId}/assign-bed/{bedId}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> AssignBed(int patientId, int bedId)
+    {
+        try
+        {
+            await _patientService.AssignPatientToBedAsync(patientId, bedId);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Звільняє ліжко, яке займає пацієнт.
+    /// </summary>
+    [HttpPost("{patientId}/unassign-bed")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UnassignBed(int patientId)
+    {
+        try
+        {
+            await _patientService.UnassignPatientFromBedAsync(patientId);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    
+    /// <summary>
+    /// (Запит №4) Отримує список пацієнтів лікарні, відділення або палати.
+    /// </summary>
+    [HttpGet("list-by-location")]
+    [ProducesResponseType(typeof(IEnumerable<PatientDetailsDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPatientListByLocation(
+        [FromQuery] int hospitalId, 
+        [FromQuery] int? departmentId, 
+        [FromQuery] int? roomId)
+    {
+        var patients = await _patientService.GetPatientListAsync(hospitalId, departmentId, roomId);
+        return Ok(patients);
+    }
+    
+    /// <summary>
+    /// (Запит №12) Отримує повну медичну історію (анамнез) пацієнта.
+    /// </summary>
+    [HttpGet("{patientId}/history")]
+    [ProducesResponseType(typeof(PatientHistoryDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetPatientHistory(int patientId)
+    {
+        try
+        {
+            var history = await _patientService.GetPatientHistoryAsync(patientId);
+            return Ok(history);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 }

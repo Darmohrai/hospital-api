@@ -58,4 +58,16 @@ public class OperationRepository : GenericRepository<Operation>, IOperationRepos
             .Include(op => op.Doctor)
             .ToListAsync();
     }
+    
+    // ✅ НОВА РЕАЛІЗАЦІЯ
+    public async Task<IEnumerable<Operation>> GetAllWithAssociationsAsync()
+    {
+        return await _context.Operations
+            .Include(op => op.Patient)
+            .Include(op => op.Doctor)
+            .Include(op => op.Hospital)
+            .Include(op => op.Clinic)
+            .AsNoTracking()
+            .ToListAsync();
+    }
 }

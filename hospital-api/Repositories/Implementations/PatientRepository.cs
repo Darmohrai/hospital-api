@@ -7,7 +7,9 @@ namespace hospital_api.Repositories.Implementations;
 
 public class PatientRepository : GenericRepository<Patient>, IPatientRepository
 {
-    public PatientRepository(ApplicationDbContext context) : base(context) { }
+    public PatientRepository(ApplicationDbContext context) : base(context)
+    {
+    }
 
     public async Task<IEnumerable<Patient>> GetByFullNameAsync(string fullName)
     {
@@ -49,10 +51,14 @@ public class PatientRepository : GenericRepository<Patient>, IPatientRepository
 
     public async Task<IEnumerable<Patient>> GetAllWithAssociationsAsync()
     {
-        return await _dbSet
+        return await _context.Patients
             .Include(p => p.Clinic)
             .Include(p => p.Hospital)
-            .Include(p => p.AssignedDoctor)
+            .Include(p => p.AssignedDoctor) // Лікар
+            .Include(p => p.Bed) // Ліжко
+            .ThenInclude(b => b.Room) // Палата
+            .ThenInclude(r => r.Department) // Відділення
+            .AsNoTracking()
             .ToListAsync();
     }
 }

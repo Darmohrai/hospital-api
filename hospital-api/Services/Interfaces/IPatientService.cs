@@ -1,4 +1,6 @@
-﻿using hospital_api.Models.PatientAggregate;
+﻿using hospital_api.DTOs.Patient;
+using hospital_api.DTOs.Reports;
+using hospital_api.Models.PatientAggregate;
 
 namespace hospital_api.Services.Interfaces;
 
@@ -18,4 +20,25 @@ public interface IPatientService
     Task<IEnumerable<Patient>> GetByHospitalIdAsync(int hospitalId);
     Task<IEnumerable<Patient>> GetByAssignedDoctorIdAsync(int doctorId);
     Task<IEnumerable<Patient>> GetAllWithAssociationsAsync();
+    
+    /// <summary>
+    /// Призначає пацієнта на конкретне ліжко.
+    /// </summary>
+    /// <param name="patientId">ID пацієнта</param>
+    /// <param name="bedId">ID ліжка</param>
+    Task AssignPatientToBedAsync(int patientId, int bedId);
+
+    /// <summary>
+    /// Звільняє ліжко, яке займає пацієнт (наприклад, при виписці).
+    /// </summary>
+    /// <param name="patientId">ID пацієнта</param>
+    Task UnassignPatientFromBedAsync(int patientId);
+    
+    /// <summary>
+    /// (Запит №4) Отримує список пацієнтів з деталями,
+    /// відфільтрований за лікарнею, відділенням або палатою.
+    /// </summary>
+    Task<IEnumerable<PatientDetailsDto>> GetPatientListAsync(int hospitalId, int? departmentId, int? roomId);
+    
+    Task<PatientHistoryDto> GetPatientHistoryAsync(int patientId);
 }

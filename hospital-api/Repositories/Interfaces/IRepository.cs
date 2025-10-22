@@ -1,4 +1,6 @@
-﻿namespace hospital_api.Repositories.Interfaces;
+﻿using System.Linq.Expressions;
+
+namespace hospital_api.Repositories.Interfaces;
 
 public interface IRepository<T> where T : class
 {
@@ -14,4 +16,7 @@ public interface IRepository<T> where T : class
     /// </summary>
     /// <returns>IQueryable колекцію сутностей.</returns>
     IQueryable<T> GetAll(); // ✅ ОСЬ ЦЕЙ РЯДОК ВИРІШУЄ ПРОБЛЕМУ
+    
+    Task<IEnumerable<T>> FindByConditionAsync(Expression<Func<T, bool>> expression);
+
 }

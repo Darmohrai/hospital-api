@@ -261,10 +261,16 @@ namespace hospital_api.Migrations
                     b.Property<bool>("IsOccupied")
                         .HasColumnType("boolean");
 
+                    b.Property<int?>("PatientId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("RoomId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PatientId")
+                        .IsUnique();
 
                     b.HasIndex("RoomId");
 
@@ -597,6 +603,139 @@ namespace hospital_api.Migrations
                     b.UseTphMappingStrategy();
                 });
 
+            modelBuilder.Entity("hospital_api.Models.Tracking.Admission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AdmissionDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("AttendingDoctorId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("DepartmentId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("DischargeDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("HospitalId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttendingDoctorId");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("HospitalId");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("Admissions");
+                });
+
+            modelBuilder.Entity("hospital_api.Models.Tracking.Appointment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ClinicId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("HospitalId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Summary")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("VisitDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClinicId");
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasIndex("HospitalId");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("Appointments");
+                });
+
+            modelBuilder.Entity("hospital_api.Models.Tracking.ClinicDoctorAssignment", b =>
+                {
+                    b.Property<int>("PatientId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ClinicId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("PatientId", "DoctorId", "ClinicId");
+
+                    b.HasIndex("ClinicId");
+
+                    b.HasIndex("DoctorId");
+
+                    b.ToTable("ClinicDoctorAssignments");
+                });
+
+            modelBuilder.Entity("hospital_api.Models.Tracking.LabAnalysis", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AnalysisDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("AnalysisType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("LaboratoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ResultSummary")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LaboratoryId");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("LabAnalyses");
+                });
+
             modelBuilder.Entity("hospital_api.Models.StaffAggregate.Doctor", b =>
                 {
                     b.HasBaseType("hospital_api.Models.StaffAggregate.Staff");
@@ -820,11 +959,18 @@ namespace hospital_api.Migrations
 
             modelBuilder.Entity("hospital_api.Models.HospitalAggregate.Bed", b =>
                 {
+                    b.HasOne("hospital_api.Models.PatientAggregate.Patient", "Patient")
+                        .WithOne("Bed")
+                        .HasForeignKey("hospital_api.Models.HospitalAggregate.Bed", "PatientId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("hospital_api.Models.HospitalAggregate.Room", "Room")
                         .WithMany("Beds")
                         .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Patient");
 
                     b.Navigation("Room");
                 });
@@ -991,6 +1137,116 @@ namespace hospital_api.Migrations
                     b.Navigation("Staff");
                 });
 
+            modelBuilder.Entity("hospital_api.Models.Tracking.Admission", b =>
+                {
+                    b.HasOne("hospital_api.Models.StaffAggregate.Staff", "AttendingDoctor")
+                        .WithMany()
+                        .HasForeignKey("AttendingDoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("hospital_api.Models.HospitalAggregate.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId");
+
+                    b.HasOne("hospital_api.Models.HospitalAggregate.Hospital", "Hospital")
+                        .WithMany()
+                        .HasForeignKey("HospitalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("hospital_api.Models.PatientAggregate.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AttendingDoctor");
+
+                    b.Navigation("Department");
+
+                    b.Navigation("Hospital");
+
+                    b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("hospital_api.Models.Tracking.Appointment", b =>
+                {
+                    b.HasOne("hospital_api.Models.ClinicAggregate.Clinic", "Clinic")
+                        .WithMany()
+                        .HasForeignKey("ClinicId");
+
+                    b.HasOne("hospital_api.Models.StaffAggregate.Staff", "Doctor")
+                        .WithMany()
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("hospital_api.Models.HospitalAggregate.Hospital", "Hospital")
+                        .WithMany()
+                        .HasForeignKey("HospitalId");
+
+                    b.HasOne("hospital_api.Models.PatientAggregate.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Clinic");
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("Hospital");
+
+                    b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("hospital_api.Models.Tracking.ClinicDoctorAssignment", b =>
+                {
+                    b.HasOne("hospital_api.Models.ClinicAggregate.Clinic", "Clinic")
+                        .WithMany()
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("hospital_api.Models.StaffAggregate.Staff", "Doctor")
+                        .WithMany()
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("hospital_api.Models.PatientAggregate.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Clinic");
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("hospital_api.Models.Tracking.LabAnalysis", b =>
+                {
+                    b.HasOne("hospital_api.Models.LaboratoryAggregate.Laboratory", "Laboratory")
+                        .WithMany()
+                        .HasForeignKey("LaboratoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("hospital_api.Models.PatientAggregate.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Laboratory");
+
+                    b.Navigation("Patient");
+                });
+
             modelBuilder.Entity("hospital_api.Models.ClinicAggregate.Clinic", b =>
                 {
                     b.Navigation("Employments");
@@ -1031,6 +1287,11 @@ namespace hospital_api.Migrations
                     b.Navigation("Clinics");
 
                     b.Navigation("Hospitals");
+                });
+
+            modelBuilder.Entity("hospital_api.Models.PatientAggregate.Patient", b =>
+                {
+                    b.Navigation("Bed");
                 });
 
             modelBuilder.Entity("hospital_api.Models.StaffAggregate.Staff", b =>

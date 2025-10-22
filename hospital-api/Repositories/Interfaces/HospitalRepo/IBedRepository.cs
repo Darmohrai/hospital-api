@@ -1,4 +1,5 @@
-﻿using hospital_api.Models.HospitalAggregate;
+﻿using System.Linq.Expressions;
+using hospital_api.Models.HospitalAggregate;
 
 namespace hospital_api.Repositories.Interfaces.HospitalRepo;
 

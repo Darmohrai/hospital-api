@@ -2,9 +2,11 @@ using hospital_api.Data;
 using hospital_api.Repositories.Implementations;
 using hospital_api.Repositories.Implementations.HospitalRepo;
 using hospital_api.Repositories.Implementations.StaffRepo;
+using hospital_api.Repositories.Implementations.Tracking;
 using hospital_api.Repositories.Interfaces;
 using hospital_api.Repositories.Interfaces.HospitalRepo;
 using hospital_api.Repositories.Interfaces.StaffRepo;
+using hospital_api.Repositories.Interfaces.Tracking;
 using hospital_api.Services.Implementations;
 using hospital_api.Services.Implementations.HospitalServices;
 using hospital_api.Services.Implementations.StaffServices;
@@ -40,6 +42,10 @@ builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddScoped<IBedRepository, BedRepository>();
 builder.Services.AddScoped<IStaffRepository, StaffRepository>();
 builder.Services.AddScoped<IEmploymentRepository, EmploymentRepository>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<ILabAnalysisRepository, LabAnalysisRepository>();
+builder.Services.AddScoped<IAdmissionRepository, AdmissionRepository>();
+builder.Services.AddScoped<IClinicDoctorAssignmentRepository, ClinicDoctorAssignmentRepository>();
 #endregion
 
 // --- 4. Реєстрація сервісів ---
@@ -63,6 +69,7 @@ builder.Services.AddScoped<IDentistService, DentistService>();
 builder.Services.AddScoped<IGynecologistService, GynecologistService>();
 builder.Services.AddScoped<IOphthalmologistService, OphthalmologistService>();
 builder.Services.AddScoped<IRadiologistService, RadiologistService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 #endregion
 
 // --- 5. Налаштування API та Swagger ---
