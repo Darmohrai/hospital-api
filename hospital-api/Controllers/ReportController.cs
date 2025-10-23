@@ -1,10 +1,12 @@
 ﻿using hospital_api.DTOs.Reports;
 using hospital_api.Models.StaffAggregate;
 using hospital_api.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace hospital_api.Controllers;
 
+[Authorize(Roles = "Authorized, Operator, Admin")]
 [ApiController]
 [Route("api/[controller]")]
 public class ReportController : ControllerBase

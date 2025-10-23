@@ -1,10 +1,12 @@
 ﻿using hospital_api.DTOs.Staff;
 using hospital_api.Models.StaffAggregate.DoctorAggregate;
 using hospital_api.Services.Interfaces.StaffServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace hospital_api.Controllers.StaffControllers;
 
+[Authorize]
 [ApiController]
 [Route("api/staff/[controller]")]
 public class NeurologistController : ControllerBase
@@ -17,6 +19,7 @@ public class NeurologistController : ControllerBase
     }
 
     // Отримати всіх невропатологів
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -25,6 +28,7 @@ public class NeurologistController : ControllerBase
     }
 
     // Отримати невропатолога за ID
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
@@ -36,6 +40,7 @@ public class NeurologistController : ControllerBase
     }
 
     // Додати нового невропатолога
+    [Authorize(Roles = "Operator, Admin")]
     [HttpPost("{hospitalId}")]
     public async Task<IActionResult> Create(int hospitalId, [FromBody] CreateNeurologistDto neurologistDto)
     {
@@ -50,6 +55,7 @@ public class NeurologistController : ControllerBase
     }
 
 // Оновити невропатолога
+    [Authorize(Roles = "Operator, Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] Neurologist neurologist)
     {
@@ -61,6 +67,7 @@ public class NeurologistController : ControllerBase
     }
 
 // Видалити невропатолога
+    [Authorize(Roles = "Operator, Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -69,6 +76,7 @@ public class NeurologistController : ControllerBase
     }
 
 // Отримати невропатологів з розширеною відпусткою більше заданих днів
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("extended-vacation/{minDays}")]
     public async Task<IActionResult> GetByExtendedVacationDays(int minDays)
     {
@@ -77,6 +85,7 @@ public class NeurologistController : ControllerBase
     }
 
 // Отримати профіль невропатолога у вигляді текстового звіту
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}/profile-summary")]
     public async Task<IActionResult> GetProfileSummary(int id)
     {

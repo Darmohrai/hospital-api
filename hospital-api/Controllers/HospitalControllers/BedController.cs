@@ -1,9 +1,11 @@
 ﻿using hospital_api.Models.HospitalAggregate;
 using hospital_api.Services.Interfaces.HospitalServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace hospital_api.Controllers.HospitalControllers;
 
+[Authorize]
 [ApiController]
 [Route("api/hospital/[controller]")]
 public class BedController : ControllerBase
@@ -16,6 +18,7 @@ public class BedController : ControllerBase
     }
 
     // Отримати всі ліжка
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -24,6 +27,7 @@ public class BedController : ControllerBase
     }
 
     // Отримати ліжко за ID
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
@@ -33,6 +37,7 @@ public class BedController : ControllerBase
     }
 
     // Додати нове ліжко
+    [Authorize(Roles = "Operator, Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Bed bed)
     {
@@ -41,6 +46,7 @@ public class BedController : ControllerBase
     }
 
     // Оновити ліжко
+    [Authorize(Roles = "Operator, Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] Bed bed)
     {
@@ -50,6 +56,7 @@ public class BedController : ControllerBase
     }
 
     // Видалити ліжко
+    [Authorize(Roles = "Operator, Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -58,6 +65,7 @@ public class BedController : ControllerBase
     }
 
     // Отримати доступні ліжка
+    [AllowAnonymous]
     [HttpGet("available")]
     public async Task<IActionResult> GetAvailable()
     {
@@ -66,6 +74,7 @@ public class BedController : ControllerBase
     }
 
     // Отримати зайняті ліжка
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("occupied")]
     public async Task<IActionResult> GetOccupied()
     {
@@ -74,6 +83,7 @@ public class BedController : ControllerBase
     }
 
     // Отримати ліжка за ID палати
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("room/{roomId}")]
     public async Task<IActionResult> GetByRoom(int roomId)
     {

@@ -2,10 +2,12 @@
 using hospital_api.DTOs.Reports;
 using hospital_api.Models.PatientAggregate;
 using hospital_api.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace hospital_api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class PatientController : ControllerBase
@@ -19,6 +21,7 @@ public class PatientController : ControllerBase
 
     // --- CRUD ---
 
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -26,6 +29,7 @@ public class PatientController : ControllerBase
         return Ok(patients);
     }
 
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
@@ -34,6 +38,7 @@ public class PatientController : ControllerBase
         return Ok(patient);
     }
 
+    [Authorize(Roles = "Operator, Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Patient patient)
     {
@@ -41,6 +46,7 @@ public class PatientController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = patient.Id }, patient);
     }
 
+    [Authorize(Roles = "Operator, Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] Patient patient)
     {
@@ -49,6 +55,7 @@ public class PatientController : ControllerBase
         return NoContent();
     }
 
+    [Authorize(Roles = "Operator, Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -58,6 +65,7 @@ public class PatientController : ControllerBase
 
     // --- Специфічні методи ---
 
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("name")]
     public async Task<IActionResult> GetByFullName([FromQuery] string fullName)
     {
@@ -65,6 +73,7 @@ public class PatientController : ControllerBase
         return Ok(patients);
     }
 
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("status")]
     public async Task<IActionResult> GetByHealthStatus([FromQuery] string status)
     {
@@ -72,6 +81,7 @@ public class PatientController : ControllerBase
         return Ok(patients);
     }
 
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("clinic/{clinicId}")]
     public async Task<IActionResult> GetByClinic(int clinicId)
     {
@@ -79,6 +89,7 @@ public class PatientController : ControllerBase
         return Ok(patients);
     }
 
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("hospital/{hospitalId}")]
     public async Task<IActionResult> GetByHospital(int hospitalId)
     {
@@ -86,6 +97,7 @@ public class PatientController : ControllerBase
         return Ok(patients);
     }
 
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("doctor/{doctorId}")]
     public async Task<IActionResult> GetByAssignedDoctor(int doctorId)
     {
@@ -93,6 +105,7 @@ public class PatientController : ControllerBase
         return Ok(patients);
     }
 
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("all-with-associations")]
     public async Task<IActionResult> GetAllWithAssociations()
     {
@@ -103,6 +116,7 @@ public class PatientController : ControllerBase
     /// <summary>
     /// Призначає пацієнта на вказане ліжко.
     /// </summary>
+    [Authorize(Roles = "Operator, Admin")]
     [HttpPost("{patientId}/assign-bed/{bedId}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -127,6 +141,7 @@ public class PatientController : ControllerBase
     /// <summary>
     /// Звільняє ліжко, яке займає пацієнт.
     /// </summary>
+    [Authorize(Roles = "Operator, Admin")]
     [HttpPost("{patientId}/unassign-bed")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -151,6 +166,7 @@ public class PatientController : ControllerBase
     /// <summary>
     /// (Запит №4) Отримує список пацієнтів лікарні, відділення або палати.
     /// </summary>
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("list-by-location")]
     [ProducesResponseType(typeof(IEnumerable<PatientDetailsDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPatientListByLocation(
@@ -165,6 +181,7 @@ public class PatientController : ControllerBase
     /// <summary>
     /// (Запит №12) Отримує повну медичну історію (анамнез) пацієнта.
     /// </summary>
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{patientId}/history")]
     [ProducesResponseType(typeof(PatientHistoryDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

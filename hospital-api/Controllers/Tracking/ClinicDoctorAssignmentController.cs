@@ -1,9 +1,11 @@
 ﻿using hospital_api.DTOs.Tracking;
 using hospital_api.Services.Interfaces.Tracking;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace hospital_api.Controllers.Tracking;
 
+[Authorize]
 [ApiController]
 [Route("api/clinic-assignment")]
 public class ClinicDoctorAssignmentController : ControllerBase
@@ -18,6 +20,7 @@ public class ClinicDoctorAssignmentController : ControllerBase
     /// <summary>
     /// Отримує всі призначення (лікарів) для пацієнта.
     /// </summary>
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("by-patient/{patientId}")]
     public async Task<IActionResult> GetByPatient(int patientId)
     {
@@ -27,6 +30,7 @@ public class ClinicDoctorAssignmentController : ControllerBase
     /// <summary>
     /// Отримує всі призначення (пацієнтів) для лікаря.
     /// </summary>
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("by-doctor/{doctorId}")]
     public async Task<IActionResult> GetByDoctor(int doctorId)
     {
@@ -36,6 +40,7 @@ public class ClinicDoctorAssignmentController : ControllerBase
     /// <summary>
     /// Призначає лікаря пацієнту в клініці.
     /// </summary>
+    [Authorize(Roles = "Operator, Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] ClinicDoctorAssignmentDto dto)
     {
@@ -53,6 +58,7 @@ public class ClinicDoctorAssignmentController : ControllerBase
     /// <summary>
     /// Видаляє призначення лікаря пацієнту в клініці.
     /// </summary>
+    [Authorize(Roles = "Operator, Admin")]
     [HttpDelete]
     public async Task<IActionResult> Delete(
         [FromQuery] int patientId, 

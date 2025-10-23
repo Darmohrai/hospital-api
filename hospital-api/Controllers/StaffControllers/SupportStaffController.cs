@@ -1,10 +1,12 @@
 ﻿using hospital_api.DTOs.Staff;
 using hospital_api.Models.StaffAggregate;
 using hospital_api.Services.Interfaces.StaffServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace hospital_api.Controllers.StaffControllers;
 
+[Authorize]
 [ApiController]
 [Route("api/staff/support")] // Більш чіткий базовий маршрут
 public class SupportStaffController : ControllerBase
@@ -19,6 +21,7 @@ public class SupportStaffController : ControllerBase
     /// <summary>
     /// Отримує весь допоміжний персонал.
     /// </summary>
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -29,6 +32,7 @@ public class SupportStaffController : ControllerBase
     /// <summary>
     /// Отримує співробітника за його ID.
     /// </summary>
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -42,6 +46,7 @@ public class SupportStaffController : ControllerBase
     /// <summary>
     /// Створює нового співробітника допоміжного персоналу.
     /// </summary>
+    [Authorize(Roles = "Operator, Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateSupportStaffDto dto)
     {
@@ -59,6 +64,7 @@ public class SupportStaffController : ControllerBase
     /// <summary>
     /// Оновлює дані існуючого співробітника.
     /// </summary>
+    [Authorize(Roles = "Operator, Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] SupportStaff staff)
     {
@@ -72,6 +78,7 @@ public class SupportStaffController : ControllerBase
     /// <summary>
     /// Видаляє співробітника за його ID.
     /// </summary>
+    [Authorize(Roles = "Operator, Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -82,6 +89,7 @@ public class SupportStaffController : ControllerBase
     /// <summary>
     /// Отримує персонал за вказаною роллю.
     /// </summary>
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("role/{role}")]
     public async Task<IActionResult> GetByRole(SupportRole role)
     {
@@ -92,6 +100,7 @@ public class SupportStaffController : ControllerBase
     /// <summary>
     /// Отримує персонал з вказаної клініки (опціонально - за роллю).
     /// </summary>
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("clinic/{clinicId}")]
     public async Task<IActionResult> GetByClinic(int clinicId, [FromQuery] SupportRole? role)
     {
@@ -102,6 +111,7 @@ public class SupportStaffController : ControllerBase
     /// <summary>
     /// Отримує персонал з вказаної лікарні (опціонально - за роллю).
     /// </summary>
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("hospital/{hospitalId}")]
     public async Task<IActionResult> GetByHospital(int hospitalId, [FromQuery] SupportRole? role)
     {
@@ -112,6 +122,7 @@ public class SupportStaffController : ControllerBase
     /// <summary>
     /// Отримує профіль співробітника у вигляді текстового звіту.
     /// </summary>
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}/profile-summary")]
     public async Task<IActionResult> GetProfileSummary(int id)
     {

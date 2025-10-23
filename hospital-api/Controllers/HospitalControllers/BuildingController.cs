@@ -1,9 +1,11 @@
 ﻿using hospital_api.Models.HospitalAggregate;
 using hospital_api.Services.Interfaces.HospitalServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace hospital_api.Controllers.HospitalControllers;
 
+[Authorize]
 [ApiController]
 [Route("api/hospital/[controller]")]
 public class BuildingController : ControllerBase
@@ -16,6 +18,7 @@ public class BuildingController : ControllerBase
     }
 
     // Отримати всі корпуси
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -24,6 +27,7 @@ public class BuildingController : ControllerBase
     }
 
     // Отримати корпус за ID
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
@@ -33,6 +37,7 @@ public class BuildingController : ControllerBase
     }
 
     // Додати новий корпус
+    [Authorize(Roles = "Operator, Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Building building)
     {
@@ -41,6 +46,7 @@ public class BuildingController : ControllerBase
     }
 
     // Оновити корпус
+    [Authorize(Roles = "Operator, Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] Building building)
     {
@@ -50,6 +56,7 @@ public class BuildingController : ControllerBase
     }
 
     // Видалити корпус
+    [Authorize(Roles = "Operator, Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -58,6 +65,7 @@ public class BuildingController : ControllerBase
     }
 
     // Отримати корпус за назвою
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("name/{name}")]
     public async Task<IActionResult> GetByName(string name)
     {
@@ -67,6 +75,7 @@ public class BuildingController : ControllerBase
     }
 
     // Отримати корпуси за ID лікарні
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("hospital/{hospitalId}")]
     public async Task<IActionResult> GetByHospital(int hospitalId)
     {
@@ -75,6 +84,7 @@ public class BuildingController : ControllerBase
     }
 
     // Отримати всі корпуси з відділеннями
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("with-departments")]
     public async Task<IActionResult> GetAllWithDepartments()
     {

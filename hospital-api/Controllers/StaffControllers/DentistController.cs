@@ -1,10 +1,12 @@
 ﻿using hospital_api.DTOs.Staff;
 using hospital_api.Models.StaffAggregate.DoctorAggregate;
 using hospital_api.Services.Interfaces.StaffServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace hospital_api.Controllers.StaffControllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/staff/dentists")] // Більш чіткий та REST-сумісний маршрут
     public class DentistController : ControllerBase
@@ -19,6 +21,7 @@ namespace hospital_api.Controllers.StaffControllers
         /// <summary>
         /// Отримує список всіх стоматологів.
         /// </summary>
+        [Authorize(Roles = "Authorized, Operator, Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -29,6 +32,7 @@ namespace hospital_api.Controllers.StaffControllers
         /// <summary>
         /// Отримує стоматолога за його ID.
         /// </summary>
+        [Authorize(Roles = "Authorized, Operator, Admin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -42,6 +46,7 @@ namespace hospital_api.Controllers.StaffControllers
         /// <summary>
         /// Створює нового стоматолога.
         /// </summary>
+        [Authorize(Roles = "Operator, Admin")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateDentistDto dto)
         {
@@ -67,6 +72,7 @@ namespace hospital_api.Controllers.StaffControllers
         /// <summary>
         /// Оновлює дані існуючого стоматолога.
         /// </summary>
+        [Authorize(Roles = "Operator, Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Dentist dentist)
         {
@@ -84,6 +90,7 @@ namespace hospital_api.Controllers.StaffControllers
         /// <summary>
         /// Видаляє стоматолога за його ID.
         /// </summary>
+        [Authorize(Roles = "Operator, Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -98,6 +105,7 @@ namespace hospital_api.Controllers.StaffControllers
         /// <summary>
         /// Отримує стоматологів з кількістю операцій не менше вказаної.
         /// </summary>
+        [Authorize(Roles = "Authorized, Operator, Admin")]
         [HttpGet("min-operations")]
         public async Task<IActionResult> GetByMinimumOperationCount([FromQuery] int minOperationCount)
         {
@@ -108,6 +116,7 @@ namespace hospital_api.Controllers.StaffControllers
         /// <summary>
         /// Отримує стоматологів з коефіцієнтом шкідливості не менше вказаного.
         /// </summary>
+        [Authorize(Roles = "Authorized, Operator, Admin")]
         [HttpGet("high-hazard-pay")]
         public async Task<IActionResult> GetByHazardPay([FromQuery] float minCoefficient)
         {
@@ -118,6 +127,7 @@ namespace hospital_api.Controllers.StaffControllers
         /// <summary>
         /// Отримує профіль стоматолога у вигляді текстового звіту.
         /// </summary>
+        [Authorize(Roles = "Authorized, Operator, Admin")]
         [HttpGet("{id}/summary")]
         public async Task<IActionResult> GetSummary(int id)
         {

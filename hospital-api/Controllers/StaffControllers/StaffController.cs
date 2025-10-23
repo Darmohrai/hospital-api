@@ -1,9 +1,11 @@
 ﻿using hospital_api.Models.StaffAggregate;
 using hospital_api.Services.Interfaces.StaffServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace hospital_api.Controllers.StaffControllers;
 
+[Authorize]
 [ApiController]
 [Route("api/staff")] // Спрощений та більш чіткий маршрут
 public class StaffController : ControllerBase
@@ -18,6 +20,7 @@ public class StaffController : ControllerBase
     /// <summary>
     /// Отримує список всього персоналу (всіх типів).
     /// </summary>
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -28,6 +31,7 @@ public class StaffController : ControllerBase
     /// <summary>
     /// Отримує співробітника за його ID.
     /// </summary>
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -41,6 +45,7 @@ public class StaffController : ControllerBase
     /// <summary>
     /// Видаляє співробітника за його ID.
     /// </summary>
+    [Authorize(Roles = "Operator, Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -54,6 +59,7 @@ public class StaffController : ControllerBase
     /// <summary>
     /// Отримує всіх співробітників, що працюють у вказаній клініці.
     /// </summary>
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("clinic/{clinicId}")]
     public async Task<IActionResult> GetByClinic(int clinicId)
     {
@@ -64,6 +70,7 @@ public class StaffController : ControllerBase
     /// <summary>
     /// Отримує всіх співробітників, що працюють у вказаній лікарні.
     /// </summary>
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("hospital/{hospitalId}")]
     public async Task<IActionResult> GetByHospital(int hospitalId)
     {
@@ -74,6 +81,7 @@ public class StaffController : ControllerBase
     /// <summary>
     /// Отримує співробітників з досвідом роботи не менше вказаної кількості років.
     /// </summary>
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("experienced")]
     public async Task<IActionResult> GetExperienced([FromQuery] int minYears)
     {
@@ -84,6 +92,7 @@ public class StaffController : ControllerBase
     /// <summary>
     /// Розраховує річний бонус для співробітника.
     /// </summary>
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}/annual-bonus")]
     public async Task<IActionResult> GetAnnualBonus(int id)
     {

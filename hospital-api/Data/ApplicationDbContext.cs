@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using hospital_api.Models.Auth;
+using Microsoft.EntityFrameworkCore;
 using hospital_api.Models.HospitalAggregate;
 using hospital_api.Models.ClinicAggregate;
 using hospital_api.Models.StaffAggregate;
@@ -31,11 +32,13 @@ namespace hospital_api.Data
         public DbSet<Staff> Staffs { get; set; }
         public DbSet<Employment> Employments { get; set; }
         public DbSet<DoctorAssignment> DoctorAssignments { get; set; }
-        
+
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<LabAnalysis> LabAnalyses { get; set; }
         public DbSet<Admission> Admissions { get; set; }
         public DbSet<ClinicDoctorAssignment> ClinicDoctorAssignments { get; set; }
+
+        public DbSet<UpgradeRequest> UpgradeRequests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -57,8 +60,10 @@ namespace hospital_api.Data
             builder.Entity<Employment>(entity =>
             {
                 entity.HasOne(e => e.Staff).WithMany(s => s.Employments).HasForeignKey(e => e.StaffId);
-                entity.HasOne(e => e.Hospital).WithMany(h => h.Employments).HasForeignKey(e => e.HospitalId).OnDelete(DeleteBehavior.Restrict);
-                entity.HasOne(e => e.Clinic).WithMany(c => c.Employments).HasForeignKey(e => e.ClinicId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(e => e.Hospital).WithMany(h => h.Employments).HasForeignKey(e => e.HospitalId)
+                    .OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(e => e.Clinic).WithMany(c => c.Employments).HasForeignKey(e => e.ClinicId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             // ✅ ВИПРАВЛЕНО: Додано ValueComparer для коректної роботи зі списком enum'ів
@@ -66,18 +71,19 @@ namespace hospital_api.Data
                 .Property(h => h.Specializations)
                 .HasConversion(
                     v => string.Join(',', v.Select(e => e.ToString())),
-                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(e => Enum.Parse<HospitalSpecialization>(e)).ToList())
+                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(e => Enum.Parse<HospitalSpecialization>(e)).ToList())
                 .Metadata.SetValueComparer(new ValueComparer<List<HospitalSpecialization>>(
                     (c1, c2) => c1.SequenceEqual(c2),
                     c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
                     c => c.ToList()));
-            
+
             builder.Entity<Patient>()
                 .HasOne(p => p.Bed) // У Пацієнта є одне Ліжко
                 .WithOne(b => b.Patient) // У Ліжка є один Пацієнт
                 .HasForeignKey<Bed>(b => b.PatientId) // Зовнішній ключ знаходиться в Bed
                 .OnDelete(DeleteBehavior.SetNull);
-            
+
             // ✅ НОВИЙ БЛОК: Налаштування композитного ключа для M:M
             builder.Entity<ClinicDoctorAssignment>(entity =>
             {
@@ -89,15 +95,20 @@ namespace hospital_api.Data
                 entity.HasOne(cda => cda.Patient)
                     .WithMany() // У Patient немає List<ClinicDoctorAssignment>
                     .HasForeignKey(cda => cda.PatientId);
-                
+
                 entity.HasOne(cda => cda.Doctor)
                     .WithMany() // У Staff немає List<ClinicDoctorAssignment>
                     .HasForeignKey(cda => cda.DoctorId);
-                
+
                 entity.HasOne(cda => cda.Clinic)
                     .WithMany() // У Clinic немає List<ClinicDoctorAssignment>
                     .HasForeignKey(cda => cda.ClinicId);
             });
+
+            builder.Entity<UpgradeRequest>()
+                .HasOne(r => r.User)
+                .WithMany() // У IdentityUser немає навігаційної властивості
+                .HasForeignKey(r => r.UserId);
         }
     }
 }

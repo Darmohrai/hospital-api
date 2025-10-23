@@ -1,9 +1,11 @@
 ﻿using hospital_api.Models.LaboratoryAggregate;
 using hospital_api.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace hospital_api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class LaboratoryController : ControllerBase
@@ -18,6 +20,7 @@ public class LaboratoryController : ControllerBase
     // --- CRUD ---
 
     // Отримати всі лабораторії
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -26,6 +29,7 @@ public class LaboratoryController : ControllerBase
     }
 
     // Отримати лабораторію за ID
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
@@ -35,6 +39,7 @@ public class LaboratoryController : ControllerBase
     }
 
     // Додати лабораторію
+    [Authorize(Roles = "Operator, Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Laboratory laboratory)
     {
@@ -43,6 +48,7 @@ public class LaboratoryController : ControllerBase
     }
 
     // Оновити лабораторію
+    [Authorize(Roles = "Operator, Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] Laboratory laboratory)
     {
@@ -52,6 +58,7 @@ public class LaboratoryController : ControllerBase
     }
 
     // Видалити лабораторію
+    [Authorize(Roles = "Operator, Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -62,6 +69,7 @@ public class LaboratoryController : ControllerBase
     // --- Специфічні методи ---
 
     // Отримати лабораторії за профілем
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("profile/{profile}")]
     public async Task<IActionResult> GetByProfile(string profile)
     {
@@ -70,6 +78,7 @@ public class LaboratoryController : ControllerBase
     }
 
     // Отримати лабораторії за ID лікарні
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("hospital/{hospitalId}")]
     public async Task<IActionResult> GetByHospital(int hospitalId)
     {
@@ -78,6 +87,7 @@ public class LaboratoryController : ControllerBase
     }
 
     // Отримати лабораторії за ID клініки
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("clinic/{clinicId}")]
     public async Task<IActionResult> GetByClinic(int clinicId)
     {
@@ -86,6 +96,7 @@ public class LaboratoryController : ControllerBase
     }
 
     // Отримати лабораторію з асоціаціями за назвою
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("name/{name}/with-associations")]
     public async Task<IActionResult> GetByNameWithAssociations(string name)
     {

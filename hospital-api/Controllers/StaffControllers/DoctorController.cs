@@ -1,9 +1,11 @@
 ﻿using hospital_api.Models.StaffAggregate;
 using hospital_api.Services.Interfaces.StaffServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace hospital_api.Controllers.StaffControllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/staff/doctors")] // Більш чіткий та REST-сумісний маршрут
     public class DoctorController : ControllerBase
@@ -18,6 +20,7 @@ namespace hospital_api.Controllers.StaffControllers
         /// <summary>
         /// Отримує список всіх лікарів (усіх спеціальностей).
         /// </summary>
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -28,6 +31,7 @@ namespace hospital_api.Controllers.StaffControllers
         /// <summary>
         /// Отримує лікаря за його ID.
         /// </summary>
+        [Authorize(Roles = "Authorized, Operator, Admin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -41,6 +45,7 @@ namespace hospital_api.Controllers.StaffControllers
         /// <summary>
         /// Отримує лікарів за вказаною спеціальністю.
         /// </summary>
+        [Authorize(Roles = "Authorized, Operator, Admin")]
         [HttpGet("by-specialty")]
         public async Task<IActionResult> GetBySpecialty([FromQuery] string specialty)
         {
@@ -51,6 +56,7 @@ namespace hospital_api.Controllers.StaffControllers
         /// <summary>
         /// Отримує лікарів за вказаним науковим ступенем.
         /// </summary>
+        [Authorize(Roles = "Authorized, Operator, Admin")]
         [HttpGet("by-degree")]
         public async Task<IActionResult> GetByDegree([FromQuery] AcademicDegree degree)
         {
@@ -61,6 +67,7 @@ namespace hospital_api.Controllers.StaffControllers
         /// <summary>
         /// Отримує лікарів за вказаним вченим званням.
         /// </summary>
+        [Authorize(Roles = "Authorized, Operator, Admin")]
         [HttpGet("by-title")]
         public async Task<IActionResult> GetByTitle([FromQuery] AcademicTitle title)
         {

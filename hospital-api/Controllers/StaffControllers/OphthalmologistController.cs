@@ -1,10 +1,12 @@
 ﻿using hospital_api.DTOs.Staff;
 using hospital_api.Models.StaffAggregate.DoctorAggregate;
 using hospital_api.Services.Interfaces.StaffServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace hospital_api.Controllers.StaffControllers;
 
+[Authorize]
 [ApiController]
 [Route("api/staff/ophthalmologists")] // Більш чіткий маршрут
 public class OphthalmologistController : ControllerBase
@@ -19,6 +21,7 @@ public class OphthalmologistController : ControllerBase
     /// <summary>
     /// Отримує список всіх офтальмологів.
     /// </summary>
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -29,6 +32,7 @@ public class OphthalmologistController : ControllerBase
     /// <summary>
     /// Отримує офтальмолога за його ID.
     /// </summary>
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -42,6 +46,7 @@ public class OphthalmologistController : ControllerBase
     /// <summary>
     /// Створює нового офтальмолога.
     /// </summary>
+    [Authorize(Roles = "Operator, Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateOphthalmologistDto dto)
     {
@@ -65,6 +70,7 @@ public class OphthalmologistController : ControllerBase
     /// <summary>
     /// Оновлює дані існуючого офтальмолога.
     /// </summary>
+    [Authorize(Roles = "Operator, Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] Ophthalmologist ophthalmologist)
     {
@@ -82,6 +88,7 @@ public class OphthalmologistController : ControllerBase
     /// <summary>
     /// Видаляє офтальмолога за його ID.
     /// </summary>
+    [Authorize(Roles = "Operator, Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -96,6 +103,7 @@ public class OphthalmologistController : ControllerBase
     /// <summary>
     /// Отримує офтальмологів з розширеною відпусткою.
     /// </summary>
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("extended-vacation")]
     public async Task<IActionResult> GetByExtendedVacation([FromQuery] int minDays)
     {
@@ -106,6 +114,7 @@ public class OphthalmologistController : ControllerBase
     /// <summary>
     /// Отримує профіль офтальмолога у вигляді текстового звіту.
     /// </summary>
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}/profile-summary")]
     public async Task<IActionResult> GetProfileSummary(int id)
     {

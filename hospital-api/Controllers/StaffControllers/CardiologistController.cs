@@ -1,10 +1,12 @@
 ﻿using hospital_api.DTOs.Staff;
 using hospital_api.Models.StaffAggregate.DoctorAggregate;
 using hospital_api.Services.Interfaces.StaffServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace hospital_api.Controllers.StaffControllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/staff/cardiologists")] // Більш чіткий та REST-сумісний маршрут
     public class CardiologistController : ControllerBase
@@ -19,6 +21,7 @@ namespace hospital_api.Controllers.StaffControllers
         /// <summary>
         /// Отримує список всіх кардіологів.
         /// </summary>
+        [Authorize(Roles = "Authorized, Operator, Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -29,6 +32,7 @@ namespace hospital_api.Controllers.StaffControllers
         /// <summary>
         /// Отримує кардіолога за його ID.
         /// </summary>
+        [Authorize(Roles = "Authorized, Operator, Admin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -42,6 +46,7 @@ namespace hospital_api.Controllers.StaffControllers
         /// <summary>
         /// Створює нового кардіолога.
         /// </summary>
+        [Authorize(Roles = "Operator, Admin")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateCardiologistDto dto)
         {
@@ -66,6 +71,7 @@ namespace hospital_api.Controllers.StaffControllers
         /// <summary>
         /// Оновлює дані існуючого кардіолога.
         /// </summary>
+        [Authorize(Roles = "Operator, Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Cardiologist cardiologist)
         {
@@ -83,6 +89,7 @@ namespace hospital_api.Controllers.StaffControllers
         /// <summary>
         /// Видаляє кардіолога за його ID.
         /// </summary>
+        [Authorize(Roles = "Operator, Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -97,6 +104,7 @@ namespace hospital_api.Controllers.StaffControllers
         /// <summary>
         /// Отримує кардіологів з кількістю операцій не менше вказаної.
         /// </summary>
+        [Authorize(Roles = "Authorized, Operator, Admin")]
         [HttpGet("min-operations")]
         public async Task<IActionResult> GetByMinimumOperationCount([FromQuery] int minOperations)
         {
@@ -107,6 +115,7 @@ namespace hospital_api.Controllers.StaffControllers
         /// <summary>
         /// Отримує профіль кардіолога у вигляді текстового звіту.
         /// </summary>
+        [Authorize(Roles = "Authorized, Operator, Admin")]
         [HttpGet("{id}/profile-summary")]
         public async Task<IActionResult> GetProfileSummary(int id)
         {

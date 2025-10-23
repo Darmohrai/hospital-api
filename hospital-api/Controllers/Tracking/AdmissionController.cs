@@ -1,9 +1,11 @@
 ﻿using hospital_api.DTOs.Tracking;
 using hospital_api.Services.Interfaces.Tracking;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace hospital_api.Controllers.Tracking;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class AdmissionController : ControllerBase
@@ -15,12 +17,14 @@ public class AdmissionController : ControllerBase
         _service = service;
     }
 
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
         return Ok(await _service.GetAllAsync());
     }
 
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -33,6 +37,7 @@ public class AdmissionController : ControllerBase
     /// <summary>
     /// Госпіталізувати пацієнта.
     /// </summary>
+    [Authorize(Roles = "Operator, Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateAdmissionDto dto)
     {
@@ -50,6 +55,7 @@ public class AdmissionController : ControllerBase
     /// <summary>
     /// Виписати пацієнта (встановити дату виписки).
     /// </summary>
+    [Authorize(Roles = "Operator, Admin")]
     [HttpPut("{id}/discharge")]
     public async Task<IActionResult> Discharge(int id, [FromQuery] DateTime? dischargeDate)
     {
@@ -72,6 +78,7 @@ public class AdmissionController : ControllerBase
     /// <summary>
     /// Видалити запис про госпіталізацію (тільки для вже виписаних).
     /// </summary>
+    [Authorize(Roles = "Operator, Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {

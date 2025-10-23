@@ -1,9 +1,11 @@
 ﻿using hospital_api.DTOs.Tracking;
 using hospital_api.Services.Interfaces.Tracking;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace hospital_api.Controllers.Tracking;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class AppointmentController : ControllerBase
@@ -15,6 +17,7 @@ public class AppointmentController : ControllerBase
         _service = service;
     }
 
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -22,6 +25,7 @@ public class AppointmentController : ControllerBase
         return Ok(appointments);
     }
 
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -32,6 +36,7 @@ public class AppointmentController : ControllerBase
         return Ok(appointment);
     }
 
+    [Authorize(Roles = "Operator, Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateAppointmentDto dto)
     {
@@ -46,6 +51,7 @@ public class AppointmentController : ControllerBase
         }
     }
 
+    [Authorize(Roles = "Operator, Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] CreateAppointmentDto dto)
     {
@@ -63,6 +69,7 @@ public class AppointmentController : ControllerBase
         }
     }
 
+    [Authorize(Roles = "Operator, Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {

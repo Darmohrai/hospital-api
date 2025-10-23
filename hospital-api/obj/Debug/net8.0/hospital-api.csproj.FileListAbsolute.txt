@@ -289,3 +289,4 @@ D:\uni\course-project\project\hospital-api\hospital-api\obj\Debug\net8.0\refint\
 D:\uni\course-project\project\hospital-api\hospital-api\obj\Debug\net8.0\hospital-api.pdb
 D:\uni\course-project\project\hospital-api\hospital-api\obj\Debug\net8.0\hospital-api.genruntimeconfig.cache
 D:\uni\course-project\project\hospital-api\hospital-api\obj\Debug\net8.0\ref\hospital-api.dll
+D:\uni\course-project\project\hospital-api\hospital-api\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

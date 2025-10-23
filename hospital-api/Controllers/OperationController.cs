@@ -1,9 +1,11 @@
 ﻿using hospital_api.Models.OperationsAggregate;
 using hospital_api.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace hospital_api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class OperationController : ControllerBase
@@ -17,6 +19,7 @@ public class OperationController : ControllerBase
 
     // --- CRUD ---
 
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -24,6 +27,7 @@ public class OperationController : ControllerBase
         return Ok(operations);
     }
 
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
@@ -32,6 +36,7 @@ public class OperationController : ControllerBase
         return Ok(operation);
     }
 
+    [Authorize(Roles = "Operator, Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Operation operation)
     {
@@ -39,6 +44,7 @@ public class OperationController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = operation.Id }, operation);
     }
 
+    [Authorize(Roles = "Operator, Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] Operation operation)
     {
@@ -47,6 +53,7 @@ public class OperationController : ControllerBase
         return NoContent();
     }
 
+    [Authorize(Roles = "Operator, Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -56,6 +63,7 @@ public class OperationController : ControllerBase
 
     // --- Специфічні методи ---
 
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("patient/{patientId}")]
     public async Task<IActionResult> GetByPatient(int patientId)
     {
@@ -63,6 +71,7 @@ public class OperationController : ControllerBase
         return Ok(operations);
     }
 
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("doctor/{doctorId}")]
     public async Task<IActionResult> GetByDoctor(int doctorId)
     {
@@ -70,6 +79,7 @@ public class OperationController : ControllerBase
         return Ok(operations);
     }
 
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("hospital/{hospitalId}")]
     public async Task<IActionResult> GetByHospital(int hospitalId)
     {
@@ -77,6 +87,7 @@ public class OperationController : ControllerBase
         return Ok(operations);
     }
 
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("clinic/{clinicId}")]
     public async Task<IActionResult> GetByClinic(int clinicId)
     {
@@ -84,6 +95,7 @@ public class OperationController : ControllerBase
         return Ok(operations);
     }
 
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("fatal")]
     public async Task<IActionResult> GetFatalOperations()
     {
@@ -91,6 +103,7 @@ public class OperationController : ControllerBase
         return Ok(operations);
     }
 
+    [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("daterange")]
     public async Task<IActionResult> GetByDateRange([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
     {
