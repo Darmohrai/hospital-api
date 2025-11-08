@@ -21,7 +21,7 @@ public class HospitalController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var hospitals = await _hospitalService.GetAllHospitalsAsync();
+        var hospitals = await _hospitalService.GetAllDtosAsync();
         return Ok(hospitals);
     }
 

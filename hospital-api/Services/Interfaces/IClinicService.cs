@@ -1,4 +1,5 @@
-﻿using hospital_api.Models.ClinicAggregate;
+﻿using hospital_api.DTOs.Clinic;
+using hospital_api.Models.ClinicAggregate;
 using hospital_api.Models.HospitalAggregate;
 using hospital_api.Models.PatientAggregate;
 using hospital_api.Models.StaffAggregate;
@@ -34,4 +35,6 @@ public interface IClinicService
     /// Направляє пацієнта з клініки до лікарні з потрібною спеціалізацією.
     /// </summary>
     Task<ServiceResponse<Hospital>> ReferPatientToHospitalAsync(int patientId, HospitalSpecialization requiredSpecialization);
+    
+    Task<IEnumerable<ClinicDto>> GetAllDtosAsync();
 }

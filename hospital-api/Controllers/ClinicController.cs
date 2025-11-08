@@ -30,7 +30,8 @@ public class ClinicController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var clinics = await _clinicService.GetAllAsync();
+        // ✅ ВИПРАВЛЕНО: Викликаємо новий метод DTO
+        var clinics = await _clinicService.GetAllDtosAsync();
         return Ok(clinics);
     }
 

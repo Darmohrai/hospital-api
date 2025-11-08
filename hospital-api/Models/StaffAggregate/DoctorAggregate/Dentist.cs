@@ -9,13 +9,11 @@ public class Dentist : Doctor
     public int OperationCount
     {
         get => Operations.Count;
-        init => throw new NotImplementedException();
     }
 
     public int FatalOperationCount
     {
         get => Operations.Count(op => op.IsFatal);
-        init => throw new NotImplementedException();
     }
 
     public float HazardPayCoefficient { get; set; }

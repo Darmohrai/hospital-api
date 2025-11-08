@@ -7,12 +7,21 @@ namespace hospital_api.Repositories.Implementations.HospitalRepo;
 
 public class BedRepository : GenericRepository<Bed>, IBedRepository
 {
-    public BedRepository(ApplicationDbContext context) : base(context) { }
+    public BedRepository(ApplicationDbContext context) : base(context)
+    {
+    }
 
     public async Task<IEnumerable<Bed>> GetAvailableBedsAsync()
     {
-        return await _dbSet
-            .Where(b => !b.IsOccupied)
+        // ✅ ЖАДІБНЕ ЗАВАНТАЖЕННЯ:
+        // Ми просимо EF підтягнути всі пов'язані дані,
+        // які потрібні фронтенду (Room -> Department -> Building -> Hospital)
+        return await _context.Beds
+            .Where(b => b.PatientId == null)
+            .Include(b => b.Room)
+            .ThenInclude(r => r.Department)
+            .ThenInclude(d => d.Building)
+            .ThenInclude(bld => bld.Hospital)
             .ToListAsync();
     }
 

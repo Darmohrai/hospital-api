@@ -22,8 +22,7 @@ public class Patient
     // Поліклініка (обов’язково)
     [Required]
     public int ClinicId { get; set; }
-    public Clinic Clinic { get; set; } = null!;
-
+    public Clinic? Clinic { get; set; }
     // Лікарня (опціонально, тільки за направленням)
     public int? HospitalId { get; set; }
     public Hospital? Hospital { get; set; }

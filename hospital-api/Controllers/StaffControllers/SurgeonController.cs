@@ -56,8 +56,6 @@ public class SurgeonController : ControllerBase
             WorkExperienceYears = dto.WorkExperienceYears,
             AcademicDegree = dto.AcademicDegree,
             AcademicTitle = dto.AcademicTitle,
-            OperationCount = dto.OperationCount,
-            FatalOperationCount = dto.FatalOperationCount
         };
 
         var result = await _surgeonService.CreateAsync(surgeon);

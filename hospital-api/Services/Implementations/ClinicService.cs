@@ -1,4 +1,5 @@
 ﻿using hospital_api.Data;
+using hospital_api.DTOs.Clinic;
 using hospital_api.Models.ClinicAggregate;
 using hospital_api.Models.HospitalAggregate;
 using hospital_api.Models.PatientAggregate;
@@ -136,5 +137,19 @@ public class ClinicService : IClinicService
         await _patientRepository.UpdateAsync(patient);
 
         return ServiceResponse<Hospital>.Success(alternativeHospital);
+    }
+
+    // ✅ НОВА РЕАЛІЗАЦІЯ
+    public async Task<IEnumerable<ClinicDto>> GetAllDtosAsync()
+    {
+        // Використовуємо .GetAll() (IQueryable) з GenericRepository
+        return await _clinicRepository.GetAll()
+            .Select(c => new ClinicDto
+            {
+                Id = c.Id,
+                Name = c.Name,
+                Address = c.Address
+            })
+            .ToListAsync();
     }
 }

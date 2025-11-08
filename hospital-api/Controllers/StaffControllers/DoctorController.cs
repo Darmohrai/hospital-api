@@ -22,9 +22,12 @@ namespace hospital_api.Controllers.StaffControllers
         /// </summary>
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+            [FromQuery] string? specialty, 
+            [FromQuery] AcademicDegree? degree, 
+            [FromQuery] AcademicTitle? title)
         {
-            var doctors = await _doctorService.GetAllAsync();
+            var doctors = await _doctorService.GetAllAsync(specialty, degree, title);
             return Ok(doctors);
         }
 

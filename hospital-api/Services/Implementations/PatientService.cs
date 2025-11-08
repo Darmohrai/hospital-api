@@ -1,10 +1,14 @@
-﻿using hospital_api.DTOs.Patient;
+﻿using hospital_api.Data;
+using hospital_api.DTOs.Patient;
 using hospital_api.DTOs.Reports;
 using hospital_api.Models.PatientAggregate;
+using hospital_api.Models.StaffAggregate;
 using hospital_api.Repositories.Interfaces;
 using hospital_api.Repositories.Interfaces.HospitalRepo;
+using hospital_api.Repositories.Interfaces.StaffRepo;
 using hospital_api.Repositories.Interfaces.Tracking;
 using hospital_api.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace hospital_api.Services.Implementations;
 
@@ -19,14 +23,22 @@ public class PatientService : IPatientService
     private readonly IOperationRepository _operationRepo;
     private readonly IAdmissionRepository _admissionRepo;
 
-    // ✅ ОНОВИ КОНСТРУКТОР
+    private readonly IStaffRepository _staffRepository;
+    private readonly IEmploymentRepository _employmentRepository;
+
+    private readonly ApplicationDbContext _context;
+
+    // ✅ ОНОВІТЬ КОНСТРУКТОР
     public PatientService(
-        IPatientRepository patientRepository, 
+        IPatientRepository patientRepository,
         IBedRepository bedRepository,
         IAppointmentRepository appointmentRepo,
         ILabAnalysisRepository labAnalysisRepo,
         IOperationRepository operationRepo,
-        IAdmissionRepository admissionRepo)
+        IAdmissionRepository admissionRepo,
+        IStaffRepository staffRepository, // ✅ Додано
+        IEmploymentRepository employmentRepository,
+        ApplicationDbContext context) // ✅ Додано
     {
         _patientRepository = patientRepository;
         _bedRepository = bedRepository;
@@ -34,6 +46,9 @@ public class PatientService : IPatientService
         _labAnalysisRepo = labAnalysisRepo;
         _operationRepo = operationRepo;
         _admissionRepo = admissionRepo;
+        _staffRepository = staffRepository; // ✅ Додано
+        _employmentRepository = employmentRepository; // ✅ Додано
+        _context = context;
     }
 
     // --- CRUD ---
@@ -59,13 +74,48 @@ public class PatientService : IPatientService
 
     public async Task UpdateAsync(Patient patient)
     {
-        var existingPatient = await _patientRepository.GetByIdAsync(patient.Id);
-        if (existingPatient == null)
+        try
         {
-            throw new InvalidOperationException("Patient not found.");
-        }
+            // 1. Отримуємо існуючого пацієнта з бази даних.
+            //    (Я припускаю, що ваш репозиторій має метод GetByIdAsync,
+            //     який відстежує сутність. Якщо ні, використовуйте _context)
+            var existingPatient = await _patientRepository.GetByIdAsync(patient.Id);
 
-        await _patientRepository.UpdateAsync(patient);
+            if (existingPatient == null)
+            {
+                throw new KeyNotFoundException($"Пацієнта з Id = {patient.Id} не знайдено.");
+            }
+
+            // 2. Копіюємо нові значення зі 'patient' (з запиту) 
+            //    в 'existingPatient' (який вже відстежується).
+            //    НЕ ВИКОРИСТОВУЙТЕ _context.Update(patient);
+
+            existingPatient.FullName = patient.FullName;
+            existingPatient.DateOfBirth = patient.DateOfBirth;
+            existingPatient.HealthStatus = patient.HealthStatus;
+            existingPatient.Temperature = patient.Temperature;
+            existingPatient.ClinicId = patient.ClinicId;
+            existingPatient.HospitalId = patient.HospitalId;
+
+            // Важливо: ми НЕ чіпаємо 'AssignedDoctorId' або 'BedId',
+            // оскільки вони керуються окремими ендпоінтами (AssignDoctor, AssignBed)
+            // і фронтенд (patients.js) видаляє їх з DTO перед відправкою.
+
+            // 3. Зберігаємо зміни. 
+            //    Викликаємо SaveChangesAsync() безпосередньо з контексту.
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            // Обробка випадків, коли хтось інший змінив дані одночасно
+            throw;
+        }
+        catch (Exception ex)
+        {
+            // Додаткова обробка помилок
+            Console.WriteLine(ex.Message);
+            throw;
+        }
     }
 
     public async Task DeleteAsync(int id)
@@ -103,7 +153,7 @@ public class PatientService : IPatientService
     {
         return await _patientRepository.GetAllWithAssociationsAsync();
     }
-    
+
     public async Task AssignPatientToBedAsync(int patientId, int bedId)
     {
         // 1. Знаходимо пацієнта
@@ -123,12 +173,13 @@ public class PatientService : IPatientService
         // 4. Перевіряємо, чи пацієнт вже не лежить на іншому ліжку
         var existingBed = (await _bedRepository.FindByConditionAsync(b => b.PatientId == patientId)).FirstOrDefault();
         if (existingBed != null)
-            throw new InvalidOperationException($"Patient is already assigned to bed {existingBed.Id}. Please unassign first.");
+            throw new InvalidOperationException(
+                $"Patient is already assigned to bed {existingBed.Id}. Please unassign first.");
 
         // 5. Призначаємо ліжко
         bed.PatientId = patientId;
         bed.IsOccupied = true;
-        
+
         await _bedRepository.UpdateAsync(bed);
     }
 
@@ -139,7 +190,7 @@ public class PatientService : IPatientService
         var patient = await _patientRepository.GetByIdAsync(patientId);
         if (patient == null)
             throw new KeyNotFoundException("Patient not found.");
-            
+
         // 2. Знаходимо ліжко, яке займає цей пацієнт
         var bed = (await _bedRepository.FindByConditionAsync(b => b.PatientId == patientId)).FirstOrDefault();
 
@@ -153,8 +204,9 @@ public class PatientService : IPatientService
 
         await _bedRepository.UpdateAsync(bed);
     }
-    
-    public async Task<IEnumerable<PatientDetailsDto>> GetPatientListAsync(int hospitalId, int? departmentId, int? roomId)
+
+    public async Task<IEnumerable<PatientDetailsDto>> GetPatientListAsync(int hospitalId, int? departmentId,
+        int? roomId)
     {
         // 1. Отримуємо ВСІХ пацієнтів з УСІМА зв'язками (ми оновили цей метод)
         var allPatients = await _patientRepository.GetAllWithAssociationsAsync();
@@ -169,7 +221,7 @@ public class PatientService : IPatientService
             filteredPatients = filteredPatients
                 .Where(p => p.Bed != null && p.Bed.Room.DepartmentId == departmentId.Value);
         }
-        
+
         if (roomId.HasValue)
         {
             // Фільтр по палаті (вже включає фільтр по відділенню)
@@ -185,11 +237,11 @@ public class PatientService : IPatientService
             DateOfBirth = p.DateOfBirth,
             HealthStatus = p.HealthStatus,
             Temperature = p.Temperature,
-            
+
             // Дані лікаря
             AttendingDoctorId = p.AssignedDoctorId,
             AttendingDoctorName = p.AssignedDoctor?.FullName ?? "N/A",
-            
+
             // Дані про місцезнаходження (з перевіркою на null)
             BedId = p.Bed?.Id,
             RoomNumber = p.Bed?.Room?.Number ?? "N/A",
@@ -198,7 +250,7 @@ public class PatientService : IPatientService
 
         return resultDto;
     }
-    
+
     public async Task<PatientHistoryDto> GetPatientHistoryAsync(int patientId)
     {
         // 1. Знаходимо пацієнта
@@ -278,9 +330,69 @@ public class PatientService : IPatientService
                 DoctorName = "N/A", // Аналізи не мають прямого лікаря в моделі
                 LocationName = a.Laboratory?.Name ?? "N/A"
             }));
-            
+
         // 6. Сортуємо всі події за датою та повертаємо
         history.Events = allEvents.OrderByDescending(e => e.EventDate).ToList();
         return history;
+    }
+
+    /// <summary>
+    /// Призначає лікаря пацієнту з перевіркою спільної локації.
+    /// </summary>
+    public async Task AssignDoctorAsync(int patientId, int doctorId)
+    {
+        // 1. Отримуємо пацієнта
+        var patient = await _patientRepository.GetByIdAsync(patientId);
+        if (patient == null)
+            throw new KeyNotFoundException("Patient not found.");
+
+        // 2. Отримуємо лікаря (переконуємось, що він існує)
+        var doctor = await _staffRepository.GetByIdAsync(doctorId);
+        if (doctor == null || !(doctor is Doctor)) // Перевіряємо, що це лікар
+            throw new KeyNotFoundException("Doctor not found.");
+
+        // 3. ✅ ВИПРАВЛЕННЯ: Використовуємо метод, який тепер існує
+        var doctorEmployments = await _employmentRepository.GetEmploymentsByStaffIdAsync(doctorId);
+
+        // 4. ✅ БІЗНЕС-ЛОГІКА: Перевірка локації
+        bool sharesLocation = false;
+
+        // Перевіряємо, чи працює лікар у клініці пацієнта
+        if (doctorEmployments.Any(e => e.ClinicId == patient.ClinicId))
+        {
+            sharesLocation = true;
+        }
+
+        // Якщо пацієнт у лікарні (має HospitalId), перевіряємо лікарні
+        if (!sharesLocation && patient.HospitalId.HasValue)
+        {
+            if (doctorEmployments.Any(e => e.HospitalId == patient.HospitalId.Value))
+            {
+                sharesLocation = true;
+            }
+        }
+
+        // 5. Якщо локація не збігається, кидаємо помилку
+        if (!sharesLocation)
+        {
+            throw new InvalidOperationException("Doctor and patient do not share the same clinic or hospital.");
+        }
+
+        // 6. Призначаємо лікаря
+        patient.AssignedDoctorId = doctorId;
+        await _patientRepository.UpdateAsync(patient); // Використовуємо репозиторій напряму
+    }
+
+    /// <summary>
+    /// Відкріплює лікаря від пацієнта.
+    /// </summary>
+    public async Task RemoveDoctorAsync(int patientId)
+    {
+        var patient = await _patientRepository.GetByIdAsync(patientId);
+        if (patient == null)
+            throw new KeyNotFoundException("Patient not found.");
+
+        patient.AssignedDoctorId = null;
+        await _patientRepository.UpdateAsync(patient);
     }
 }

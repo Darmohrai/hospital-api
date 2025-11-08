@@ -14,4 +14,6 @@ public interface IDoctorService
     Task<IEnumerable<Doctor>> GetWithHazardPayAsync();
     Task<IEnumerable<Doctor>> GetWithExtendedVacationAsync();
     Task<IEnumerable<Doctor>> GetProfessorsWithMultipleAssignmentsAsync();
+    
+    Task<IEnumerable<Doctor>> GetAllAsync(string? specialty, AcademicDegree? degree, AcademicTitle? title);
 }

@@ -796,12 +796,6 @@ namespace hospital_api.Migrations
                 {
                     b.HasBaseType("hospital_api.Models.StaffAggregate.Doctor");
 
-                    b.Property<int>("FatalOperationCount")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("OperationCount")
-                        .HasColumnType("integer");
-
                     b.HasDiscriminator().HasValue("Cardiologist");
                 });
 
@@ -809,23 +803,8 @@ namespace hospital_api.Migrations
                 {
                     b.HasBaseType("hospital_api.Models.StaffAggregate.Doctor");
 
-                    b.Property<int>("FatalOperationCount")
-                        .HasColumnType("integer");
-
                     b.Property<float>("HazardPayCoefficient")
                         .HasColumnType("real");
-
-                    b.Property<int>("OperationCount")
-                        .HasColumnType("integer");
-
-                    b.ToTable("Staffs", t =>
-                        {
-                            t.Property("FatalOperationCount")
-                                .HasColumnName("Dentist_FatalOperationCount");
-
-                            t.Property("OperationCount")
-                                .HasColumnName("Dentist_OperationCount");
-                        });
 
                     b.HasDiscriminator().HasValue("Dentist");
                 });
@@ -833,21 +812,6 @@ namespace hospital_api.Migrations
             modelBuilder.Entity("hospital_api.Models.StaffAggregate.DoctorAggregate.Gynecologist", b =>
                 {
                     b.HasBaseType("hospital_api.Models.StaffAggregate.Doctor");
-
-                    b.Property<int>("FatalOperationCount")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("OperationCount")
-                        .HasColumnType("integer");
-
-                    b.ToTable("Staffs", t =>
-                        {
-                            t.Property("FatalOperationCount")
-                                .HasColumnName("Gynecologist_FatalOperationCount");
-
-                            t.Property("OperationCount")
-                                .HasColumnName("Gynecologist_OperationCount");
-                        });
 
                     b.HasDiscriminator().HasValue("Gynecologist");
                 });
@@ -903,21 +867,6 @@ namespace hospital_api.Migrations
             modelBuilder.Entity("hospital_api.Models.StaffAggregate.DoctorAggregate.Surgeon", b =>
                 {
                     b.HasBaseType("hospital_api.Models.StaffAggregate.Doctor");
-
-                    b.Property<int>("FatalOperationCount")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("OperationCount")
-                        .HasColumnType("integer");
-
-                    b.ToTable("Staffs", t =>
-                        {
-                            t.Property("FatalOperationCount")
-                                .HasColumnName("Surgeon_FatalOperationCount");
-
-                            t.Property("OperationCount")
-                                .HasColumnName("Surgeon_OperationCount");
-                        });
 
                     b.HasDiscriminator().HasValue("Surgeon");
                 });
@@ -1157,12 +1106,12 @@ namespace hospital_api.Migrations
                     b.HasOne("hospital_api.Models.ClinicAggregate.Clinic", "Clinic")
                         .WithMany("Employments")
                         .HasForeignKey("ClinicId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("hospital_api.Models.HospitalAggregate.Hospital", "Hospital")
                         .WithMany("Employments")
                         .HasForeignKey("HospitalId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("hospital_api.Models.StaffAggregate.Staff", "Staff")
                         .WithMany("Employments")

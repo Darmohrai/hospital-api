@@ -41,4 +41,7 @@ public interface IPatientService
     Task<IEnumerable<PatientDetailsDto>> GetPatientListAsync(int hospitalId, int? departmentId, int? roomId);
     
     Task<PatientHistoryDto> GetPatientHistoryAsync(int patientId);
+    
+    Task AssignDoctorAsync(int patientId, int doctorId);
+    Task RemoveDoctorAsync(int patientId);
 }

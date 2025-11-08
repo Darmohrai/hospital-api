@@ -56,8 +56,6 @@ namespace hospital_api.Controllers.StaffControllers
                 WorkExperienceYears = dto.WorkExperienceYears,
                 AcademicDegree = dto.AcademicDegree,
                 AcademicTitle = dto.AcademicTitle,
-                OperationCount = dto.OperationCount,
-                FatalOperationCount = dto.FatalOperationCount,
                 HazardPayCoefficient = dto.HazardPayCoefficient
             };
 

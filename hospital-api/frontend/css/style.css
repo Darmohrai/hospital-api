@@ -1,0 +1,54 @@
+﻿/* css/style.css */
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+/*
+  --- ВАЖЛИВЕ ВИПРАВЛЕННЯ ---
+  Ми додаємо 'padding-top' до body.
+  Це змусить наш '<main>' контент початися *після* хедера.
+  70px - це приблизна висота стандартного Bootstrap navbar.
+*/
+body {
+    margin-bottom: 60px; /* Відступ для футера, як у тебе було */
+    padding-top: 70px;   /* <-- НАШЕ ВИПРАВЛЕННЯ */
+    background-color: #f8f9fa; /* Світлий фон */
+}
+
+/* Стилі для форм логіну та реєстрації */
+.form-container {
+    max-width: 450px;
+    margin: 3rem auto; /* Зменшив відступ, щоб виглядало краще */
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Стилі для головного контенту */
+.content-area {
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Допоміжні класи */
+.text-danger {
+    color: #dc3545 !important;
+}
+
+.text-success {
+    color: #198754 !important;
+}

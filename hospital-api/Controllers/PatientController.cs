@@ -25,12 +25,12 @@ public class PatientController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var patients = await _patientService.GetAllAsync();
+        var patients = await _patientService.GetAllWithAssociationsAsync();
         return Ok(patients);
     }
 
     [Authorize(Roles = "Authorized, Operator, Admin")]
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
         var patient = await _patientService.GetByIdAsync(id);
@@ -42,6 +42,11 @@ public class PatientController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Patient patient)
     {
+        if (!ModelState.IsValid)
+        {
+            // Подивись на помилки валідації тут
+            return BadRequest(ModelState);
+        }
         await _patientService.AddAsync(patient);
         return CreatedAtAction(nameof(Get), new { id = patient.Id }, patient);
     }
@@ -191,6 +196,45 @@ public class PatientController : ControllerBase
         {
             var history = await _patientService.GetPatientHistoryAsync(patientId);
             return Ok(history);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
+    
+    [Authorize(Roles = "Operator, Admin")]
+    [HttpPost("{patientId}/assign-doctor/{doctorId}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> AssignDoctor(int patientId, int doctorId)
+    {
+        try
+        {
+            await _patientService.AssignDoctorAsync(patientId, doctorId);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message); // Повертаємо 400, якщо логіка не дозволяє
+        }
+    }
+
+    [Authorize(Roles = "Operator, Admin")]
+    [HttpPost("{patientId}/remove-doctor")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RemoveDoctor(int patientId)
+    {
+        try
+        {
+            await _patientService.RemoveDoctorAsync(patientId);
+            return NoContent();
         }
         catch (KeyNotFoundException ex)
         {

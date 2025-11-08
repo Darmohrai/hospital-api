@@ -1,6 +1,8 @@
-﻿using hospital_api.Models.HospitalAggregate;
+﻿using hospital_api.DTOs.Hospital;
+using hospital_api.Models.HospitalAggregate;
 using hospital_api.Repositories.Interfaces.HospitalRepo;
 using hospital_api.Services.Interfaces.HospitalServices;
+using Microsoft.EntityFrameworkCore;
 
 namespace hospital_api.Services.Implementations.HospitalServices;
 
@@ -36,5 +38,17 @@ public class HospitalService : IHospitalService
     public async Task DeleteHospitalAsync(int id)
     {
         await _hospitalRepository.DeleteAsync(id);
+    }
+    
+    public async Task<IEnumerable<HospitalDto>> GetAllDtosAsync()
+    {
+        return await _hospitalRepository.GetAll()
+            .Select(h => new HospitalDto
+            {
+                Id = h.Id,
+                Name = h.Name,
+                Address = h.Address
+            })
+            .ToListAsync();
     }
 }

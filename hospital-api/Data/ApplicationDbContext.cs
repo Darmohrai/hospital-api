@@ -60,10 +60,14 @@ namespace hospital_api.Data
             builder.Entity<Employment>(entity =>
             {
                 entity.HasOne(e => e.Staff).WithMany(s => s.Employments).HasForeignKey(e => e.StaffId);
+
+                // ✅ ВИПРАВЛЕНО:
                 entity.HasOne(e => e.Hospital).WithMany(h => h.Employments).HasForeignKey(e => e.HospitalId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.SetNull); 
+
+                // ✅ ВИПРАВЛЕНО:
                 entity.HasOne(e => e.Clinic).WithMany(c => c.Employments).HasForeignKey(e => e.ClinicId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.SetNull); 
             });
 
             // ✅ ВИПРАВЛЕНО: Додано ValueComparer для коректної роботи зі списком enum'ів
