@@ -5,43 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Керування: Лікарні</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- ✅ Іконки Bootstrap для кнопок "додати/видалити" -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../css/style.css">
+    <style>
+        /* Стиль для дерева структури */
+        .structure-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .structure-controls .form-control {
+            flex-grow: 1; /* Поле вводу займає вільне місце */
+        }
+
+        .accordion-header {
+            /* Обов'язково для позиціонування .btn-group */
+            position: relative;
+        }
+
+        .accordion-button {
+            /* ✅ ВИПРАВЛЕНО: Збільшуємо відступ, щоб кнопки помістились */
+            padding-right: 8rem;
+        }
+
+        .accordion-button::after {
+            /* Стандартна стрілка акордеону */
+            z-index: 1;
+        }
+
+        .accordion-header .btn-group {
+            /* ✅ ВИПРАВЛЕНО: Позиціонуємо кнопки ЛІВІШЕ від стрілки */
+            position: absolute;
+            right: 1.5rem; /* Посуваємо лівіше */
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 2; /* Вище за стрілку */
+        }
+
+        .accordion-body {
+            padding-left: 1.5rem; /* Візуальний відступ для вкладеності */
+        }
+    </style>
 </head>
 <body>
 
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="../index.html">МедСистема</a> <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
+            <a class="navbar-brand" href="../index.html">МедСистема</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
             <div class="collapse navbar-collapse" id="navbarContent">
-
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item" id="nav-reports" style="display:none;">
-                        <a class="nav-link" href="../reports.html">Звіти</a>
-                    </li>
+                    <li class="nav-item" id="nav-reports" style="display:none;"><a class="nav-link"
+                                                                                   href="../reports.html">Звіти</a></li>
                     <li class="nav-item dropdown" id="nav-crud" style="display:none;">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            Керування даними
-                        </a>
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Керування
+                            даними</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="hospitals.html">Лікарні</a></li>
                             <li><a class="dropdown-item" href="clinics.html">Поліклініки</a></li>
                             <li><a class="dropdown-item" href="laboratories.html">Лабораторії</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li><a class="dropdown-item" href="patients.html">Пацієнти</a></li>
                             <li><a class="dropdown-item" href="doctors.html">Лікарі</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li><a class="dropdown-item" href="query.html">SQL Запити</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item" id="nav-admin" style="display:none;">
-                        <a class="nav-link" href="../admin.html">Адмін-панель</a>
+                    <li class="nav-item" id="nav-admin" style="display:none;"><a class="nav-link" href="../admin.html">Адмін-панель</a>
                     </li>
                 </ul>
-
                 <div class="d-flex" id="auth-section">
                     <div id="anonymous-links">
                         <a href="../login.html" class="btn btn-outline-light me-2">Увійти</a>
@@ -59,58 +100,298 @@
 
 <main class="container mt-4">
     <div class="content-area">
-
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2>Керування: Лікарні</h2>
-            <button class="btn btn-primary" id="add-hospital-btn" data-bs-toggle="modal" data-bs-target="#hospital-modal">
-                Додати лікарню
+            <button class="btn btn-primary" id="add-hospital-btn" data-bs-toggle="modal"
+                    data-bs-target="#hospital-manage-modal">
+                <i class="bi bi-plus-lg"></i> Додати лікарню
             </button>
         </div>
 
-        <table class="table table-striped">
+        <div class="alert alert-danger" id="page-error" style="display: none;"></div>
+
+        <table class="table table-striped table-hover">
             <thead>
             <tr>
                 <th>ID</th>
                 <th>Назва</th>
                 <th>Адреса</th>
-                <th>Дії</th>
+                <th>Спеціалізації</th>
+                <th style="width: 150px;">Дії</th>
             </tr>
             </thead>
             <tbody id="hospitals-table-body">
+            <!-- Завантаження -->
+            <tr>
+                <td colspan="5" class="text-center">Завантаження...</td>
+            </tr>
             </tbody>
         </table>
-
     </div>
 </main>
 
-<div class="modal fade" id="hospital-modal" tabindex="-1">
-    <div class="modal-dialog">
+<!-- =================================================================== -->
+<!-- == ОСНОВНЕ МОДАЛЬНЕ ВІКНО (СТВОРЕННЯ / КЕРУВАННЯ) == -->
+<!-- =================================================================== -->
+<div class="modal fade" id="hospital-manage-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-xl"> <!-- Дуже велике вікно -->
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="hospital-modal-title">Додати лікарню</h5>
+                <h5 class="modal-title" id="hospital-modal-title">Завантаження...</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="hospital-form">
-                    <input type="hidden" id="hospital-id">
+                <div class="alert alert-danger" id="modal-error" style="display: none;"></div>
 
-                    <div class="mb-3">
-                        <label for="hospital-name" class="form-label">Назва лікарні:</label>
-                        <input type="text" class="form-control" id="hospital-name" required>
+                <!-- Навігація по вкладках -->
+                <ul class="nav nav-tabs" id="hospital-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="tab-main-info" data-bs-toggle="tab"
+                                data-bs-target="#tab-main-info-content" type="button" role="tab">
+                            Основна інформація
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-structure" data-bs-toggle="tab"
+                                data-bs-target="#tab-structure-content" type="button" role="tab" disabled>
+                            Структура (Корпуси, Відділення)
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Вміст вкладок -->
+                <div class="tab-content pt-3">
+
+                    <!-- == ВКЛАДКА 1: ОСНОВНА ІНФОРМАЦІЯ == -->
+                    <div class="tab-pane fade show active" id="tab-main-info-content" role="tabpanel">
+                        <form id="hospital-form">
+                            <input type="hidden" id="hospital-id">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="hospital-name" class="form-label">Назва лікарні:</label>
+                                        <input type="text" class="form-control" id="hospital-name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="hospital-address" class="form-label">Адреса:</label>
+                                        <input type="text" class="form-control" id="hospital-address" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Спеціалізації:</label>
+                                    <div id="hospital-specializations-container" class="border rounded p-2"
+                                         style="max-height: 200px; overflow-y: auto;">
+                                        <!-- Чекбокси будуть тут -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end mt-3">
+                                <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Закрити
+                                </button>
+                                <button type="submit" class="btn btn-primary" id="save-hospital-btn">Зберегти і
+                                    продовжити
+                                </button>
+                            </div>
+                        </form>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="hospital-address" class="form-label">Адреса:</label>
-                        <input type="text" class="form-control" id="hospital-address" required>
+                    <!-- == ВКЛАДКА 2: СТРУКТУРА == -->
+                    <div class="tab-pane fade" id="tab-structure-content" role="tabpanel">
+                        <div class="d-flex justify-content-end mb-3">
+                            <button class="btn btn-success" id="add-building-btn"
+                                    data-action="add-building"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#add-building-modal">
+                                <i class="bi bi-plus-lg"></i> Додати Корпус
+                            </button>
+                        </div>
+
+                        <!-- Тут буде динамічно згенерований акордеон -->
+                        <div class="accordion" id="structure-accordion">
+                            <!-- Приклад -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#b-1">
+                                        Корпус: Хірургічний
+                                    </button>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </h2>
+                                <div id="b-1" class="accordion-collapse collapse">
+                                    <div class="accordion-body">
+                                        Тут будуть відділення...
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /Приклад -->
+                        </div>
+                        <div id="structure-loading" class="text-center" style="display: none;">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="d-flex justify-content-end">
-                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Закрити</button>
-                        <button type="submit" class="btn btn-primary">Зберегти</button>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- =================================================================== -->
+<!-- == ДОПОМІЖНІ МОДАЛЬНІ ВІКНА (ДЛЯ ДОДАВАННЯ) == -->
+<!-- =================================================================== -->
+
+<!-- 1. Модальне вікно "Додати Корпус" -->
+<div class="modal fade" id="add-building-modal" tabindex="-1">
+    <div class="modal-dialog">
+        <form id="add-building-form">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Додати Корпус</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" id="add-building-error" style="display: none;"></div>
+                    <input type="hidden" id="add-building-hospital-id">
+                    <div class="mb-3">
+                        <label for="add-building-number" class="form-label">Назва або номер корпусу:</label>
+                        <input type="text" class="form-control" id="add-building-number" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                    <button type="submit" class="btn btn-primary">Додати</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 2. Модальне вікно "Додати Відділення" -->
+<div class="modal fade" id="add-department-modal" tabindex="-1">
+    <div class="modal-dialog">
+        <form id="add-department-form">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Додати Відділення</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" id="add-department-error" style="display: none;"></div>
+                    <input type="hidden" id="add-department-building-id">
+                    <div class="mb-3">
+                        <label for="add-department-name" class="form-label">Назва відділення:</label>
+                        <input type="text" class="form-control" id="add-department-name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="add-department-specialization" class="form-label">Спеціалізація:</label>
+                        <select class="form-select" id="add-department-specialization" required>
+                            <!-- JS заповнить цей список на основі спеціалізацій лікарні -->
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                    <button type="submit" class="btn btn-primary">Додати</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="edit-department-modal" tabindex="-1">
+    <div class="modal-dialog">
+        <form id="edit-department-form">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Редагувати Відділення</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" id="edit-department-error" style="display: none;"></div>
+
+                    <input type="hidden" id="edit-department-id">
+                    <input type="hidden" id="edit-department-building-id">
+
+                    <div class="mb-3">
+                        <label for="edit-department-name" class="form-label">Назва відділення:</label>
+                        <input type="text" class="form-control" id="edit-department-name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-department-specialization" class="form-label">Спеціалізація:</label>
+                        <select class="form-select" id="edit-department-specialization" required>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                    <button type="submit" class="btn btn-primary">Зберегти зміни</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 3. Модальне вікно "Додати Палату" -->
+<div class="modal fade" id="add-room-modal" tabindex="-1">
+    <div class="modal-dialog">
+        <form id="add-room-form">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Додати Палату</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" id="add-room-error" style="display: none;"></div>
+                    <input type="hidden" id="add-room-department-id">
+                    <div class="mb-3">
+                        <label for="add-room-number" class="form-label">Номер палати:</label>
+                        <input type="text" class="form-control" id="add-room-number" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="add-room-capacity" class="form-label">Місткість (кількість ліжок):</label>
+                        <input type="number" class="form-control" id="add-room-capacity" min="1" value="1" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                    <button type="submit" class="btn btn-primary">Додати</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 4. Модальне вікно "Додати Ліжка" (Пакетно) -->
+<div class="modal fade" id="add-beds-modal" tabindex="-1">
+    <div class="modal-dialog">
+        <form id="add-beds-form">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Додати Ліжка</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" id="add-beds-error" style="display: none;"></div>
+                    <input type="hidden" id="add-beds-room-id">
+                    <p>Для палати <strong id="add-beds-room-name"></strong> (Місткість: <strong
+                            id="add-beds-room-capacity"></strong>)</p>
+                    <div class="mb-3">
+                        <label for="add-beds-count" class="form-label">Скільки ліжок створити?</label>
+                        <input type="number" class="form-control" id="add-beds-count" min="1" value="1" required>
+                    </div>
+                    <div class="form-text">Імена будуть згенеровані автоматично (Ліжко-1, Ліжко-2...).</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                    <button type="submit" class="btn btn-primary">Створити</button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -118,5 +399,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../js/api.js"></script>
 <script src="../js/auth.js"></script>
-<script src="../js/main.js"></script> <script src="hospitals.js"></script>  </body>
+<script src="../js/main.js"></script>
+<script src="hospitals.js"></script>
+</body>
 </html>

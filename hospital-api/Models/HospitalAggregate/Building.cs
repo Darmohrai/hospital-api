@@ -15,7 +15,6 @@ public class Building
     [ForeignKey(nameof(Hospital))]
     public int HospitalId { get; set; }
 
-    public Hospital Hospital { get; set; } = null!;
-
+    public Hospital? Hospital { get; set; }
     public List<Department> Departments { get; set; } = new();
 }

@@ -26,6 +26,7 @@ public class BuildingService : IBuildingService
 
     public async Task AddAsync(Building building)
     {
+        building.Hospital = null;
         await _buildingRepository.AddAsync(building);
     }
 

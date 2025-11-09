@@ -47,7 +47,12 @@ public class HospitalService : IHospitalService
             {
                 Id = h.Id,
                 Name = h.Name,
-                Address = h.Address
+                Address = h.Address,
+                Buildings = h.Buildings,
+                Departments = h.Departments,
+                Patients = h.Patients,
+                Clinics = h.Clinics,
+                Specializations = h.Specializations
             })
             .ToListAsync();
     }

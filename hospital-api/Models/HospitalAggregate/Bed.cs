@@ -14,7 +14,7 @@ public class Bed
     [ForeignKey(nameof(Room))] public int RoomId { get; set; }
 
     // Navigation Property
-    public Room Room { get; set; } = null!;
+    public Room? Room { get; set; }
 
     // ✅ НОВІ ПОЛЯ: Зв'язок з пацієнтом (одне ліжко зайняте одним пацієнтом)
     [ForeignKey(nameof(Patient))]

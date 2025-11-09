@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using hospital_api.Data;
 using hospital_api.Repositories.Implementations;
 using hospital_api.Repositories.Implementations.Auth;
@@ -57,6 +58,17 @@ builder.Services.AddAuthentication(options =>
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
         };
+    });
+
+// ✅ ЦЕЙ БЛОК НАЛАШТОВУЄ КОНТРОЛЕРИ І ДЛЯ VIEWS, І ДЛЯ API
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        // Дозволяє коректно обробляти цикли в об'єктах
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        
+        // Дозволяє API приймати "Surgery" замість '0' для Enum
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
 var MyAllowSpecificOrigins = "AllowFrontend";
@@ -129,10 +141,9 @@ builder.Services.AddScoped<IEmploymentService, EmploymentService>();
 #endregion
 
 // --- 6. API та Swagger ---
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
-});
+
+// ❌ ВИДАЛЕНО ДУБЛЮЮЧИЙ БЛОК: builder.Services.AddControllers().AddJsonOptions(...)
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
