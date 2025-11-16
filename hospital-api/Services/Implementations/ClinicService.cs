@@ -148,7 +148,8 @@ public class ClinicService : IClinicService
             {
                 Id = c.Id,
                 Name = c.Name,
-                Address = c.Address
+                Address = c.Address,
+                HospitalId = c.HospitalId
             })
             .ToListAsync();
     }

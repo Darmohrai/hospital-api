@@ -30,6 +30,22 @@
             <input type="password" class="form-control" id="register-password" required>
         </div>
 
+        <div class="form-group">
+            <label>Тип реєстрації:</label>
+            <div>
+                <input type="radio" id="role-authorized" name="role" value="Authorized">
+                <label for="role-authorized">Авторизований (звичайний користувач)</label>
+            </div>
+            <div>
+                <input type="radio" id="role-operator" name="role" value="Operator">
+                <label for="role-authorized">Оператор</label>
+            </div>
+            <div>
+                <input type="radio" id="role-admin" name="role" value="Admin">
+                <label for="role-authorized">Адмін</label>
+            </div>
+        </div>
+
         <button type="submit" class="btn btn-primary w-100">Зареєструватися</button>
 
         <div id="register-message" class="alert mt-3" style="display: none;"></div>

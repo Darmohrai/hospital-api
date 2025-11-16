@@ -40,12 +40,14 @@ async function loadUpgradeRequests() {
             console.log(req);
             const row = document.createElement('tr');
             // DTO містить id, userName, email, requestDate
+            console.log(req.requestedRole)
             row.innerHTML = `
                 <td>${req.requestId}</td>
                 <td>${req.userName}</td>
+                <td>${req.role}</td>
                 <td>${new Date(req.requestDate).toLocaleString('uk-UA')}</td>
                 <td>
-                    <button class="btn btn-success btn-sm btn-approve" data-id="${req.userId}">
+                    <button class="btn btn-success btn-sm btn-approve" data-id="${req.userId}" data-role="${req.role}">
                         Схвалити
                     </button>
                     <button class="btn btn-danger btn-sm btn-reject" data-id="${req.userId}">
@@ -67,6 +69,10 @@ async function loadUpgradeRequests() {
 async function handleRequestAction(event) {
     const target = event.target; // Елемент, на який натиснули
     const id = target.dataset.id; // Отримуємо ID з data-id=""
+    const targetRole = target.dataset.role;
+
+    console.log("targetRole =", targetRole);
+
 
     // Якщо ми натиснули не на кнопку, ігноруємо
     if (!id) return;
@@ -90,7 +96,13 @@ async function handleRequestAction(event) {
 
     try {
         // Викликаємо відповідний POST-запит
-        await apiFetch(endpoint, { method: 'POST' });
+        await apiFetch(endpoint,
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    targetRole: targetRole // ✅ Надсилаємо ОБ'ЄКТ
+                })
+            });
 
         alert(`Запит ${id} успішно ${actionName}.`);
         loadUpgradeRequests(); // Оновлюємо таблицю, щоб запит зник

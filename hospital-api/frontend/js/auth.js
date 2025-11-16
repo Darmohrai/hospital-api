@@ -1,37 +1,27 @@
-﻿// js/auth.js
+﻿// frontend/js/auth.js
 
-// Цей код виконається, коли HTML-документ буде повністю завантажено
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
 
-    // --- ВАЖЛИВЕ ВИПРАВЛЕННЯ ---
-    // Ця логіка спрацює ТІЛЬКИ якщо ми на сторінці логіну АБО реєстрації
+    // --- Виконуємо тільки якщо на сторінці логін або реєстрація
     if (loginForm || registerForm) {
-
-        // Якщо ми ВЖЕ залогінені, нам не треба бути на цих сторінках
         if (isLoggedIn()) {
             window.location.href = 'index.html';
-            return; // Зупиняємо виконання скрипту
+            return;
         }
 
-        // "Вішаємо" обробники, тільки якщо форми існують
-        if (loginForm) {
-            loginForm.addEventListener('submit', handleLogin);
-        }
-        if (registerForm) {
-            registerForm.addEventListener('submit', handleRegister);
-        }
+        if (loginForm) loginForm.addEventListener('submit', handleLogin);
+        if (registerForm) registerForm.addEventListener('submit', handleRegister);
     }
+
+    initForgotPassword(); // Ініціалізація модалки Forgot Password
 });
 
-/**
- * Обробник відправки форми логіну
- */
+// =================== ЛОГІН ===================
 async function handleLogin(event) {
-    event.preventDefault(); // Запобігаємо перезавантаженню сторінки
+    event.preventDefault();
 
-    // Використовуємо 'login-username' згідно з твоїм LoginDto.cs
     const username = document.getElementById('login-username').value;
     const password = document.getElementById('login-password').value;
     const errorEl = document.getElementById('login-error');
@@ -40,139 +30,181 @@ async function handleLogin(event) {
     errorEl.textContent = '';
 
     try {
-        // Використовуємо наш apiFetch
         const data = await apiFetch('/api/auth/login', {
             method: 'POST',
             body: JSON.stringify({ username, password }),
         });
 
-        // УСПІХ!
         if (data.token) {
             localStorage.setItem('jwtToken', data.token);
-            // Перенаправляємо на головну сторінку, як ти і хотів
-            window.location.href = 'index.html';
+            showToast('Вхід успішний!', 'success');
+            setTimeout(() => window.location.href = 'index.html', 500);
         } else {
-            showLoginError('Помилка: Не вдалося отримати токен.');
+            showToast('Помилка: Не вдалося отримати токен.', 'danger');
         }
 
     } catch (error) {
-        // Показуємо помилку (напр. 'Invalid credentials')
-        showLoginError(error.message);
+        errorEl.style.display = 'block';
+        errorEl.textContent = error.message || 'Помилка логіну.';
     }
 }
 
-/**
- * Обробник відправки форми реєстрації "Гостя"
- */
+// =================== РЕЄСТРАЦІЯ (ОНОВЛЕНО) ===================
 async function handleRegister(event) {
     event.preventDefault();
 
-    // Поля з твого RegisterDto.cs
     const userName = document.getElementById('register-username').value;
     const email = document.getElementById('register-email').value;
     const password = document.getElementById('register-password').value;
-    const messageEl = document.getElementById('register-message');
+    const messageEl = document.getElementById('register-message'); // Елемент для виводу помилок
 
+    // ✅ Отримуємо значення ролі з radio-кнопок (які ви додали в register.html)
+    const roleInput = document.querySelector('input[name="role"]:checked');
+    
     messageEl.style.display = 'none';
     messageEl.textContent = '';
 
+    // ✅ Валідація на клієнті, що роль обрано
+    if (!roleInput) {
+        messageEl.style.display = 'block';
+        messageEl.textContent = 'Будь ласка, оберіть тип реєстрації.';
+        return;
+    }
+    const role = roleInput.value;
+
     try {
-        // Викликаємо ендпоінт реєстрації "Гостя"
-        await apiFetch('/api/auth/register-guest', {
+        // ✅ Змінено URL на /api/auth/register
+        // ✅ Додано 'role' в тіло запиту
+        const data = await apiFetch('/api/auth/register-guest', {
             method: 'POST',
-            body: JSON.stringify({ userName, email, password }),
+            body: JSON.stringify({
+                username: userName,
+                email,
+                password,
+                role: role // ✅ Нове поле
+            }),
         });
 
-        // УСПІХ!
-        showMessage('Реєстрація успішна! Тепер ви можете увійти.', 'success');
+        // ✅ Використовуємо динамічне повідомлення з бекенду
+        showToast(data.message || 'Реєстрація успішна!', 'success');
         event.target.reset();
 
+        // ✅ Перенаправляємо на сторінку логіну
+        setTimeout(() => {
+            window.location.href = 'login.html';
+        }, 1500); // 1.5с, щоб користувач встиг прочитати toast
+
     } catch (error) {
-        // Показуємо помилку (напр. 'Passwords must have at least one non-alphanumeric character...')
-        showMessage(error.message, 'danger');
+        // ✅ Відображаємо помилку в формі (аналогічно до handleLogin)
+        messageEl.style.display = 'block';
+        messageEl.textContent = error.message || 'Помилка реєстрації.';
     }
 }
 
-// Допоміжні функції для показу повідомлень
-function showLoginError(message) {
-    const errorEl = document.getElementById('login-error');
-    errorEl.textContent = message;
-    errorEl.style.display = 'block';
+
+// =================== ФОРГОТ ПАРОЛЬ ===================
+function initForgotPassword() {
+    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+    if (!forgotPasswordLink) return;
+
+    const forgotModalEl = document.getElementById('forgot-password-modal');
+    const forgotModal = new bootstrap.Modal(forgotModalEl);
+    const sendResetBtn = document.getElementById('send-reset-link');
+
+    forgotPasswordLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        forgotModal.show();
+    });
+
+    sendResetBtn.addEventListener('click', async () => {
+        const emailInput = document.getElementById('forgot-email');
+        const email = emailInput.value.trim();
+        if (!email) {
+            showToast('Будь ласка, введіть email!', 'danger');
+            return;
+        }
+
+        try {
+            const data = await apiFetch('/api/auth/forgot-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email }),
+            });
+
+            forgotModal.hide();
+            showToast('Посилання для скидання пароля надіслано!', 'success');
+
+            setTimeout(() => {
+                window.location.href = `reset-password.html?email=${data.email}&token=${data.token}`;
+            }, 1500);
+
+        } catch (error) {
+            forgotModal.hide();
+            showToast(error.message || 'Користувача з таким email не знайдено.', 'danger');
+        }
+    });
 }
 
-function showMessage(message, type = 'danger') {
-    const messageEl = document.getElementById('register-message');
-    messageEl.textContent = message;
-    messageEl.className = `alert alert-${type} mt-3`;
-    messageEl.style.display = 'block';
+// =================== TOAST ===================
+function showToast(message, type = 'info') {
+    const container = document.querySelector('.toast-container');
+    if (!container) return;
+
+    const toastEl = document.createElement('div');
+    toastEl.className = `toast align-items-center text-bg-${type} border-0`;
+    toastEl.setAttribute('role', 'alert');
+    toastEl.setAttribute('aria-live', 'assertive');
+    toastEl.setAttribute('aria-atomic', 'true');
+    toastEl.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">${message}</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+
+    container.appendChild(toastEl);
+
+    const bsToast = new bootstrap.Toast(toastEl, { delay: 3000 });
+    bsToast.show();
+
+    toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
 }
 
-
-// --- ГЛОБАЛЬНІ ФУНКЦІЇ (доступні на всіх сторінках) ---
-
-/**
- * Функція виходу
- */
+// =================== JWT & AUTH HELPERS ===================
 function logout() {
-    localStorage.removeItem('jwtToken'); // Просто чистимо токен
-    window.location.href = 'index.html'; // Повертаємо на головну
+    localStorage.removeItem('jwtToken');
+    window.location.href = 'index.html';
 }
 
-/**
- * Перевіряє, чи є токен в сховищі
- * @returns {boolean}
- */
 function isLoggedIn() {
     return !!localStorage.getItem('jwtToken');
 }
 
-/**
- * Декодує JWT токен, щоб отримати дані (наприклад, роль)
- * @returns {object | null} Payload токена
- */
 function decodeToken() {
     try {
         const token = localStorage.getItem('jwtToken');
         if (!token) return null;
-
         const payloadBase64 = token.split('.')[1];
-        const payloadJson = atob(payloadBase64); // Декодуємо з Base64
+        const payloadJson = atob(payloadBase64);
         return JSON.parse(payloadJson);
-
     } catch (e) {
         console.error('Error decoding token:', e);
-        logout(); // Якщо токен "битий", просто виходимо з системи
+        logout();
         return null;
     }
 }
 
-/**
- * Отримує роль поточного користувача з токена
- * @returns {string | null} Роль (Admin, Operator, Authorized, Guest)
- */
 function getUserRole() {
     const payload = decodeToken();
     if (!payload) return null;
-
-    // ASP.NET Identity за замовчуванням зберігає роль у "claim" з такою назвою
     const roleClaim = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
     const role = payload[roleClaim];
-
-    if (Array.isArray(role)) {
-        return role[0];
-    }
-    return role;
+    return Array.isArray(role) ? role[0] : role;
 }
 
-/**
- * Отримує ім'я (username) користувача з токена
- * @returns {string}
- */
 function getUserName() {
     const payload = decodeToken();
     if (!payload) return 'User';
-
-    // ASP.NET Identity зберігає ім'я тут
     const nameClaim = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name';
     return payload[nameClaim] || 'User';
 }

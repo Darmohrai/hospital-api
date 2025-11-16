@@ -120,7 +120,7 @@
                     if (currentUserRole === 'Admin' || currentUserRole === 'Operator') {
                         actionsHtml = `<button class="btn btn-sm btn-primary" data-action="edit" data-id="${lab.id}" title="Редагувати"><i class="bi bi-pencil-square"></i></button>`;
                     }
-                    if (currentUserRole === 'Admin') {
+                    if (currentUserRole === 'Admin' || currentUserRole === 'Operator') {
                         actionsHtml += `<button class="btn btn-sm btn-danger ms-1" data-action="delete" data-id="${lab.id}" title="Видалити"><i class="bi bi-trash"></i></button>`;
                     }
 

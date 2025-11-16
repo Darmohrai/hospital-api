@@ -122,7 +122,7 @@ function renderTable(patients) {
                 </button>
             `;
         }
-        if (currentUserRole === 'Admin') {
+        if (currentUserRole === 'Admin' || currentUserRole === 'Operator') {
             actionsHtml += `
                 <button class="btn btn-danger btn-sm" data-id="${patient.id}" data-action="delete" title="Видалити">
                     Видал.

@@ -52,3 +52,21 @@ body {
 .text-success {
     color: #198754 !important;
 }
+
+/* Дозволяє модалкам працювати поверх інших */
+.modal-backdrop {
+    z-index: 1040 !important;
+}
+
+.modal {
+    z-index: 1050 !important;
+}
+
+/* Спецклас, який ми будемо вмикати під час відкриття дочірньої модалки */
+.modal-static-fix {
+    z-index: 1060 !important;
+}
+
+.modal-static-fix {
+    pointer-events: none !important;
+}

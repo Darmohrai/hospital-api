@@ -45,17 +45,19 @@ public class SupportStaffService : ISupportStaffService
         await _staffRepository.AddAsync(staff);
     }
 
-    public async Task UpdateAsync(SupportStaff staff)
+    // --- 💡 ПОЧАТОК ВИПРАВЛЕННЯ ---
+    // Повертаємо метод до найпростішого вигляду.
+    // 'staffFromRequest' - це об'єкт, що прийшов з [FromBody] у контролері.
+    // Він "від'єднаний", і ваш GenericRepository.UpdateAsync()
+    // (який викликає _dbSet.Update(entity)) саме для цього і призначений.
+    public async Task UpdateAsync(SupportStaff staffFromRequest)
     {
-        var existingStaff = await GetByIdAsync(staff.Id);
-        if (existingStaff == null)
-        {
-            throw new InvalidOperationException("Support staff not found.");
-        }
-
-        // Оновлюємо через загальний репозиторій
-        await _staffRepository.UpdateAsync(staff);
+        // Просто передаємо об'єкт далі.
+        // EF Core приєднає його і позначить як "Modified".
+        // Це уникне помилки "already being tracked".
+        await _staffRepository.UpdateAsync(staffFromRequest);
     }
+    // --- 💡 КІНЕЦЬ ВИПРАВЛЕННЯ ---
 
     public async Task DeleteAsync(int id)
     {

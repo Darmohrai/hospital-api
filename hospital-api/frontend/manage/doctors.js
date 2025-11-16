@@ -2,7 +2,7 @@
 const doctorSpecialties = {
     "Surgeon": "Хірург",
     "Neurologist": "Невролог",
-    "Ophthalmologist": "Окуліст",
+    "Ophthalmologist": "Окуліст", // (Офтальмолог)
     "Dentist": "Стоматолог",
     "Radiologist": "Рентгенолог",
     "Gynecologist": "Гінеколог",
@@ -33,6 +33,11 @@ let allClinics = []; // Кеш для списку клінік
 // ✅ Змінна для поточного запиту (щоб оновлення працювало з фільтрами)
 let currentDoctorQuery = '/api/staff/doctors';
 
+// ✅ НОВИЙ БЛОК: Змінні для динамічних полів
+let modalSpecialtySelect = null;
+let dynamicHazardPayFields = null;
+let dynamicExtendedVacationFields = null;
+
 document.addEventListener('DOMContentLoaded', () => {
     // Ініціалізація модальних вікон
     doctorModal = new bootstrap.Modal(document.getElementById('doctor-modal'));
@@ -50,6 +55,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. Завантажуємо лікарні та клініки для модального вікна
     loadInstitutions();
 
+    // ✅ НОВИЙ БЛОК: Отримуємо елементи динамічної форми
+    modalSpecialtySelect = document.getElementById('doctor-specialty');
+    dynamicHazardPayFields = document.getElementById('dynamic-hazard-pay-fields');
+    dynamicExtendedVacationFields = document.getElementById('dynamic-extended-vacation-fields');
+
     // 5. Налаштування обробників подій
     document.getElementById('filter-btn').addEventListener('click', applyFilters);
     document.getElementById('create-doctor-btn').addEventListener('click', openCreateModal);
@@ -59,6 +69,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Нові обробники для модального вікна "Призначити"
     document.getElementById('employment-form').addEventListener('submit', handleEmploymentFormSubmit);
     document.getElementById('employment-type').addEventListener('change', handleEmploymentTypeChange);
+
+    // ✅ НОВИЙ БЛОК: Обробник для зміни спеціальності в модальному вікні
+    if (modalSpecialtySelect) {
+        modalSpecialtySelect.addEventListener('change', handleModalSpecialtyChange);
+    }
 });
 
 /**
@@ -152,7 +167,7 @@ function applyFilters() {
  */
 function renderTable(doctors) {
     const tableBody = document.getElementById('doctors-table-body');
-    tableBody.innerHTML = ''; // Очищуємо таблицю
+    tableBody.innerHTML = ''; // Очищаємо таблицю
 
     if (!doctors || doctors.length === 0) {
         tableBody.innerHTML = '<tr><td colspan="8" class="text-center">Лікарів не знайдено.</td></tr>';
@@ -173,7 +188,7 @@ function renderTable(doctors) {
                 </button>
             `;
         }
-        if (currentUserRole === 'Admin') {
+        if (currentUserRole === 'Admin' || currentUserRole === 'Operator') {
             actionsHtml += `
                 <button class="btn btn-danger btn-sm" data-id="${doctor.id}" data-action="delete" title="Видалити лікаря">
                     Видал.
@@ -274,6 +289,11 @@ function openCreateModal() {
     document.getElementById('doctor-degree').value = "0";
     document.getElementById('doctor-title').value = "0";
 
+    // ✅ НОВИЙ БЛОК: Скидаємо та ховаємо динамічні поля
+    document.getElementById('doctor-hazard-pay').value = '1.0';
+    document.getElementById('doctor-extended-vacation').value = '0';
+    handleModalSpecialtyChange(); // Викликаємо, щоб сховати всі поля
+
     doctorModal.show();
 }
 
@@ -284,6 +304,7 @@ function openCreateModal() {
 async function handleEdit(id) {
     try {
         showModalError(null);
+        // Запит йде на загальний ендпоінт, що повертає повну модель лікаря
         const doctor = await apiFetch(`/api/staff/doctors/${id}`);
         if (!doctor) {
             showError('Не вдалося знайти лікаря.');
@@ -299,6 +320,15 @@ async function handleEdit(id) {
         document.getElementById('doctor-title').value = doctor.academicTitle;
         document.getElementById('doctor-specialty').disabled = true;
 
+        // ✅ НОВИЙ БЛОК: Заповнюємо динамічні поля, якщо вони є
+        // Використовуємо || (або), щоб уникнути 'null' або 'undefined' в полях
+        // і встановити значення за замовчуванням
+        document.getElementById('doctor-hazard-pay').value = doctor.hazardPayCoefficient || '1.0';
+        document.getElementById('doctor-extended-vacation').value = doctor.extendedVacationDays || '0';
+
+        // Показуємо потрібні поля для цієї спеціальності
+        handleModalSpecialtyChange();
+
         doctorModal.show();
 
     } catch (error) {
@@ -308,19 +338,44 @@ async function handleEdit(id) {
 }
 
 /**
- * Обробник відправки форми (Створення / Оновлення)
+ * ✅✅✅ ВИПРАВЛЕНО: Обробник відправки форми (Створення / Оновлення)
  */
 async function handleFormSubmit(event) {
     event.preventDefault();
     const id = document.getElementById('doctor-id').value;
     const specialty = document.getElementById('doctor-specialty').value;
 
+    // 1. Збираємо базові дані (які є у всіх лікарів)
     const doctorDto = {
         fullName: document.getElementById('doctor-fullname').value,
         workExperienceYears: parseInt(document.getElementById('doctor-experience').value, 10),
         academicDegree: parseInt(document.getElementById('doctor-degree').value, 10),
         academicTitle: parseInt(document.getElementById('doctor-title').value, 10),
     };
+
+    // 2. ✅✅✅ НОВИЙ ВИПРАВЛЕНИЙ БЛОК: Додаємо унікальні дані на основі C# класів,
+    // які ви надіслали в останньому повідомленні.
+    switch (specialty) {
+        case 'Dentist':
+            // Dentist.cs має HazardPayCoefficient
+            doctorDto.hazardPayCoefficient = parseFloat(document.getElementById('doctor-hazard-pay').value);
+            break;
+        case 'Radiologist':
+            // Radiologist.cs має обидва поля
+            doctorDto.hazardPayCoefficient = parseFloat(document.getElementById('doctor-hazard-pay').value);
+            doctorDto.extendedVacationDays = parseInt(document.getElementById('doctor-extended-vacation').value, 10);
+            break;
+        case 'Neurologist':
+            // Neurologist.cs має ExtendedVacationDays
+            doctorDto.extendedVacationDays = parseInt(document.getElementById('doctor-extended-vacation').value, 10);
+            break;
+        case 'Ophthalmologist':
+            // Ophthalmologist.cs має ExtendedVacationDays
+            doctorDto.extendedVacationDays = parseInt(document.getElementById('doctor-extended-vacation').value, 10);
+            break;
+        // Surgeon, Gynecologist, Cardiologist не мають дод. полів
+    }
+    // ✅✅✅ КІНЕЦЬ НОВОГО БЛОКУ
 
     const endpoint = getApiEndpointForSpecialty(specialty);
     if (!endpoint) {
@@ -377,7 +432,7 @@ async function handleDelete(id) {
  * @returns {string} The API endpoint path
  */
 function getApiEndpointForSpecialty(specialty) {
-    // Це має точно відповідати твоїм DTO та контролерам
+    // Ця функція вже була коректною і містила Ophthalmologist
     switch (specialty) {
         case "Surgeon": return "/api/staff/surgeons";
         case "Neurologist": return "/api/staff/neurologists";
@@ -389,6 +444,43 @@ function getApiEndpointForSpecialty(specialty) {
         default:
             console.error(`Unknown specialty: ${specialty}`);
             return null;
+    }
+}
+
+// --- ✅✅✅ ВИПРАВЛЕНА ФУНКЦІЯ: Показ/приховування динамічних полів ---
+/**
+ * Обробляє зміну спеціальності в модальному вікні,
+ * показуючи або приховуючи додаткові поля.
+ * Логіка базується на C# класах з останнього повідомлення.
+ */
+function handleModalSpecialtyChange() {
+    const specialty = modalSpecialtySelect.value;
+
+    // 1. Спершу ховаємо всі динамічні поля
+    dynamicHazardPayFields.style.display = 'none';
+    dynamicExtendedVacationFields.style.display = 'none';
+
+    // 2. Показуємо потрібні поля на основі спеціальності
+    switch (specialty) {
+        case 'Dentist':
+            // Dentist.cs має HazardPayCoefficient
+            dynamicHazardPayFields.style.display = 'block';
+            break;
+        case 'Radiologist':
+            // Radiologist.cs має обидва поля
+            dynamicHazardPayFields.style.display = 'block';
+            dynamicExtendedVacationFields.style.display = 'block';
+            break;
+        case 'Neurologist':
+            // Neurologist.cs має ExtendedVacationDays
+            dynamicExtendedVacationFields.style.display = 'block';
+            break;
+        case 'Ophthalmologist':
+            // Ophthalmologist.cs має ExtendedVacationDays
+            dynamicExtendedVacationFields.style.display = 'block';
+            break;
+        // Surgeon, Gynecologist, Cardiologist 
+        // не мають унікальних полів для форми
     }
 }
 

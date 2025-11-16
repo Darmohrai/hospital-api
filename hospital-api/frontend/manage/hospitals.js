@@ -51,7 +51,22 @@
 
     // 1. Додати Корпус
     const addBuildingModalEl = document.getElementById('add-building-modal');
-    const addBuildingModal = new bootstrap.Modal(addBuildingModalEl);
+    const addBuildingModal = new bootstrap.Modal(addBuildingModalEl, {
+        backdrop: 'static',  // ← важливо: фон статичний
+        keyboard: false      // ← Esc не закриває модалку
+    });
+
+// --- FIX: відкриває модалку поверх головної ---
+    addBuildingModalEl.addEventListener('show.bs.modal', () => {
+        mainModalEl.classList.add("modal-static-fix");
+    });
+
+    addBuildingModalEl.addEventListener('hidden.bs.modal', () => {
+        mainModalEl.classList.remove("modal-static-fix");
+    });
+
+// Запобігає приховуванню попередньої модалки (офіційний Bootstrap fix)
+
     const addBuildingForm = document.getElementById('add-building-form');
     const addBuildingError = document.getElementById('add-building-error');
 
@@ -163,7 +178,7 @@
                             </button>
                         `;
                     }
-                    if (currentUserRole === 'Admin') {
+                    if (currentUserRole === 'Admin' || currentUserRole === 'Operator') {
                         actionsHtml += `
                             <button class="btn btn-sm btn-danger ms-1" data-action="delete" data-id="${hospital.id}" title="Видалити">
                                 <i class="bi bi-trash"></i>
@@ -284,57 +299,74 @@
         }
 
         const hospitalBody = {
-            id: currentHospitalData ? currentHospitalData.id : 0,
-            name: hospitalNameInput.value,
-            address: hospitalAddressInput.value,
+            id: currentHospitalData?.id ?? 0,
+            name: hospitalNameInput.value.trim(),
+            address: hospitalAddressInput.value.trim(),
             specializations: specs
         };
 
+        if (!hospitalBody.name) {
+            showMainModalError('Назва лікарні не може бути порожньою.');
+            return;
+        }
+
+        if (!hospitalBody.address) {
+            showMainModalError('Адреса лікарні не може бути порожньою.');
+            return;
+        }
+
         try {
+            // --- CREATE MODE ---
             if (currentMode === 'create') {
-                // Створюємо нову лікарню
                 const newHospital = await apiFetch('/api/hospital', {
                     method: 'POST',
                     body: JSON.stringify(hospitalBody)
                 });
 
-                // Успіх! Переводимо модальне вікно в режим "Редагування"
-                currentMode = 'edit';
-                currentHospitalData = newHospital; // Зберігаємо щойно створену лікарню
-                hospitalIdInput.value = newHospital.id;
+                if (!newHospital || !newHospital.id) {
+                    throw new Error('Сервер повернув некоректні дані.');
+                }
 
+                currentMode = 'edit';
+                currentHospitalData = newHospital;
+
+                hospitalIdInput.value = newHospital.id;
                 mainModalTitle.textContent = `Керування: ${newHospital.name}`;
                 saveHospitalBtn.textContent = 'Зберегти зміни';
+
                 tabStructure.removeAttribute('disabled');
 
-                // Переключаємо на вкладку структури
-                bootstrap.Tab.getInstance(tabStructure).show();
+                // Переключення на вкладку структури
+                const tabInstance = bootstrap.Tab.getInstance(tabStructure) ||
+                    new bootstrap.Tab(tabStructure);
+                tabInstance.show();
 
-                // Рендеримо (порожню) структуру
                 await renderHospitalStructure(newHospital);
-                loadHospitals(); // Оновлюємо головну таблицю у фоні
+                loadHospitals();
 
-            } else {
-                // Оновлюємо існуючу лікарню
+                // --- EDIT MODE ---
+            } else if (currentMode === 'edit' && currentHospitalData) {
+
                 await apiFetch(`/api/hospital/${currentHospitalData.id}`, {
                     method: 'PUT',
                     body: JSON.stringify(hospitalBody)
                 });
 
-                // Оновлюємо заголовок (на випадок зміни назви)
+                // Оновлюємо локальні дані
+                Object.assign(currentHospitalData, hospitalBody);
+
                 mainModalTitle.textContent = `Керування: ${hospitalBody.name}`;
-                // Оновлюємо кешовані дані (особливо спеціалізації)
-                currentHospitalData.name = hospitalBody.name;
-                currentHospitalData.address = hospitalBody.address;
-                currentHospitalData.specializations = hospitalBody.specializations;
 
-                // Оновлюємо рендер, бо спеціалізації могли змінитись (впливає на модалки)
                 await renderHospitalStructure(currentHospitalData);
+                loadHospitals();
+                showMainModalError(null);
 
-                loadHospitals(); // Оновлюємо головну таблицю
-                showMainModalError(null); // Сховати помилку
+            } else {
+                throw new Error('Некоректний режим роботи форми.');
             }
+
         } catch (error) {
+            console.error('Hospital save error:', error);
             showMainModalError(`Не вдалося зберегти лікарню: ${error.message}`);
         }
     }
@@ -489,7 +521,7 @@
 
         const bedCount = beds?.length || 0; // Рахуємо на основі завантажених даних
         const capacityColor = bedCount > room.capacity ? 'text-danger' : (bedCount === room.capacity ? 'text-success' : 'text-warning');
-        
+
         return `
             <div class="accordion-item">
                 <h2 class="accordion-header">
@@ -610,7 +642,7 @@
         try {
             await apiFetch('/api/hospital/building', {
                 method: 'POST',
-                body: JSON.stringify({ name: number, hospitalId: parseInt(hospitalId) })
+                body: JSON.stringify({name: number, hospitalId: parseInt(hospitalId)})
             });
             addBuildingModal.hide();
             refreshStructure(); // Оновлюємо дерево
@@ -737,7 +769,7 @@
         const capacity = parseInt(document.getElementById('add-room-capacity').value, 10);
 
         try {
-            await apiFetch('/api/room', {
+            await apiFetch('/api/hospital/room', {
                 method: 'POST',
                 body: JSON.stringify({number, capacity, departmentId: parseInt(departmentId)})
             });

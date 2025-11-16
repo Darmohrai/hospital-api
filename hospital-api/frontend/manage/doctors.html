@@ -33,6 +33,7 @@
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="patients.html">Пацієнти</a></li>
                             <li><a class="dropdown-item" href="doctors.html">Лікарі</a></li>
+                            <li><a class="dropdown-item" href="support-staff.html">Доп. Персонал</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="query.html">SQL Запити</a></li>
                         </ul>
@@ -158,6 +159,19 @@
                             <select id="doctor-title" class="form-select" required>
                             </select>
                         </div>
+                    </div>
+
+                    <hr>
+                    <h6 class="text-muted">Додаткові поля для спеціальності</h6>
+
+                    <div id="dynamic-hazard-pay-fields" class="mb-3" style="display: none;">
+                        <label for="doctor-hazard-pay" class="form-label">Коефіцієнт за шкідливі умови</label>
+                        <input type="number" id="doctor-hazard-pay" class="form-control" step="0.1" min="1.0" value="1.0">
+                    </div>
+
+                    <div id="dynamic-extended-vacation-fields" class="mb-3" style="display: none;">
+                        <label for="doctor-extended-vacation" class="form-label">Додаткові дні відпустки</label>
+                        <input type="number" id="doctor-extended-vacation" class="form-control" min="0" value="0">
                     </div>
                 </div>
                 <div class="modal-footer">

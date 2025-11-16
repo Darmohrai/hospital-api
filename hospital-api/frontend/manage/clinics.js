@@ -88,8 +88,10 @@
             const clinics = await apiFetch('/api/clinic');
             clinicsTableBody.innerHTML = '';
 
+            console.log(clinics);
+
             if (clinics && clinics.length > 0) {
-                clinics.forEach(clinic => {
+                for (const clinic of clinics) {
                     const row = document.createElement('tr');
 
                     // Кнопки дій в залежності від ролі
@@ -109,15 +111,24 @@
                         `;
                     }
 
+                    let hospital;
+
+                    if (clinic.hospitalId) {
+                        hospital = await apiFetch(`/api/hospital/${clinic.hospitalId}`);
+                    }
+
+                    let hospitalName = (hospital && hospital.name) ? hospital.name : 'Не прив\'язано';
+
                     row.innerHTML = `
                         <td>${clinic.id}</td>
                         <td>${clinic.name}</td>
                         <td>${clinic.address}</td>
+                        <td>${hospitalName}</td>
                         <td>${actionsHtml || 'Недоступно'}</td>
                     `;
 
                     clinicsTableBody.appendChild(row);
-                });
+                }
             } else {
                 clinicsTableBody.innerHTML = '<tr><td colspan="4" class="text-center">Поліклініки не знайдено.</td></tr>';
             }
@@ -214,7 +225,7 @@
         try {
             if (currentMode === 'create') {
                 // Створюємо нову поліклініку (використовуємо CreateClinicDto)
-                const createDto = { name, address, hospitalId };
+                const createDto = {name, address, hospitalId};
 
                 await apiFetch('/api/clinic', {
                     method: 'POST',
@@ -224,7 +235,7 @@
             } else {
                 // Оновлюємо існуючу (використовуємо повну модель Clinic, як очікує Update)
                 const id = parseInt(clinicIdInput.value, 10);
-                const updateModel = { id, name, address, hospitalId };
+                const updateModel = {id, name, address, hospitalId};
 
                 await apiFetch(`/api/clinic/${id}`, {
                     method: 'PUT',
@@ -250,7 +261,7 @@
         }
 
         try {
-            await apiFetch(`/api/clinic/${id}`, { method: 'DELETE' });
+            await apiFetch(`/api/clinic/${id}`, {method: 'DELETE'});
             loadClinics();
         } catch (error) {
             showPageError(`Помилка видалення: ${error.message}`);
