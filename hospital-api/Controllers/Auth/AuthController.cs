@@ -45,7 +45,21 @@ public class AuthController : ControllerBase
     {
         var userExists = await _userManager.FindByNameAsync(dto.Username);
         if (userExists != null)
-            return BadRequest("Користувач з таким іменем вже існує.");
+        {
+            // ✅ ВИПРАВЛЕНО: Повертаємо масив JSON, щоб фронтенд розпізнав це як помилку поля "Username"
+            return BadRequest(new[] { 
+                new { code = "DuplicateUserName", description = "Користувач з таким іменем вже існує." } 
+            });
+        }
+        
+        var userExistsEmail = await _userManager.FindByEmailAsync(dto.Email);
+        if (userExistsEmail != null)
+        {
+            // ✅ ВИПРАВЛЕНО: Повертаємо масив JSON, щоб фронтенд розпізнав це як помилку поля "Username"
+            return BadRequest(new[] { 
+                new { code = "DuplicateUserName", description = "Користувач з таким email вже існує." } 
+            });
+        }
 
         var user = new IdentityUser
         {

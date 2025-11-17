@@ -4,6 +4,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
 
+    const registerEmail = document.getElementById('register-email');
+    const registerPassword = document.getElementById('register-password');
+    const registerUsername = document.getElementById('register-username');
+
+    // 1. Очищення помилки для ПАРОЛЯ
+    if (registerPassword) {
+        registerPassword.addEventListener('input', function() {
+            this.setCustomValidity('');
+        });
+    }
+
+    // 2. Очищення помилки для ЛОГІНА
+    if (registerUsername) {
+        registerUsername.addEventListener('input', function() {
+            this.setCustomValidity('');
+        });
+    }
+
+    // 3. ✅ ОЧИЩЕННЯ ПОМИЛКИ ДЛЯ EMAIL (Виправлення вашої проблеми)
+    if (registerEmail) {
+        registerEmail.addEventListener('input', function() {
+            // Як тільки юзер змінює пошту — прибираємо блокування
+            this.setCustomValidity('');
+        });
+    }
+    
     // --- Виконуємо тільки якщо на сторінці логін або реєстрація
     if (loginForm || registerForm) {
         if (isLoggedIn()) {
@@ -18,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initForgotPassword(); // Ініціалізація модалки Forgot Password
 });
 
+// =================== ЛОГІН ===================
 // =================== ЛОГІН ===================
 async function handleLogin(event) {
     event.preventDefault();
@@ -40,67 +67,155 @@ async function handleLogin(event) {
             showToast('Вхід успішний!', 'success');
             setTimeout(() => window.location.href = 'index.html', 500);
         } else {
-            showToast('Помилка: Не вдалося отримати токен.', 'danger');
+            // Це малоймовірний сценарій, якщо API працює правильно,
+            // але про всяк випадок обробляємо вручну
+            throw new Error('Неправильний логін або пароль');
         }
 
     } catch (error) {
         errorEl.style.display = 'block';
-        errorEl.textContent = error.message || 'Помилка логіну.';
+
+        // ПЕРЕВІРКА: Якщо сервер повернув 401 (Unauthorized)
+        if (error.message && (error.message.includes('Unauthorized') || error.message.includes('401'))) {
+            errorEl.textContent = 'Неправильний логін або пароль';
+        } else {
+            // Для всіх інших помилок показуємо оригінальне повідомлення або заглушку
+            errorEl.textContent = error.message || 'Помилка логіну.';
+        }
     }
 }
 
 // =================== РЕЄСТРАЦІЯ (ОНОВЛЕНО) ===================
+// =================== РЕЄСТРАЦІЯ (ОНОВЛЕНО З ПЕРЕВІРКОЮ ПАРОЛЯ) ===================
 async function handleRegister(event) {
     event.preventDefault();
 
-    const userName = document.getElementById('register-username').value;
-    const email = document.getElementById('register-email').value;
-    const password = document.getElementById('register-password').value;
-    const messageEl = document.getElementById('register-message'); // Елемент для виводу помилок
+    const usernameInput = document.getElementById('register-username');
+    const emailInput = document.getElementById('register-email');
+    const passwordInput = document.getElementById('register-password');
 
-    // ✅ Отримуємо значення ролі з radio-кнопок (які ви додали в register.html)
-    const roleInput = document.querySelector('input[name="role"]:checked');
-    
-    messageEl.style.display = 'none';
-    messageEl.textContent = '';
+    const roleInputs = document.querySelectorAll('input[name="role"]');
+    const selectedRole = document.querySelector('input[name="role"]:checked');
 
-    // ✅ Валідація на клієнті, що роль обрано
-    if (!roleInput) {
-        messageEl.style.display = 'block';
-        messageEl.textContent = 'Будь ласка, оберіть тип реєстрації.';
+    const messageEl = document.getElementById('register-message');
+
+    // 1. ОЧИЩЕННЯ ПОМИЛОК
+    // Скидаємо старі помилки перед новою спробою
+    usernameInput.setCustomValidity('');
+    emailInput.setCustomValidity(''); // Додано очищення для email
+    passwordInput.setCustomValidity('');
+    roleInputs.forEach(input => input.setCustomValidity(''));
+
+    if (messageEl) {
+        messageEl.style.display = 'none';
+        messageEl.textContent = '';
+    }
+
+    // 2. ВАЛІДАЦІЯ USERNAME (Тільки латиниця)
+    const usernameRegex = /^[a-zA-Z0-9]+$/;
+    if (!usernameRegex.test(usernameInput.value)) {
+        usernameInput.setCustomValidity('Логін може містити тільки англійські літери та цифри.');
+        usernameInput.reportValidity();
         return;
     }
-    const role = roleInput.value;
+
+    // 3. ВАЛІДАЦІЯ ПАРОЛЯ
+    const password = passwordInput.value;
+    let passwordError = '';
+
+    if (password.length < 6) {
+        passwordError = 'Пароль має містити мінімум 6 символів.';
+    } else if (!/[a-z]/.test(password)) {
+        passwordError = 'Пароль має містити хоча б одну малу літеру (a-z).';
+    } else if (!/[A-Z]/.test(password)) {
+        passwordError = 'Пароль має містити хоча б одну велику літеру (A-Z).';
+    } else if (!/[^a-zA-Z0-9]/.test(password)) {
+        passwordError = 'Пароль має містити хоча б один спецсимвол (!, @, # тощо).';
+    }
+
+    if (passwordError) {
+        passwordInput.setCustomValidity(passwordError);
+        passwordInput.reportValidity();
+        return;
+    }
+
+    // 4. ВАЛІДАЦІЯ РОЛІ
+    if (!selectedRole) {
+        roleInputs[0].setCustomValidity('Будь ласка, оберіть тип реєстрації');
+        roleInputs[0].reportValidity();
+        return;
+    }
+
+    const userName = usernameInput.value;
+    const email = emailInput.value;
+    const role = selectedRole.value;
 
     try {
-        // ✅ Змінено URL на /api/auth/register
-        // ✅ Додано 'role' в тіло запиту
         const data = await apiFetch('/api/auth/register-guest', {
             method: 'POST',
             body: JSON.stringify({
                 username: userName,
                 email,
                 password,
-                role: role // ✅ Нове поле
+                role: role
             }),
         });
 
-        // ✅ Використовуємо динамічне повідомлення з бекенду
         showToast(data.message || 'Реєстрація успішна!', 'success');
         event.target.reset();
 
-        // ✅ Перенаправляємо на сторінку логіну
         setTimeout(() => {
             window.location.href = 'login.html';
-        }, 1500); // 1.5с, щоб користувач встиг прочитати toast
+        }, 1500);
 
     } catch (error) {
-        // ✅ Відображаємо помилку в формі (аналогічно до handleLogin)
-        messageEl.style.display = 'block';
-        messageEl.textContent = error.message || 'Помилка реєстрації.';
+        console.error(error);
+
+        let handled = false; // Прапорець: чи обробили ми помилку специфічно?
+
+        // --- ОБРОБКА СПЕЦИФІЧНИХ ПОМИЛОК ВІД СЕРВЕРА ---
+        if (Array.isArray(error)) {
+
+            // 1. Перевірка на дублікат Email
+            const emailErr = error.find(e => e.code === 'DuplicateEmail' || e.description.toLowerCase().includes('email'));
+            if (emailErr) {
+                emailInput.setCustomValidity('Цей email вже зареєстрований. Спробуйте увійти.');
+                emailInput.reportValidity(); // Показує хмаринку на полі Email
+                handled = true;
+            }
+
+            // 2. Перевірка на дублікат Логіну (Username)
+            // Робимо це тільки якщо з поштою все ок
+            if (!handled) {
+                const userErr = error.find(e => e.code === 'DuplicateUserName' || e.description.toLowerCase().includes('user'));
+                if (userErr) {
+                    usernameInput.setCustomValidity('Це ім\'я користувача вже зайняте.');
+                    usernameInput.reportValidity(); // Показує хмаринку на полі Username
+                    handled = true;
+                }
+            }
+        }
+
+        // --- ЯКЩО ЦЕ ІНША ПОМИЛКА ---
+        // Якщо ми не знайшли специфічної помилки поля, показуємо загальне повідомлення
+        if (!handled) {
+            let errorText = 'Помилка реєстрації.';
+
+            if (Array.isArray(error)) {
+                errorText = error.map(e => e.description).join('\n');
+            } else if (error.message) {
+                errorText = error.message;
+            }
+
+            if (messageEl) {
+                messageEl.style.display = 'block';
+                messageEl.textContent = errorText;
+            } else {
+                showToast(errorText, 'danger');
+            }
+        }
     }
 }
-
 
 // =================== ФОРГОТ ПАРОЛЬ ===================
 function initForgotPassword() {

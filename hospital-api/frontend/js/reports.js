@@ -9,11 +9,11 @@ const specialties = [
 ];
 
 const academicDegrees = {
-    0: "Немає", 1: "Кандидат наук", 2: "Доктор наук"
+    "None": "Немає", "Candidate": "Кандидат наук", "Doctor": "Доктор наук"
 };
 
 const academicTitles = {
-    0: "Немає", 1: "Доцент", 2: "Професор"
+    "None": "Немає", "AssociateProfessor": "Доцент", "Professor": "Професор"
 };
 
 const supportRoles = {
@@ -301,6 +301,7 @@ function renderDoctorReport(data, container) {
     if (data.doctors && data.doctors.length > 0) {
         html += `<table class="table table-sm"><thead><tr><th>ПІБ</th><th>Спец.</th><th>Стаж</th><th>Звання</th></tr></thead><tbody>`;
         data.doctors.forEach(d => {
+            console.log(d)
             const degree = academicDegrees[d.academicDegree] || '-';
             const title = academicTitles[d.academicTitle] || '-';
             html += `<tr>

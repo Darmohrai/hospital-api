@@ -46,12 +46,16 @@ async function apiFetch(endpoint, options = {}) {
                 detail: response.statusText
             }));
 
+            if (Array.isArray(errorData)) {
+                throw errorData;
+            }
+
             // Формуємо зрозуміле повідомлення про помилку
             let errorMessage = errorData.title || 'Помилка API';
-            if(errorData.detail) errorMessage += `: ${errorData.detail}`;
+            if (errorData.detail) errorMessage += `: ${errorData.detail}`;
 
             // Обробка помилок валідації (якщо вони є)
-            if(errorData.errors) {
+            if (errorData.errors) {
                 const validationErrors = Object.values(errorData.errors).flat().join(', ');
                 errorMessage += `: ${validationErrors}`;
             }
@@ -70,7 +74,9 @@ async function apiFetch(endpoint, options = {}) {
         return response.json();
 
     } catch (error) {
-        console.error('Fetch Error:', error.message);
+        if (!Array.isArray(error)) {
+            console.error('Fetch Error:', error.message || error);
+        }
         // "Прокидаємо" помилку далі, щоб її можна було зловити в UI
         throw error;
     }

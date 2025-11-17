@@ -34,7 +34,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 // --- 2. Додаємо Identity ---
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+// --- 2. Додаємо Identity з налаштуваннями ---
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+    {
+        // ✅ ВМИКАЄМО ПЕРЕВІРКУ УНІКАЛЬНОСТІ EMAIL
+        options.User.RequireUniqueEmail = true; 
+    })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
