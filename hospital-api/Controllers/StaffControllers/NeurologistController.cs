@@ -41,10 +41,10 @@ public class NeurologistController : ControllerBase
 
     // Додати нового невропатолога
     [Authorize(Roles = "Operator, Admin")]
-    [HttpPost("{hospitalId}")]
-    public async Task<IActionResult> Create(int hospitalId, [FromBody] CreateNeurologistDto neurologistDto)
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateNeurologistDto neurologistDto)
     {
-        var result = await _neurologistService.AddNeurologistToHospitalAsync(hospitalId, neurologistDto);
+        var result = await _neurologistService.AddNeurologistToHospitalAsync(null, neurologistDto);
 
         if (!result.IsSuccess)
         {
@@ -91,5 +91,14 @@ public class NeurologistController : ControllerBase
     {
         var summary = await _neurologistService.GetNeurologistProfileSummaryAsync(id);
         return Ok(summary);
+    }
+
+    [Authorize(Roles = "Authorized, Operator, Admin")]
+    [HttpGet("vacation/{neurologistId}")]
+    public async Task<IActionResult> GetExtendVacationDays(int neurologistId)
+    {
+        var days = await _neurologistService.GetNeurologistExtendedVacationDaysAsync(neurologistId);
+
+        return Ok(days);
     }
 }

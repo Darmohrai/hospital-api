@@ -27,7 +27,8 @@
                             даними</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="hospitals.html">Лікарні</a></li>
-                            <li><a class="dropdown-item active" aria-current="page" href="clinics.html">Поліклініки</a></li>
+                            <li><a class="dropdown-item active" aria-current="page" href="clinics.html">Поліклініки</a>
+                            </li>
                             <li><a class="dropdown-item" href="laboratories.html">Лабораторії</a></li>
                             <li>
                                 <hr class="dropdown-divider">
@@ -35,6 +36,10 @@
                             <li><a class="dropdown-item" href="patients.html">Пацієнти</a></li>
                             <li><a class="dropdown-item" href="doctors.html">Лікарі</a></li>
                             <li><a class="dropdown-item" href="support-staff.html">Доп. Персонал</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="tracking.html">Відстеження (Записи/Операції)</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -91,41 +96,42 @@
 </main>
 
 <div class="modal fade" id="clinic-manage-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-lg"> <div class="modal-content">
-        <form id="clinic-form">
-            <div class="modal-header">
-                <h5 class="modal-title" id="clinic-modal-title">Завантаження...</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="alert alert-danger" id="modal-error" style="display: none;"></div>
-
-                <input type="hidden" id="clinic-id">
-
-                <div class="mb-3">
-                    <label for="clinic-name" class="form-label">Назва поліклініки:</label>
-                    <input type="text" class="form-control" id="clinic-name" required>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="clinic-form">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="clinic-modal-title">Завантаження...</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" id="modal-error" style="display: none;"></div>
 
-                <div class="mb-3">
-                    <label for="clinic-address" class="form-label">Адреса:</label>
-                    <input type="text" class="form-control" id="clinic-address" required>
+                    <input type="hidden" id="clinic-id">
+
+                    <div class="mb-3">
+                        <label for="clinic-name" class="form-label">Назва поліклініки:</label>
+                        <input type="text" class="form-control" id="clinic-name" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="clinic-address" class="form-label">Адреса:</label>
+                        <input type="text" class="form-control" id="clinic-address" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="clinic-hospital-id" class="form-label">Прив'язана лікарня (необов'язково):</label>
+                        <select class="form-select" id="clinic-hospital-id">
+                            <option value="">Не прив'язано</option>
+                        </select>
+                    </div>
+
                 </div>
-
-                <div class="mb-3">
-                    <label for="clinic-hospital-id" class="form-label">Прив'язана лікарня (необов'язково):</label>
-                    <select class="form-select" id="clinic-hospital-id">
-                        <option value="">Не прив'язано</option>
-                    </select>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                    <button type="submit" class="btn btn-primary" id="save-clinic-btn">Зберегти</button>
                 </div>
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
-                <button type="submit" class="btn btn-primary" id="save-clinic-btn">Зберегти</button>
-            </div>
-        </form>
-    </div>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -134,5 +140,6 @@
 <script src="../js/api.js"></script>
 <script src="../js/auth.js"></script>
 <script src="../js/main.js"></script>
-<script src="clinics.js"></script> </body>
+<script src="clinics.js"></script>
+</body>
 </html>

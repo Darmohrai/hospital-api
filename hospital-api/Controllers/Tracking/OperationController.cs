@@ -1,9 +1,10 @@
-﻿using hospital_api.Models.OperationsAggregate;
+﻿using hospital_api.DTOs.Tracking;
+using hospital_api.Models.OperationsAggregate;
 using hospital_api.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace hospital_api.Controllers;
+namespace hospital_api.Controllers.Tracking;
 
 [Authorize]
 [ApiController]
@@ -36,27 +37,76 @@ public class OperationController : ControllerBase
         return Ok(operation);
     }
 
+    // ✅ ОНОВЛЕНО: Використання CreateOperationDto
     [Authorize(Roles = "Operator, Admin")]
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Operation operation)
+    public async Task<IActionResult> Create([FromBody] CreateOperationDto dto)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        // Мапінг DTO на модель
+        var operation = new Operation
+        {
+            Date = dto.Date,
+            Type = dto.Type,
+            IsFatal = dto.IsFatal,
+            PatientId = dto.PatientId,
+            DoctorId = dto.DoctorId,
+            HospitalId = dto.HospitalId,
+            ClinicId = dto.ClinicId
+        };
+
         await _operationService.AddAsync(operation);
+        // Повертаємо повний об'єкт операції, який був доданий (включаючи Id)
         return CreatedAtAction(nameof(Get), new { id = operation.Id }, operation);
     }
 
+    // ✅ ОНОВЛЕНО: Використання CreateOperationDto
     [Authorize(Roles = "Operator, Admin")]
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] Operation operation)
+    public async Task<IActionResult> Update(int id, [FromBody] CreateOperationDto dto)
     {
-        if (id != operation.Id) return BadRequest();
-        await _operationService.UpdateAsync(operation);
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        // 1. Отримуємо існуючу операцію
+        var existingOperation = await _operationService.GetByIdAsync(id);
+        if (existingOperation == null)
+        {
+            return NotFound();
+        }
+
+        // 2. Оновлюємо поля з DTO
+        existingOperation.Date = dto.Date;
+        existingOperation.Type = dto.Type;
+        existingOperation.IsFatal = dto.IsFatal;
+        existingOperation.PatientId = dto.PatientId;
+        existingOperation.DoctorId = dto.DoctorId;
+        existingOperation.HospitalId = dto.HospitalId;
+        existingOperation.ClinicId = dto.ClinicId;
+
+        // 3. Зберігаємо оновлену модель
+        await _operationService.UpdateAsync(existingOperation);
         return NoContent();
     }
+
 
     [Authorize(Roles = "Operator, Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
+        // Перевіряємо, чи існує запис, перш ніж видаляти
+        var existingOperation = await _operationService.GetByIdAsync(id);
+        if (existingOperation == null)
+        {
+            return NotFound();
+        }
+
         await _operationService.DeleteAsync(id);
         return NoContent();
     }

@@ -12,9 +12,10 @@
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="../index.html">МедСистема</a> <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+            <a class="navbar-brand" href="../index.html">МедСистема</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
             <div class="collapse navbar-collapse" id="navbarContent">
 
@@ -30,11 +31,19 @@
                             <li><a class="dropdown-item" href="hospitals.html">Лікарні</a></li>
                             <li><a class="dropdown-item" href="clinics.html">Поліклініки</a></li>
                             <li><a class="dropdown-item" href="laboratories.html">Лабораторії</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li><a class="dropdown-item" href="patients.html">Пацієнти</a></li>
                             <li><a class="dropdown-item" href="doctors.html">Лікарі</a></li>
                             <li><a class="dropdown-item" href="support-staff.html">Доп. Персонал</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="tracking.html">Відстеження (Записи/Операції)</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li><a class="dropdown-item" href="query.html">SQL Запити</a></li>
                         </ul>
                     </li>
@@ -62,7 +71,8 @@
 <main class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1>Керування лікарями</h1>
-        <button class="btn btn-success" id="create-doctor-btn" style="display:none;" data-bs-toggle="modal" data-bs-target="#doctor-modal">
+        <button class="btn btn-success" id="create-doctor-btn" style="display:none;" data-bs-toggle="modal"
+                data-bs-target="#doctor-modal">
             + Створити лікаря
         </button>
     </div>
@@ -108,7 +118,9 @@
                 <th>Ступінь</th>
                 <th>Звання</th>
                 <th>Стаж (р.)</th>
-                <th>Місця роботи</th> <th id="actions-header" style="display:none;">Дії</th>
+                <th>Місця роботи</th>
+                <th>Додаткова інф.</th>
+                <th id="actions-header" style="display:none;">Дії</th>
             </tr>
             </thead>
             <tbody id="doctors-table-body">
@@ -132,7 +144,8 @@
                     <input type="hidden" id="doctor-id">
 
                     <div class="mb-3">
-                        <label for="doctor-specialty" class="form-label">Спеціальність <span class="text-danger">*</span></label>
+                        <label for="doctor-specialty" class="form-label">Спеціальність <span
+                                class="text-danger">*</span></label>
                         <select id="doctor-specialty" class="form-select" required>
                             <option value="">Оберіть спеціальність...</option>
                         </select>
@@ -140,17 +153,20 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="doctor-fullname" class="form-label">Повне ім'я (ПІБ) <span class="text-danger">*</span></label>
+                        <label for="doctor-fullname" class="form-label">Повне ім'я (ПІБ) <span
+                                class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="doctor-fullname" required>
                     </div>
 
                     <div class="row">
                         <div class="col-md-4 mb-3">
-                            <label for="doctor-experience" class="form-label">Стаж (років) <span class="text-danger">*</span></label>
+                            <label for="doctor-experience" class="form-label">Стаж (років) <span
+                                    class="text-danger">*</span></label>
                             <input type="number" class="form-control" id="doctor-experience" min="0" value="0" required>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label for="doctor-degree" class="form-label">Науковий ступінь <span class="text-danger">*</span></label>
+                            <label for="doctor-degree" class="form-label">Науковий ступінь <span
+                                    class="text-danger">*</span></label>
                             <select id="doctor-degree" class="form-select" required>
                             </select>
                         </div>
@@ -166,7 +182,8 @@
 
                     <div id="dynamic-hazard-pay-fields" class="mb-3" style="display: none;">
                         <label for="doctor-hazard-pay" class="form-label">Коефіцієнт за шкідливі умови</label>
-                        <input type="number" id="doctor-hazard-pay" class="form-control" step="0.1" min="1.0" value="1.0">
+                        <input type="number" id="doctor-hazard-pay" class="form-control" step="0.1" min="1.0"
+                               value="1.0">
                     </div>
 
                     <div id="dynamic-extended-vacation-fields" class="mb-3" style="display: none;">
@@ -203,7 +220,8 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="employment-type" class="form-label">Тип закладу <span class="text-danger">*</span></label>
+                        <label for="employment-type" class="form-label">Тип закладу <span
+                                class="text-danger">*</span></label>
                         <select id="employment-type" class="form-select" required>
                             <option value="">Оберіть тип...</option>
                             <option value="hospital">Лікарня</option>
@@ -212,7 +230,8 @@
                     </div>
 
                     <div class="mb-3" id="institution-select-container" style="display:none;">
-                        <label for="employment-institution-id" class="form-label">Заклад <span class="text-danger">*</span></label>
+                        <label for="employment-institution-id" class="form-label">Заклад <span
+                                class="text-danger">*</span></label>
                         <select id="employment-institution-id" class="form-select" required>
                         </select>
                     </div>

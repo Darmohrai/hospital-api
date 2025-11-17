@@ -23,7 +23,5 @@ public class CreateDentistDto
 
     [Range(0, int.MaxValue)]
     public int FatalOperationCount { get; set; }
-
-    [Range(0, float.MaxValue)]
-    public float HazardPayCoefficient { get; set; }
+    
 }

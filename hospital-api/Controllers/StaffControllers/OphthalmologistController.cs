@@ -125,4 +125,13 @@ public class OphthalmologistController : ControllerBase
 
         return Ok(summary);
     }
+    
+    [Authorize(Roles = "Authorized, Operator, Admin")]
+    [HttpGet("vacation/{ophthalmologistId}")]
+    public async Task<IActionResult> GetExtendVacationDays(int ophthalmologistId)
+    {
+        var days = await _ophthalmologistService.GetOphthalmologistExtendedVacationDaysAsync(ophthalmologistId);
+
+        return Ok(days);
+    }
 }

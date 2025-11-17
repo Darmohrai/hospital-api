@@ -43,17 +43,9 @@ public class NeurologistService : INeurologistService
     }
 
     // ✅ Повністю переписана логіка працевлаштування
-    public async Task<ServiceResponse<Neurologist>> AddNeurologistToHospitalAsync(int hospitalId,
+    public async Task<ServiceResponse<Neurologist>> AddNeurologistToHospitalAsync(int? hospitalId,
         CreateNeurologistDto dto)
     {
-        var hospital = await _hospitalRepository.GetByIdAsync(hospitalId);
-        if (hospital == null)
-            return ServiceResponse<Neurologist>.Fail($"Hospital with ID {hospitalId} not found.");
-
-        if (!hospital.Specializations.Contains(HospitalSpecialization.Neurologist))
-            return ServiceResponse<Neurologist>.Fail(
-                "Cannot add a neurologist to a hospital without a neurology specialization.");
-
         // 1. Створюємо об'єкт Neurologist
         var neurologist = new Neurologist
         {
@@ -67,14 +59,6 @@ public class NeurologistService : INeurologistService
 
         // 2. Зберігаємо його як звичайного співробітника
         await _staffRepository.AddAsync(neurologist);
-
-        // 3. Створюємо запис про працевлаштування
-        var employment = new Employment
-        {
-            StaffId = neurologist.Id,
-            HospitalId = hospitalId
-        };
-        await _employmentRepository.AddAsync(employment);
 
         return ServiceResponse<Neurologist>.Success(neurologist);
     }
@@ -134,4 +118,10 @@ public class NeurologistService : INeurologistService
 
         return summaryBuilder.ToString();
     }
+
+    public Task<int> GetNeurologistExtendedVacationDaysAsync(int neurologistId)
+    {
+        return _staffRepository.GetExtendedVacationDaysForDoctor(neurologistId);
+    }
+
 }

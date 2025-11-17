@@ -13,4 +13,7 @@ public interface IOphthalmologistService
     Task<IEnumerable<Ophthalmologist>> GetByExtendedVacationDaysAsync(int minDays);
         
     Task<string> GetProfileSummaryAsync(int ophthalmologistId);
+    
+    Task<int> GetOphthalmologistExtendedVacationDaysAsync(int ophthalmologistId);
+
 }

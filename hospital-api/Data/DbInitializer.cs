@@ -133,7 +133,7 @@ public static class DbInitializer
 
         var surgeon1 = new Surgeon { FullName = "Петренко Сергій Іванович", WorkExperienceYears = 15, Specialty = "Surgeon", AcademicDegree = AcademicDegree.Candidate, AcademicTitle = AcademicTitle.AssociateProfessor };
         var cardiologist1 = new Cardiologist { FullName = "Іванова Марія Олегівна", WorkExperienceYears = 10, Specialty = "Cardiologist", AcademicDegree = AcademicDegree.None, AcademicTitle = AcademicTitle.None };
-        var dentist1 = new Dentist { FullName = "Ковальчук Андрій Петрович", WorkExperienceYears = 5, Specialty = "Dentist", AcademicDegree = AcademicDegree.None, AcademicTitle = AcademicTitle.None, HazardPayCoefficient = 1.15f };
+        var dentist1 = new Dentist { FullName = "Ковальчук Андрій Петрович", WorkExperienceYears = 5, Specialty = "Dentist", AcademicDegree = AcademicDegree.None, AcademicTitle = AcademicTitle.None };
         var support1 = new SupportStaff { FullName = "Васильєва Олена Сергіївна", WorkExperienceYears = 3, Role = SupportRole.Nurse };
         var support2 = new SupportStaff { FullName = "Гончарук Віктор Львович", WorkExperienceYears = 1, Role = SupportRole.Orderly };
         context.Staffs.AddRange(surgeon1, cardiologist1, dentist1, support1, support2);

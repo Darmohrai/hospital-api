@@ -15,4 +15,8 @@ public interface IRadiologistService
     Task<IEnumerable<Radiologist>> GetByHazardPayAndVacationAsync(float minCoefficient, int minDays);
 
     Task<string> GetProfileSummaryAsync(int radiologistId);
+
+    Task<int> GetRadiologistExtendedVacationDaysAsync(int radiologistId);
+
+    Task<float> GetRadiologistHazardPayCoefficientAsync(int radiologistId);
 }

@@ -11,7 +11,5 @@ public interface IDentistService
     Task<ServiceResponse<bool>> DeleteAsync(int id);
         
     Task<IEnumerable<Dentist>> GetByMinimumOperationCountAsync(int minOperationCount);
-    Task<IEnumerable<Dentist>> GetByHazardPayCoefficientAsync(float minCoefficient);
-        
     Task<string> GetSummaryAsync(int dentistId);
 }

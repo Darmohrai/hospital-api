@@ -30,11 +30,6 @@ public class DentistService : IDentistService
 
     public async Task<ServiceResponse<Dentist>> CreateAsync(Dentist dentist)
     {
-        if (dentist.HazardPayCoefficient < 0)
-        {
-            return ServiceResponse<Dentist>.Fail("Hazard pay coefficient cannot be negative.");
-        }
-
         dentist.Specialty = "Dentist"; // Встановлюємо спеціальність
         await _staffRepository.AddAsync(dentist);
         return ServiceResponse<Dentist>.Success(dentist);
@@ -72,14 +67,6 @@ public class DentistService : IDentistService
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Dentist>> GetByHazardPayCoefficientAsync(float minCoefficient)
-    {
-        return await _staffRepository.GetAll()
-            .OfType<Dentist>()
-            .Where(d => d.HazardPayCoefficient >= minCoefficient)
-            .ToListAsync();
-    }
-
     public async Task<string> GetSummaryAsync(int dentistId)
     {
         var dentist = await GetByIdAsync(dentistId);
@@ -93,7 +80,6 @@ public class DentistService : IDentistService
         summaryBuilder.AppendLine($"Спеціальність: {dentist.Specialty}");
         summaryBuilder.AppendLine($"Кількість операцій: {dentist.OperationCount}");
         summaryBuilder.AppendLine($"Летальних операцій: {dentist.FatalOperationCount}");
-        summaryBuilder.AppendLine($"Коефіцієнт шкідливості: {dentist.HazardPayCoefficient}");
 
         var employments = await _employmentRepository.GetEmploymentsByStaffIdAsync(dentistId);
         summaryBuilder.AppendLine("Місця роботи:");

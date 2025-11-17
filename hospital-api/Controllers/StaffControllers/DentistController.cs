@@ -56,7 +56,6 @@ namespace hospital_api.Controllers.StaffControllers
                 WorkExperienceYears = dto.WorkExperienceYears,
                 AcademicDegree = dto.AcademicDegree,
                 AcademicTitle = dto.AcademicTitle,
-                HazardPayCoefficient = dto.HazardPayCoefficient
             };
 
             var result = await _dentistService.CreateAsync(dentist);
@@ -108,17 +107,6 @@ namespace hospital_api.Controllers.StaffControllers
         public async Task<IActionResult> GetByMinimumOperationCount([FromQuery] int minOperationCount)
         {
             var dentists = await _dentistService.GetByMinimumOperationCountAsync(minOperationCount);
-            return Ok(dentists);
-        }
-
-        /// <summary>
-        /// Отримує стоматологів з коефіцієнтом шкідливості не менше вказаного.
-        /// </summary>
-        [Authorize(Roles = "Authorized, Operator, Admin")]
-        [HttpGet("high-hazard-pay")]
-        public async Task<IActionResult> GetByHazardPay([FromQuery] float minCoefficient)
-        {
-            var dentists = await _dentistService.GetByHazardPayCoefficientAsync(minCoefficient);
             return Ok(dentists);
         }
 

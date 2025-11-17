@@ -18,4 +18,8 @@ public interface IStaffRepository : IRepository<Staff>
     /// Отримує співробітників типу SupportStaff, які працюють у вказаній лікарні.
     /// </summary>
     Task<IEnumerable<SupportStaff>> GetSupportStaffByHospitalAsync(int hospitalId, SupportRole? role = null);
+
+    Task<int> GetExtendedVacationDaysForDoctor(int doctorId);
+
+    Task<float> GetHazardPayCoefficientForDoctor(int doctorId);
 }

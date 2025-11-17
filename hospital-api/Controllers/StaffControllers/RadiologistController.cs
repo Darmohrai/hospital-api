@@ -148,4 +148,22 @@ public class RadiologistController : ControllerBase
 
         return Ok(summary);
     }
+    
+    [Authorize(Roles = "Authorized, Operator, Admin")]
+    [HttpGet("vacation/{radiologistId}")]
+    public async Task<IActionResult> GetExtendVacationDays(int radiologistId)
+    {
+        var days = await _radiologistService.GetRadiologistExtendedVacationDaysAsync(radiologistId);
+
+        return Ok(days);
+    }
+    
+    [Authorize(Roles = "Authorized, Operator, Admin")]
+    [HttpGet("hazard/{radiologistId}")]
+    public async Task<IActionResult> GetRadiologistHazardPayCoefficient(int radiologistId)
+    {
+        var days = await _radiologistService.GetRadiologistHazardPayCoefficientAsync(radiologistId);
+
+        return Ok(days);
+    }
 }

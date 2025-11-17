@@ -123,4 +123,14 @@ public class RadiologistService : IRadiologistService
 
         return summaryBuilder.ToString();
     }
+    
+    public Task<int> GetRadiologistExtendedVacationDaysAsync(int radiologistId)
+    {
+        return _staffRepository.GetExtendedVacationDaysForDoctor(radiologistId);
+    }
+    
+    public Task<float> GetRadiologistHazardPayCoefficientAsync(int radiologistId)
+    {
+        return _staffRepository.GetHazardPayCoefficientForDoctor(radiologistId);
+    }
 }

@@ -106,4 +106,9 @@ public class OphthalmologistService : IOphthalmologistService
 
         return summaryBuilder.ToString();
     }
+
+    public Task<int> GetOphthalmologistExtendedVacationDaysAsync(int ophthalmologistId)
+    {
+        return _staffRepository.GetExtendedVacationDaysForDoctor(ophthalmologistId);
+    }
 }

@@ -12,9 +12,10 @@
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="../index.html">МедСистема</a> <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+            <a class="navbar-brand" href="../index.html">МедСистема</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
             <div class="collapse navbar-collapse" id="navbarContent">
 
@@ -30,11 +31,19 @@
                             <li><a class="dropdown-item" href="hospitals.html">Лікарні</a></li>
                             <li><a class="dropdown-item" href="clinics.html">Поліклініки</a></li>
                             <li><a class="dropdown-item" href="laboratories.html">Лабораторії</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li><a class="dropdown-item" href="patients.html">Пацієнти</a></li>
                             <li><a class="dropdown-item" href="doctors.html">Лікарі</a></li>
                             <li><a class="dropdown-item" href="support-staff.html">Доп. Персонал</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="tracking.html">Відстеження (Записи/Операції)</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li><a class="dropdown-item" href="query.html">SQL Запити</a></li>
                         </ul>
                     </li>
@@ -61,7 +70,8 @@
 <main class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1>Керування пацієнтами</h1>
-        <button class="btn btn-success" id="create-patient-btn" style="display:none;" data-bs-toggle="modal" data-bs-target="#patient-modal">
+        <button class="btn btn-success" id="create-patient-btn" style="display:none;" data-bs-toggle="modal"
+                data-bs-target="#patient-modal">
             + Створити пацієнта
         </button>
     </div>
@@ -79,7 +89,7 @@
                 <th>Температура</th>
                 <th>Прив'язана клініка</th>
                 <th>Прив'язана лікарня</th>
-                <th>Призначений лікар</th> 
+                <th>Призначений лікар</th>
                 <th>Ліжко (Госпіталь)</th>
                 <th id="actions-header" style="display:none;">Дії</th>
             </tr>
@@ -105,7 +115,8 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="patient-clinic" class="form-label">Прив'язана поліклініка <span class="text-danger">*</span></label>
+                            <label for="patient-clinic" class="form-label">Прив'язана поліклініка <span
+                                    class="text-danger">*</span></label>
                             <select id="patient-clinic" class="form-select" required>
                                 <option value="">Завантаження клінік...</option>
                             </select>
@@ -120,11 +131,13 @@
 
                     <hr>
                     <div class="mb-3">
-                        <label for="patient-fullname" class="form-label">Повне ім'я (ПІБ) <span class="text-danger">*</span></label>
+                        <label for="patient-fullname" class="form-label">Повне ім'я (ПІБ) <span
+                                class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="patient-fullname" required>
                     </div>
                     <div class="mb-3">
-                        <label for="patient-dob" class="form-label">Дата народження <span class="text-danger">*</span></label>
+                        <label for="patient-dob" class="form-label">Дата народження <span
+                                class="text-danger">*</span></label>
                         <input type="date" class="form-control" id="patient-dob" required>
                     </div>
                     <hr>
@@ -163,7 +176,8 @@
                         <input type="text" class="form-control" id="assign-bed-patient-name" disabled>
                     </div>
                     <div class="mb-3">
-                        <label for="assign-bed-select" class="form-label">Вільні ліжка <span class="text-danger">*</span></label>
+                        <label for="assign-bed-select" class="form-label">Вільні ліжка <span
+                                class="text-danger">*</span></label>
                         <select id="assign-bed-select" class="form-select" required>
                             <option value="">Завантаження ліжок...</option>
                         </select>
@@ -197,7 +211,8 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="assign-doctor-select" class="form-label">Лікарі <span class="text-danger">*</span></label>
+                        <label for="assign-doctor-select" class="form-label">Лікарі <span
+                                class="text-danger">*</span></label>
                         <select id="assign-doctor-select" class="form-select" required>
                             <option value="">Завантаження лікарів...</option>
                         </select>
