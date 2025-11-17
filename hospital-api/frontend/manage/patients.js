@@ -3,76 +3,109 @@ let currentUserRole = null;
 let patientModal = null; // Екземпляр Bootstrap Modal для Пацієнта
 let allClinics = []; // Кеш для списку клінік
 let bedModal = null; // Екземпляр Bootstrap Modal для Ліжок
-let doctorModal = null; // Модальне вікно для Лікарів
-let allDoctors = []; // Кеш для списку лікарів (з їх employments)
-let allPatients = []; // ✅ НОВЕ: Кеш для списку пацієнтів
+let doctorModal = null; // Модальне вікно для керування лікарями
+let allDoctors = []; // Кеш для списку лікарів
+let allPatients = []; // Кеш для списку пацієнтів
 let allHospitals = [];
 
-/**
- * Головна функція, що виконується при завантаженні сторінки
- */
+// Enum спеціалізацій (C# HospitalSpecialization)
+const hospitalSpecializations = {
+    0: "Хірург",
+    1: "Невролог",
+    2: "Окуліст",
+    3: "Стоматолог",
+    4: "Рентгенолог",
+    5: "Гінеколог",
+    6: "Кардіолог"
+};
+
+const specIdToKey = {
+    0: "Surgeon",
+    1: "Neurologist",
+    2: "Ophthalmologist",
+    3: "Dentist",
+    4: "Radiologist",
+    5: "Gynecologist",
+    6: "Cardiologist"
+};
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Ініціалізуємо ВСІ модальні вікна
     patientModal = new bootstrap.Modal(document.getElementById('patient-modal'));
     bedModal = new bootstrap.Modal(document.getElementById('assign-bed-modal'));
     doctorModal = new bootstrap.Modal(document.getElementById('assign-doctor-modal'));
 
     setupUIBasedOnRole();
+
+    // 1. Додаємо поле "Спеціалізація" (тільки для фільтрації лікарень)
+    injectSpecializationField();
+
     loadInitialData();
 
-    // Налаштування обробників подій
+    // Обробники подій
     document.getElementById('create-patient-btn').addEventListener('click', openCreateModal);
     document.getElementById('patient-form').addEventListener('submit', handleFormSubmit);
     document.getElementById('patients-table-body').addEventListener('click', handleTableClick);
     document.getElementById('assign-bed-form').addEventListener('submit', handleBedAssignSubmit);
-    document.getElementById('assign-doctor-form').addEventListener('submit', handleDoctorAssignSubmit);
+
+    // Каскадні слухачі
+    document.getElementById('patient-clinic').addEventListener('change', updateHospitalOptions);
+    document.getElementById('referral-specialization').addEventListener('change', updateHospitalOptions);
 });
 
 /**
- * Перевіряє роль користувача та налаштовує UI
+ * Додає поле Спеціалізації у модальне вікно створення/редагування
  */
+function injectSpecializationField() {
+    const hospitalSelect = document.getElementById('patient-hospital');
+    const container = hospitalSelect.closest('.mb-3');
+
+    const specDiv = document.createElement('div');
+    specDiv.className = 'mb-3';
+    specDiv.innerHTML = `
+        <label for="referral-specialization" class="form-label text-primary">Необхідна спеціалізація (для направлення)</label>
+        <select id="referral-specialization" class="form-select">
+            <option value="">-- Без фільтру / Амбулаторно --</option>
+        </select>
+        <small class="text-muted" style="font-size: 0.8em;">Оберіть, щоб знайти відповідну лікарню.</small>
+    `;
+    container.parentNode.insertBefore(specDiv, container);
+
+    const specSelect = document.getElementById('referral-specialization');
+    for (const [key, value] of Object.entries(hospitalSpecializations)) {
+        specSelect.innerHTML += `<option value="${key}">${value}</option>`;
+    }
+}
+
 function setupUIBasedOnRole() {
     currentUserRole = getUserRole();
-
     if (currentUserRole === 'Admin' || currentUserRole === 'Operator') {
         document.getElementById('create-patient-btn').style.display = 'block';
         document.getElementById('actions-header').style.display = 'table-cell';
     }
 }
 
-/**
- * Завантажує клініки, лікарів, а потім пацієнтів.
- */
 async function loadInitialData() {
     try {
-        // Паралельно завантажуємо клініки та лікарів
         const [clinics, doctors, hospitals] = await Promise.all([
             apiFetch('/api/clinic'),
-            apiFetch('/api/staff/doctors'), // Цей запит має повертати лікарів з їх .Employments
+            apiFetch('/api/staff/doctors'),
             apiFetch('/api/hospital')
         ]);
 
-        // Обробка клінік
         allClinics = clinics;
+        allHospitals = hospitals;
+        allDoctors = doctors;
+
+        // Заповнення списку клінік
         const clinicSelect = document.getElementById('patient-clinic');
         clinicSelect.innerHTML = '<option value="">Оберіть поліклініку...</option>';
         allClinics.forEach(clinic => {
             clinicSelect.innerHTML += `<option value="${clinic.id}">${clinic.name}</option>`;
         });
 
+        // Ініціалізація лікарень
+        updateHospitalOptions();
 
-
-        allHospitals = hospitals;
-        const hospitalSelect = document.getElementById('patient-hospital');
-        hospitalSelect.innerHTML = '<option value="">Не госпіталізовано</option>'; // Дозволяємо null
-        allHospitals.forEach(hospital => {
-            hospitalSelect.innerHTML += `<option value="${hospital.id}">${hospital.name}</option>`;
-        });
-
-        // ✅ ОНОВЛЕННЯ: Просто зберігаємо лікарів. Не заповнюємо список.
-        allDoctors = doctors;
-
-        // Тепер завантажуємо пацієнтів
         await loadPatients();
 
     } catch (error) {
@@ -80,199 +113,162 @@ async function loadInitialData() {
     }
 }
 
-/**
- * Завантажує пацієнтів з API.
- */
+function updateHospitalOptions() {
+    const clinicId = parseInt(document.getElementById('patient-clinic').value, 10);
+    const specValue = document.getElementById('referral-specialization').value;
+    const hospitalSelect = document.getElementById('patient-hospital');
+    const currentHospitalId = hospitalSelect.value;
+
+    hospitalSelect.innerHTML = '<option value="">Не госпіталізовано (Амбулаторно)</option>';
+
+    const reqSpec = specValue !== "" ? parseInt(specValue, 10) : null;
+    const selectedClinic = allClinics.find(c => c.id === clinicId);
+
+    let allowedHospitals = [];
+
+    if (reqSpec === null) {
+        allowedHospitals = allHospitals;
+    } else {
+        if (selectedClinic && selectedClinic.hospitalId) {
+            const linkedHospital = allHospitals.find(h => h.id === selectedClinic.hospitalId);
+
+            if (linkedHospital && linkedHospital.specializations && linkedHospital.specializations.includes(reqSpec)) {
+                allowedHospitals.push(linkedHospital);
+            } else {
+                allowedHospitals = allHospitals.filter(h => h.specializations && h.specializations.includes(reqSpec));
+            }
+        } else {
+            allowedHospitals = allHospitals.filter(h => h.specializations && h.specializations.includes(reqSpec));
+        }
+    }
+
+    allowedHospitals.forEach(h => {
+        const isLinked = (selectedClinic && h.id === selectedClinic.hospitalId) ? " (За місцем проживання)" : "";
+        hospitalSelect.innerHTML += `<option value="${h.id}">${h.name}${isLinked}</option>`;
+    });
+
+    if (currentHospitalId && [...hospitalSelect.options].some(o => o.value === currentHospitalId)) {
+        hospitalSelect.value = currentHospitalId;
+    } else {
+        hospitalSelect.value = "";
+    }
+}
+
 async function loadPatients() {
     try {
         showError(null);
-        const patients = await apiFetch('/api/patient'); // Має викликати GetAllWithAssociationsAsync
-
-        // ✅ ОНОВЛЕННЯ: Зберігаємо пацієнтів у кеш
+        const patients = await apiFetch('/api/patient');
         allPatients = patients;
-
-        renderTable(patients);
+        // ✅ Очікуємо завершення рендерингу (тепер це async)
+        await renderTable(patients);
     } catch (error) {
-        console.error('Error loading patients:', error);
         showError(`Не вдалося завантажити пацієнтів: ${error.message}`);
     }
 }
 
-/**
- * Рендерить (відображає) таблицю пацієнтів
- */
-function renderTable(patients) {
+// ✅ ОНОВЛЕНО: Функція тепер асинхронна для завантаження лікарів поліклініки
+async function renderTable(patients) {
     const tableBody = document.getElementById('patients-table-body');
-    tableBody.innerHTML = '';
 
     if (!patients || patients.length === 0) {
-        // ✅ ВИПРАВЛЕНО: colspan="10" (9 колонок даних + 1 дії)
         tableBody.innerHTML = '<tr><td colspan="10" class="text-center">Пацієнтів не знайдено.</td></tr>';
         return;
     }
 
-    patients.forEach(patient => {
-        const row = document.createElement('tr');
+    // Показуємо індикатор завантаження поки дані збираються
+    tableBody.innerHTML = '<tr><td colspan="10" class="text-center text-muted">Завантаження списку лікарів...</td></tr>';
 
+    // Використовуємо Promise.all для паралельного завантаження даних по кожному пацієнту
+    const rowsHtml = await Promise.all(patients.map(async (patient) => {
         let actionsHtml = '';
         if (currentUserRole === 'Admin' || currentUserRole === 'Operator') {
             actionsHtml = `
-                <button class="btn btn-primary btn-sm me-1" data-id="${patient.id}" data-action="edit" title="Редагувати">
-                    Ред.
-                </button>
+                <button class="btn btn-primary btn-sm me-1" data-id="${patient.id}" data-action="edit" title="Редагувати">Ред.</button>
+                <button class="btn btn-danger btn-sm" data-id="${patient.id}" data-action="delete" title="Видалити">Видал.</button>
             `;
-        }
-        if (currentUserRole === 'Admin' || currentUserRole === 'Operator') {
-            actionsHtml += `
-                <button class="btn btn-danger btn-sm" data-id="${patient.id}" data-action="delete" title="Видалити">
-                    Видал.
-                </button>`;
         }
 
         const dobText = patient.dateOfBirth ? patient.dateOfBirth.split('T')[0] : 'Н/Д';
-        const healthStatusText = patient.healthStatus || 'Н/Д';
-        const tempText = patient.temperature ? `${patient.temperature}°C` : 'Н/Д';
-
         const clinic = allClinics.find(c => c.id === patient.clinicId);
-        const clinicText = clinic ? clinic.name : `<span class="text-danger">ID: ${patient.clinicId}</span>`;
+        const clinicText = clinic ? clinic.name : `ID: ${patient.clinicId}`;
 
-        // Ця логіка у вас була, але вона не використовувалась у innerHTML
         let hospitalText = '<span class="text-muted small">Н/Д</span>';
         if (patient.hospitalId) {
-            // patient.hospital має бути завантажений через GetAllWithAssociationsAsync
-            if (patient.hospital) {
-                hospitalText = patient.hospital.name;
-            } else {
-                // Фоллбек, якщо асоціація не завантажилась, але ID є
-                const hospital = allHospitals.find(h => h.id === patient.hospitalId);
-                hospitalText = hospital ? hospital.name : `<span class="text-danger">ID: ${patient.hospitalId}</span>`;
-            }
+            const hospital = allHospitals.find(h => h.id === patient.hospitalId);
+            hospitalText = hospital ? `<span class="badge bg-primary">${hospital.name}</span>` : `ID: ${patient.hospitalId}`;
         }
 
-        // Логіка для лікаря
+        // --- ФОРМУВАННЯ КОЛОНКИ "ЛІКАРІ" ---
         let doctorText = '';
+
+        // 1. Лікар стаціонару (з об'єкта пацієнта)
         if (patient.assignedDoctor) {
-            doctorText = `
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="badge bg-info text-dark">
-                        ${patient.assignedDoctor.fullName}
-                    </span>
-            `;
-            if (currentUserRole === 'Admin' || currentUserRole === 'Operator') {
-                doctorText += `
-                    <button class="btn btn-warning btn-sm ms-2" 
-                            data-action="remove-doctor" 
-                            data-id="${patient.id}" 
-                            title="Відкріпити лікаря">
-                        &times;
-                    </button>
-                `;
-            }
-            doctorText += '</div>';
-        } else {
-            doctorText = '<span class="text-muted small">Немає</span>';
-            if (currentUserRole === 'Admin' || currentUserRole === 'Operator') {
-                doctorText += `
-                    <button class="btn btn-success btn-sm ms-2" 
-                            data-action="assign-doctor" 
-                            data-id="${patient.id}" 
-                            data-name="${patient.fullName}"
-                            title="Призначити лікаря">
-                        +
-                    </button>
-                `;
-            }
+            doctorText += `<div class="small mb-1 text-primary"><strong>Стац:</strong> ${patient.assignedDoctor.fullName}</div>`;
         }
 
-        // Логіка для ліжка
-        let bedText = '';
-        if (patient.bed) {
-            const bedLocation = `(Кім. ${patient.bed.room.number}, ${patient.bed.room.department.name})`;
-            bedText = `
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="badge bg-success">
-                        Ліжко #${patient.bed.id} 
-                        ${bedLocation}
-                    </span>
-            `;
-            if (currentUserRole === 'Admin' || currentUserRole === 'Operator') {
-                bedText += `
-                    <button class="btn btn-warning btn-sm ms-2" 
-                            data-action="remove-bed" 
-                            data-id="${patient.id}"  /* ✅ ВИПРАВЛЕНО: Потрібен patientId для /unassign-bed */
-                            title="Звільнити ліжко">
-                        &times;
-                    </button>
-                `;
+        // 2. Лікарі поліклініки (завантажуємо окремо)
+        try {
+            const clinicAssignments = await apiFetch(`/api/clinic-assignment/by-patient/${patient.id}`);
+            if (clinicAssignments && clinicAssignments.length > 0) {
+                const clinicDocNames = clinicAssignments.map(a => {
+                    const d = allDoctors.find(doc => doc.id === a.doctorId);
+                    return d ? d.fullName : `ID ${a.doctorId}`;
+                }).join(', ');
+
+                doctorText += `<div class="small text-success"><strong>Амб:</strong> ${clinicDocNames}</div>`;
             }
-            bedText += '</div>';
-        } else {
-            bedText = '<span class="text-muted small">Немає</span>';
-            // ✅ Кнопку "призначити ліжко" показуємо, ТІЛЬКИ ЯКЩО пацієнт в лікарні
-            if ((currentUserRole === 'Admin' || currentUserRole === 'Operator') && patient.hospitalId) {
-                bedText += `
-                    <button class="btn btn-info btn-sm ms-2" 
-                            data-action="assign-bed" 
-                            data-id="${patient.id}" 
-                            data-name="${patient.fullName}"
-                            title="Призначити ліжко">
-                        +
-                    </button>
-                `;
-            }
+        } catch (e) {
+            console.warn(`Failed to load clinic doctors for patient ${patient.id}`, e);
         }
 
-        // ✅ ВИПРАВЛЕНО: Додано <td>${hospitalText}</td> згідно вашого HTML
-        row.innerHTML = `
-            <td>${patient.id}</td>
-            <td>${patient.fullName}</td>
-            <td>${dobText}</td>
-            <td>${healthStatusText}</td>
-            <td>${tempText}</td>
-            <td>${clinicText}</td>
-            <td>${hospitalText}</td> <td>${doctorText}</td>
-            <td>${bedText}</td>
-            ${actionsHtml ? `<td>${actionsHtml}</td>` : ''}
+        // Кнопка керування
+        doctorText += `
+            <button class="btn btn-outline-secondary btn-sm mt-1 w-100" style="font-size: 0.75rem;" data-action="manage-doctors" data-id="${patient.id}">
+                <i class="bi bi-pencil"></i> Змінити
+            </button>
         `;
-        tableBody.appendChild(row);
-    });
+
+        let bedText = patient.bed ? `<span class="badge bg-success">Ліжко #${patient.bed.id}</span>` : '<span class="text-muted small">Немає</span>';
+        if ((currentUserRole === 'Admin' || currentUserRole === 'Operator') && patient.hospitalId) {
+            if(!patient.bed) bedText += `<button class="btn btn-info btn-sm ms-2 py-0" data-action="assign-bed" data-id="${patient.id}">+</button>`;
+            else bedText += `<button class="btn btn-warning btn-sm ms-2 py-0" data-action="remove-bed" data-id="${patient.id}">&times;</button>`;
+        }
+
+        return `
+            <tr>
+                <td>${patient.id}</td>
+                <td>${patient.fullName}</td>
+                <td>${dobText}</td>
+                <td>${patient.healthStatus || '-'}</td>
+                <td>${patient.temperature}°C</td>
+                <td>${clinicText}</td>
+                <td>${hospitalText}</td>
+                <td>${doctorText}</td>
+                <td>${bedText}</td>
+                <td>${actionsHtml}</td>
+            </tr>
+        `;
+    }));
+
+    tableBody.innerHTML = rowsHtml.join('');
 }
 
-/**
- * Обробник кліків на кнопках в таблиці
- */
 function handleTableClick(event) {
     const target = event.target.closest('button');
     if (!target) return;
-
     const action = target.dataset.action;
-    if (!action) return;
-
-    // ✅ ВИПРАВЛЕНО: Завжди беремо ID з data-id
     const patientId = target.dataset.id;
-    if (!patientId) return; // Захист від кнопок без data-id
+    if (!patientId) return;
 
-    if (action === 'edit') {
-        handleEdit(patientId);
-    } else if (action === 'delete') {
-        handleDelete(patientId);
-    } else if (action === 'assign-bed') {
-        const patientName = target.dataset.name;
-        openAssignBedModal(patientId, patientName);
-    } else if (action === 'remove-bed') {
-        // const bedId = target.dataset.bedId; // Це не потрібно, patientId достатньо
-        handleRemoveBed(patientId);
-    } else if (action === 'assign-doctor') {
-        // ✅ ОНОВЛЕННЯ: Більше не передаємо 'patientName'
-        openAssignDoctorModal(patientId);
-    } else if (action === 'remove-doctor') {
-        handleRemoveDoctor(patientId);
-    }
+    if (action === 'edit') handleEdit(patientId);
+    else if (action === 'delete') handleDelete(patientId);
+    else if (action === 'assign-bed') openAssignBedModal(patientId, "");
+    else if (action === 'remove-bed') handleRemoveBed(patientId);
+    else if (action === 'manage-doctors') openManageDoctorsModal(patientId);
 }
 
-/**
- * Відкриває модальне вікно для створення нового пацієнта
- */
+// --- Створення/Редагування Пацієнта (БЕЗ ЛІКАРЯ) ---
+
 function openCreateModal() {
     showModalError(null);
     document.getElementById('patient-form').reset();
@@ -280,31 +276,25 @@ function openCreateModal() {
     document.getElementById('modal-title').textContent = 'Створити пацієнта';
 
     document.getElementById('patient-clinic').value = "";
-    document.getElementById('patient-hospital').value = ""; // ✅ Скидаємо лікарню
-    document.getElementById('patient-temperature').value = "36.6";
+    document.getElementById('referral-specialization').value = "";
+    updateHospitalOptions();
 
+    document.getElementById('patient-temperature').value = "36.6";
     patientModal.show();
 }
 
-/**
- * Завантажує дані пацієнта та відкриває модальне вікно для редагування
- */
 async function handleEdit(id) {
     try {
         showModalError(null);
-        // Використовуємо кеш, бо він надійніший
         const patient = allPatients.find(p => p.id == id);
-
-        if (!patient) {
-            showError('Не вдалося знайти пацієнта в кеші.');
-            return;
-        }
+        if (!patient) { showError('Пацієнта не знайдено'); return; }
 
         document.getElementById('patient-id').value = patient.id;
         document.getElementById('modal-title').textContent = `Редагувати: ${patient.fullName}`;
 
         document.getElementById('patient-clinic').value = patient.clinicId;
-        // ✅ ВИПРАВЛЕНО: Додано встановлення значення лікарні
+        document.getElementById('referral-specialization').value = "";
+        updateHospitalOptions();
         document.getElementById('patient-hospital').value = patient.hospitalId || "";
 
         document.getElementById('patient-fullname').value = patient.fullName;
@@ -313,93 +303,252 @@ async function handleEdit(id) {
         document.getElementById('patient-temperature').value = patient.temperature;
 
         patientModal.show();
-
     } catch (error) {
-        console.error('Error fetching patient details:', error);
-        showError(`Помилка: ${error.message}`);
+        showError(error.message);
     }
 }
 
-/**
- * Обробник відправки форми (Створення / Оновлення Пацієнта)
- */
 async function handleFormSubmit(event) {
     event.preventDefault();
     const id = document.getElementById('patient-id').value;
-
-    const dobString = document.getElementById('patient-dob').value;
-    const dobUtc = new Date(dobString).toISOString();
-
-    // ✅ ВИПРАВЛЕНО: Зчитуємо hospitalId з форми
-    const hospitalIdValue = document.getElementById('patient-hospital').value;
-    const hospitalIdParsed = hospitalIdValue ? parseInt(hospitalIdValue, 10) : null;
+    const hospitalIdVal = document.getElementById('patient-hospital').value;
 
     const patientDto = {
         clinicId: parseInt(document.getElementById('patient-clinic').value, 10),
         fullName: document.getElementById('patient-fullname').value,
-        dateOfBirth: dobUtc,
+        dateOfBirth: new Date(document.getElementById('patient-dob').value).toISOString(),
         healthStatus: document.getElementById('patient-healthstatus').value,
         temperature: parseFloat(document.getElementById('patient-temperature').value),
-
-        // ✅ ВИПРАВЛЕНО: Встановлюємо hospitalId з форми, а не null
-        hospitalId: hospitalIdParsed
+        hospitalId: hospitalIdVal ? parseInt(hospitalIdVal, 10) : null
     };
+
+    if (id) patientDto.id = parseInt(id, 10);
 
     const method = id ? 'PUT' : 'POST';
     const url = id ? `/api/patient/${id}` : '/api/patient';
-
-    if (id) {
-        patientDto.id = parseInt(id, 10);
-
-        // При оновленні (PUT) ми не хочемо затирати ці поля,
-        // оскільки вони керуються окремими ендпоінтами (AssignDoctor/AssignBed).
-        // Але hospitalId ми ЗАЛИШАЄМО, бо ми ним керуємо з цієї форми.
-        delete patientDto.assignedDoctorId;
-        delete patientDto.bedId;
-        // delete patientDto.hospitalId; // ✅ ВИПРАВЛЕНО: Цей рядок НЕ ПОТРІБЕН
-    } else {
-        // Для POST (створення) ми можемо відправити null
-        patientDto.assignedDoctorId = null;
-        patientDto.bedId = null;
-    }
 
     try {
         showModalError(null);
         await apiFetch(url, { method: method, body: JSON.stringify(patientDto) });
         patientModal.hide();
         loadPatients();
-
     } catch (error) {
-        console.error('Error saving patient:', error);
-        showModalError(`Не вдалося зберегти: ${error.message}`);
+        showModalError(`Помилка збереження: ${error.message}`);
     }
 }
 
-/**
- * Видалення пацієнта
- */
 async function handleDelete(id) {
-    if (!confirm('Ви впевнені, що хочете видалити цього пацієнта? Це також звільнить його ліжко.')) {
-        return;
-    }
+    if (!confirm('Видалити пацієнта?')) return;
     try {
-        showError(null);
         await apiFetch(`/api/patient/${id}`, { method: 'DELETE' });
         loadPatients();
     } catch (error) {
-        console.error('Error deleting patient:', error);
-        showError(`Не вдалося видалити пацієнта: ${error.message}`);
+        showError(error.message);
     }
 }
 
-// --- ФУНКЦІЇ ДЛЯ КЕРУВАННЯ ЛІЖКАМИ ---
+// ==========================================================
+// ✅ Модальне вікно керування лікарями
+// ==========================================================
 
+async function openManageDoctorsModal(patientId) {
+    showDoctorModalError(null);
+
+    const patient = allPatients.find(p => p.id == patientId);
+    if (!patient) return;
+
+    let clinicAssignments = [];
+    try {
+        clinicAssignments = await apiFetch(`/api/clinic-assignment/by-patient/${patientId}`);
+    } catch (e) {
+        console.warn("Помилка завантаження призначень:", e);
+        clinicAssignments = [];
+    }
+
+    renderManageDoctorsModal(patient, clinicAssignments);
+    doctorModal.show();
+}
+
+function renderManageDoctorsModal(patient, clinicAssignments) {
+    const modalBody = document.querySelector('#assign-doctor-modal .modal-body');
+
+    modalBody.innerHTML = `
+        <div id="assign-doctor-error-alert" class="alert alert-danger" style="display:none;"></div>
+        <h5 class="text-center mb-3 text-primary">${patient.fullName}</h5>
+    `;
+
+    // --- Секція 1: Лікарня (Стаціонар) ---
+    const hospitalSection = document.createElement('div');
+    hospitalSection.className = 'card mb-3 border-primary';
+
+    let hospitalContent = `
+        <div class="card-header bg-primary text-white">Лікар стаціонару (Лікарня)</div>
+        <div class="card-body">
+    `;
+
+    if (patient.hospitalId) {
+        const currentHospital = allHospitals.find(h => h.id === patient.hospitalId);
+        const docName = patient.assignedDoctor ? patient.assignedDoctor.fullName : "Не призначено";
+
+        hospitalContent += `
+            <p class="mb-2"><strong>Заклад:</strong> ${currentHospital ? currentHospital.name : 'ID ' + patient.hospitalId}</p>
+            <p class="mb-3"><strong>Поточний лікар:</strong> ${docName}</p>
+            
+            <form id="hospital-doc-form" class="row g-2">
+                <div class="col-8">
+                    <select id="hospital-doc-select" class="form-select form-select-sm">
+                        <option value="">Оберіть лікаря...</option>
+                    </select>
+                </div>
+                <div class="col-4">
+                    <button type="submit" class="btn btn-success btn-sm w-100">Призначити</button>
+                </div>
+            </form>
+            ${patient.assignedDoctor ? `<button class="btn btn-outline-danger btn-sm w-100 mt-2" onclick="handleRemoveHospitalDoc(${patient.id})">Відкріпити поточного</button>` : ''}
+        `;
+    } else {
+        hospitalContent += `<p class="text-muted text-center my-2">Пацієнт не госпіталізований.<br>Призначення недоступне.</p>`;
+    }
+    hospitalContent += `</div>`;
+    hospitalSection.innerHTML = hospitalContent;
+    modalBody.appendChild(hospitalSection);
+
+
+    // --- Секція 2: Поліклініка - Багато лікарів ---
+    const clinicSection = document.createElement('div');
+    clinicSection.className = 'card border-success';
+
+    let clinicContent = `
+        <div class="card-header bg-success text-white">Лікарі поліклініки (Амбулаторно)</div>
+        <div class="card-body">
+    `;
+
+    const currentClinic = allClinics.find(c => c.id === patient.clinicId);
+    clinicContent += `<p class="mb-2"><strong>Заклад:</strong> ${currentClinic ? currentClinic.name : 'ID ' + patient.clinicId}</p>`;
+
+    if (clinicAssignments && clinicAssignments.length > 0) {
+        clinicContent += `<ul class="list-group list-group-flush mb-3">`;
+        clinicAssignments.forEach(assign => {
+            const doc = allDoctors.find(d => d.id === assign.doctorId);
+            const docName = doc ? `${doc.fullName} (${doc.specialty})` : `Лікар ID: ${assign.doctorId}`;
+
+            clinicContent += `
+                <li class="list-group-item d-flex justify-content-between align-items-center p-1">
+                    <small>${docName}</small>
+                    <button class="btn btn-sm btn-danger py-0" onclick="handleRemoveClinicDoc(${assign.doctorId}, ${patient.id}, ${patient.clinicId})">&times;</button>
+                </li>
+            `;
+        });
+        clinicContent += `</ul>`;
+    } else {
+        clinicContent += `<p class="text-muted small">Немає призначених лікарів.</p>`;
+    }
+
+    clinicContent += `
+        <form id="clinic-doc-form" class="row g-2 mt-2 border-top pt-2">
+            <div class="col-8">
+                <select id="clinic-doc-select" class="form-select form-select-sm">
+                    <option value="">Додати лікаря...</option>
+                </select>
+            </div>
+            <div class="col-4">
+                <button type="submit" class="btn btn-outline-success btn-sm w-100">Додати</button>
+            </div>
+        </form>
+    </div>`;
+    clinicSection.innerHTML = clinicContent;
+    modalBody.appendChild(clinicSection);
+
+
+    // --- Заповнюємо селекти ---
+
+    // 1. Для лікарні
+    if (patient.hospitalId) {
+        const hSelect = document.getElementById('hospital-doc-select');
+        const hDocs = allDoctors.filter(d => d.employments.some(e => e.hospitalId === patient.hospitalId));
+        hDocs.forEach(d => hSelect.innerHTML += `<option value="${d.id}">${d.fullName} (${d.specialty})</option>`);
+
+        document.getElementById('hospital-doc-form').onsubmit = (e) => {
+            e.preventDefault();
+            handleHospitalDocSubmit(patient.id, hSelect.value);
+        };
+    }
+
+    // 2. Для поліклініки
+    const cSelect = document.getElementById('clinic-doc-select');
+    const assignedIds = clinicAssignments.map(a => a.doctorId);
+    const cDocs = allDoctors.filter(d =>
+        d.employments.some(e => e.clinicId === patient.clinicId) &&
+        !assignedIds.includes(d.id)
+    );
+
+    if (cDocs.length > 0) {
+        cDocs.forEach(d => cSelect.innerHTML += `<option value="${d.id}">${d.fullName} (${d.specialty})</option>`);
+    } else {
+        cSelect.innerHTML = '<option value="">Всі доступні лікарі вже призначені</option>';
+    }
+
+    document.getElementById('clinic-doc-form').onsubmit = (e) => {
+        e.preventDefault();
+        handleClinicDocSubmit(patient.id, cSelect.value, patient.clinicId);
+    };
+}
+
+// --- Логіка збереження лікарів ---
+
+async function handleHospitalDocSubmit(patientId, doctorId) {
+    showDoctorModalError(null);
+    if (!doctorId) return;
+    try {
+        await apiFetch(`/api/patient/${patientId}/assign-doctor/${doctorId}`, { method: 'POST' });
+        await loadPatients();
+        openManageDoctorsModal(patientId);
+    } catch (e) { showDoctorModalError(e.message); }
+}
+
+window.handleRemoveHospitalDoc = async function(patientId) {
+    if(!confirm('Відкріпити лікаря стаціонару?')) return;
+    try {
+        await apiFetch(`/api/patient/${patientId}/remove-doctor`, { method: 'POST' });
+        await loadPatients();
+        openManageDoctorsModal(patientId);
+    } catch(e) { showDoctorModalError(e.message); }
+};
+
+async function handleClinicDocSubmit(patientId, doctorId, clinicId) {
+    showDoctorModalError(null);
+    if (!doctorId) return;
+    try {
+        await apiFetch('/api/clinic-assignment', {
+            method: 'POST',
+            body: JSON.stringify({
+                patientId: parseInt(patientId),
+                doctorId: parseInt(doctorId),
+                clinicId: parseInt(clinicId)
+            })
+        });
+        openManageDoctorsModal(patientId);
+        loadPatients(); // Оновлюємо головну таблицю
+    } catch (e) { showDoctorModalError("Не вдалося додати лікаря: " + e.message); }
+}
+
+window.handleRemoveClinicDoc = async function(doctorId, patientId, clinicId) {
+    if(!confirm('Видалити цього лікаря зі списку?')) return;
+    try {
+        const params = new URLSearchParams({ patientId, doctorId, clinicId });
+        await apiFetch(`/api/clinic-assignment?${params.toString()}`, { method: 'DELETE' });
+        openManageDoctorsModal(patientId);
+        loadPatients(); // Оновлюємо головну таблицю
+    } catch(e) { showDoctorModalError(e.message); }
+};
+
+
+// --- Bed Logic (Без змін) ---
 function openAssignBedModal(patientId, patientName) {
     showBedModalError(null);
     document.getElementById('assign-bed-form').reset();
     document.getElementById('assign-bed-patient-id').value = patientId;
     document.getElementById('assign-bed-patient-name').value = patientName;
-
     bedModal.show();
     loadAvailableBeds();
 }
@@ -407,225 +556,35 @@ function openAssignBedModal(patientId, patientName) {
 async function loadAvailableBeds() {
     const select = document.getElementById('assign-bed-select');
     select.innerHTML = '<option value="">Завантаження...</option>';
-
     try {
-        // (Якщо 404, змініть на /api/bed/available)
         const availableBeds = await apiFetch('/api/hospital/bed/available');
-
-        if (availableBeds.length === 0) {
-            select.innerHTML = '<option value="">Вільних ліжок немає</option>';
-            return;
-        }
-
-        select.innerHTML = '<option value="">Оберіть вільне ліжко...</option>';
+        if (!availableBeds.length) { select.innerHTML = '<option value="">Вільних ліжок немає</option>'; return; }
+        select.innerHTML = '<option value="">Оберіть ліжко...</option>';
         availableBeds.forEach(bed => {
-            const location = `(Кім. ${bed.room.id}, ${bed.room.department.name})`;
-            select.innerHTML += `<option value="${bed.id}">Ліжко #${bed.id} ${location}</option>`;
+            select.innerHTML += `<option value="${bed.id}">#${bed.id} (Кім. ${bed.room.number})</option>`;
         });
-
-    } catch (error) {
-        showBedModalError(`Помилка завантаження ліжок: ${error.message}`);
-    }
+    } catch (error) { showBedModalError(error.message); }
 }
 
 async function handleBedAssignSubmit(event) {
     event.preventDefault();
-    showBedModalError(null);
-
-    const bedId = parseInt(document.getElementById('assign-bed-select').value, 10);
-    const patientId = parseInt(document.getElementById('assign-bed-patient-id').value, 10);
-
-    if (!bedId || !patientId) {
-        showBedModalError('Необхідно обрати пацієнта та ліжко.');
-        return;
-    }
-
+    const bedId = document.getElementById('assign-bed-select').value;
+    const patientId = document.getElementById('assign-bed-patient-id').value;
     try {
-        const url = `/api/patient/${patientId}/assign-bed/${bedId}`;
-
-        await apiFetch(url, {
-            method: 'POST'
-        });
-
+        await apiFetch(`/api/patient/${patientId}/assign-bed/${bedId}`, { method: 'POST' });
         bedModal.hide();
         loadPatients();
-
-    } catch (error) {
-        showBedModalError(`Не вдалося призначити ліжко: ${error.message}`);
-    }
+    } catch (e) { showBedModalError(e.message); }
 }
 
 async function handleRemoveBed(patientId) {
-    if (!confirm('Ви впевнені, що хочете звільнити це ліжко?')) {
-        return;
-    }
-
-    try {
-        await apiFetch(`/api/patient/${patientId}/unassign-bed`, {
-            method: 'POST',
-        });
-
-        loadPatients();
-
-    } catch (error) {
-        showError(`Не вдалося звільнити ліжко: ${error.message}`);
-    }
+    if(!confirm('Звільнити ліжко?')) return;
+    try { await apiFetch(`/api/patient/${patientId}/unassign-bed`, { method: 'POST' }); loadPatients(); }
+    catch(e) { showError(e.message); }
 }
 
-// --- ✅ ОНОВЛЕНІ ФУНКЦІЇ ДЛЯ КЕРУВАННЯ ЛІКАРЯМИ ---
-
-/**
- * ✅ ОНОВЛЕНО: Знаходить пацієнта, фільтрує лікарів,
- * заповнює <select> і показує модальне вікно.
- */
-function openAssignDoctorModal(patientId) {
-    showDoctorModalError(null);
-    document.getElementById('assign-doctor-form').reset();
-
-    // 1. Знайти пацієнта з кешу
-    const patient = allPatients.find(p => p.id == patientId);
-    if (!patient) {
-        showError('Не вдалося знайти дані пацієнта (ID: ' + patientId + ').');
-        return;
-    }
-
-    // 2. Встановити дані в модальному вікні
-    document.getElementById('assign-doctor-patient-id').value = patient.id;
-    document.getElementById('assign-doctor-patient-name').value = patient.fullName;
-
-    // 3. Динамічно заповнити список лікарів
-    const doctorSelect = document.getElementById('assign-doctor-select');
-
-    // 3a. Отримуємо локації пацієнта
-    const patientClinicId = patient.clinicId;
-    // (patient.hospitalId завантажується вашим GetAllWithAssociationsAsync)
-    const patientHospitalId = patient.hospitalId;
-
-    // 3b. Фільтруємо 'allDoctors'
-    const availableDoctors = allDoctors.filter(doctor => {
-        if (!doctor.employments || doctor.employments.length === 0) {
-            return false;
-        }
-
-        // Перевірка на клініку
-        if (doctor.employments.some(emp => emp.clinicId === patientClinicId)) {
-            return true;
-        }
-
-        // Перевірка на госпіталь (якщо пацієнт там є)
-        if (patientHospitalId && doctor.employments.some(emp => emp.hospitalId === patientHospitalId)) {
-            return true;
-        }
-
-        return false;
-    });
-
-    // 3c. Заповнюємо <select>
-    if (availableDoctors.length === 0) {
-        doctorSelect.innerHTML = '<option value="">Немає доступних лікарів для цієї локації</option>';
-    } else {
-        doctorSelect.innerHTML = '<option value="">Оберіть лікаря...</option>';
-        availableDoctors.forEach(doctor => {
-            doctorSelect.innerHTML += `<option value="${doctor.id}">${doctor.fullName} (${doctor.specialty})</option>`;
-        });
-    }
-
-    // 4. Показати модальне вікно
-    doctorModal.show();
-}
-
-/**
- * (Ця функція без змін, вона викликає /api/patient/{patientId}/assign-doctor/{doctorId})
- */
-async function handleDoctorAssignSubmit(event) {
-    event.preventDefault();
-    showDoctorModalError(null);
-
-    const doctorId = parseInt(document.getElementById('assign-doctor-select').value, 10);
-    const patientId = parseInt(document.getElementById('assign-doctor-patient-id').value, 10);
-
-    if (!doctorId || !patientId) {
-        showDoctorModalError('Необхідно обрати пацієнта та лікаря.');
-        return;
-    }
-
-    try {
-        const url = `/api/patient/${patientId}/assign-doctor/${doctorId}`;
-
-        await apiFetch(url, {
-            method: 'POST'
-        });
-
-        doctorModal.hide();
-        loadPatients();
-
-    } catch (error) {
-        // Показуємо помилку (напр. "Doctor and patient do not share...")
-        showDoctorModalError(`Не вдалося призначити лікаря: ${error.message}`);
-    }
-}
-
-/**
- * (Ця функція без змін, вона викликає /api/patient/{patientId}/remove-doctor)
- */
-async function handleRemoveDoctor(patientId) {
-    if (!confirm('Ви впевнені, що хочете відкріпити лікаря від цього пацієнта?')) {
-        return;
-    }
-
-    try {
-        const url = `/api/patient/${patientId}/remove-doctor`;
-
-        await apiFetch(url, {
-            method: 'POST'
-        });
-
-        loadPatients();
-
-    } catch (error) {
-        showError(`Не вдалося відкріпити лікаря: ${error.message}`);
-    }
-}
-
-
-// --- Допоміжні функції для показу помилок ---
-
-function showError(message) {
-    const errorEl = document.getElementById('error-alert');
-    if (message) {
-        errorEl.textContent = message;
-        errorEl.style.display = 'block';
-    } else {
-        errorEl.style.display = 'none';
-    }
-}
-
-function showModalError(message) {
-    const errorEl = document.getElementById('modal-error-alert');
-    if (message) {
-        errorEl.textContent = message;
-        errorEl.style.display = 'block';
-    } else {
-        errorEl.style.display = 'none';
-    }
-}
-
-function showBedModalError(message) {
-    const errorEl = document.getElementById('assign-bed-error-alert');
-    if (message) {
-        errorEl.textContent = message;
-        errorEl.style.display = 'block';
-    } else {
-        errorEl.style.display = 'none';
-    }
-}
-
-function showDoctorModalError(message) {
-    const errorEl = document.getElementById('assign-doctor-error-alert');
-    if (message) {
-        errorEl.textContent = message;
-        errorEl.style.display = 'block';
-    } else {
-        errorEl.style.display = 'none';
-    }
-}
+// Error helpers
+function showError(msg) { const e = document.getElementById('error-alert'); e.innerText = msg || ''; e.style.display = msg ? 'block' : 'none'; }
+function showModalError(msg) { const e = document.getElementById('modal-error-alert'); e.innerText = msg || ''; e.style.display = msg ? 'block' : 'none'; }
+function showBedModalError(msg) { const e = document.getElementById('assign-bed-error-alert'); e.innerText = msg || ''; e.style.display = msg ? 'block' : 'none'; }
+function showDoctorModalError(msg) { const e = document.getElementById('assign-doctor-error-alert'); e.innerText = msg || ''; e.style.display = msg ? 'block' : 'none'; }

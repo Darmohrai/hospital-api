@@ -180,11 +180,11 @@ function renderAdmissionsTable(data) {
 
         const actions = (currentUserRole === 'Admin' || currentUserRole === 'Operator') ? `
             <td>
-                <button class="btn btn-primary btn-sm me-1" data-id="${item.id}" data-action="edit" title="Редагувати">Ред.</button>
-                <button class="btn btn-danger btn-sm" data-id="${item.id}" data-action="delete" title="Видалити">Видал.</button>
+                <button class="btn btn-warning btn-sm me-1" data-id="${item.id}" data-action="edit" title="Виписати / Редагувати">Виписати</button>
+                <button class="btn btn-danger btn-sm" data-id="${item.id}" data-action="delete" title="Видалити запис">Видал.</button>
             </td>` : '';
 
-        const dischargeDate = item.dischargeDate ? new Date(item.dischargeDate).toLocaleString() : '<span class="text-muted">В лікарні</span>';
+        const dischargeDate = item.dischargeDate ? new Date(item.dischargeDate).toLocaleString() : '<span class="badge bg-success">В стаціонарі</span>';
 
         const row = `
             <tr>
@@ -255,14 +255,14 @@ function openCreateModal(mode) {
     showModalError(null);
     document.getElementById('tracking-form').reset();
 
-    // ✅ ВИПРАВЛЕННЯ: Скидаємо 'required' з усіх полів перед налаштуванням.
-    // Це запобігає валідації полів, які будуть приховані.
+    // Скидаємо 'required' та 'disabled'
     document.querySelectorAll('#tracking-form [required]').forEach(el => el.required = false);
+    document.querySelectorAll('#tracking-form input, #tracking-form select').forEach(el => el.disabled = false);
 
     document.getElementById('tracking-id').value = '';
     document.getElementById('tracking-mode').value = mode;
 
-    setupModalForMode(mode); // Ця функція тепер встановить правильні 'required'
+    setupModalForMode(mode);
 
     // Скидаємо залежні дропдауни
     resetLocationSelect(true);
@@ -280,42 +280,60 @@ async function handleEdit(id, mode) {
     document.getElementById('tracking-id').value = id;
     document.getElementById('tracking-mode').value = mode;
 
+    // Скидаємо disabled перед налаштуванням
+    document.querySelectorAll('#tracking-form input, #tracking-form select').forEach(el => el.disabled = false);
+
     setupModalForMode(mode, true); // true = isEdit
 
     try {
-        // 1. Отримуємо дані
         const endpoint = getEndpoint(mode);
         const item = await apiFetch(`${endpoint}/${id}`);
 
-        // 2. Заповнюємо пацієнта (і запускаємо каскад)
+        // Заповнюємо пацієнта (і запускаємо каскад)
         document.getElementById('tracking-patient').value = item.patientId;
-        // Запускаємо логіку пацієнта, щоб заповнити локації
         await handlePatientChange();
 
-        // 3. Заповнюємо специфічні поля
         if (mode === 'appointment') {
             const locationValue = item.clinicId ? `clinic-${item.clinicId}` : `hospital-${item.hospitalId}`;
             document.getElementById('tracking-location').value = locationValue;
-            await handleLocationChange(); // Запускаємо логіку локації, щоб заповнити лікарів
+            await handleLocationChange();
 
             document.getElementById('tracking-doctor').value = item.doctorId;
             document.getElementById('tracking-datetime').value = toLocalISOString(new Date(item.visitDateTime));
             document.getElementById('tracking-summary').value = item.summary;
 
         } else if (mode === 'admission') {
+            // ✅ ЛОГІКА ВИПИСКИ (DISCHARGE)
+            // Якщо ми редагуємо госпіталізацію, ми переводимо форму в режим "Виписка"
+
+            document.getElementById('modal-title').textContent = `Виписати пацієнта`;
             document.getElementById('tracking-hospital').value = item.hospitalId;
-            await handleHospitalChange(); // Запускаємо логіку лікарні, щоб заповнити лікарів
+            await handleHospitalChange();
 
             document.getElementById('tracking-doctor').value = item.attendingDoctorId;
             document.getElementById('tracking-datetime').value = toLocalISOString(new Date(item.admissionDate));
+
+            // Блокуємо поля, які не можна змінювати при виписці
+            document.getElementById('tracking-patient').disabled = true;
+            document.getElementById('tracking-hospital').disabled = true;
+            document.getElementById('tracking-doctor').disabled = true;
+            document.getElementById('tracking-datetime').disabled = true; // Дата госпіталізації
+
+            // Дата виписки
             if (item.dischargeDate) {
                 document.getElementById('tracking-dischargedate').value = toLocalISOString(new Date(item.dischargeDate));
+            } else {
+                // Якщо ще не виписаний, ставимо поточний час
+                document.getElementById('tracking-dischargedate').value = toLocalISOString(new Date());
             }
+            // Робимо дату виписки обов'язковою
+            document.getElementById('tracking-dischargedate').required = true;
+
 
         } else if (mode === 'operation') {
             const locationValue = item.clinicId ? `clinic-${item.clinicId}` : `hospital-${item.hospitalId}`;
             document.getElementById('tracking-location').value = locationValue;
-            await handleLocationChange(); // Запускаємо логіку локації, щоб заповнити лікарів
+            await handleLocationChange();
 
             document.getElementById('tracking-doctor').value = item.doctorId;
             document.getElementById('tracking-datetime').value = toLocalISOString(new Date(item.date));
@@ -336,27 +354,23 @@ async function handleEdit(id, mode) {
 function setupModalForMode(mode, isEdit = false) {
     const titlePrefix = isEdit ? 'Редагувати' : 'Створити';
 
-    // --- 1. Отримуємо всі керовані поля ---
+    // Отримуємо всі керовані поля
     const patientSelect = document.getElementById('tracking-patient');
     const locationSelect = document.getElementById('tracking-location');
     const hospitalSelect = document.getElementById('tracking-hospital');
     const doctorSelect = document.getElementById('tracking-doctor');
     const datetimeInput = document.getElementById('tracking-datetime');
-    const dischargeDateInput = document.getElementById('tracking-dischargedate');
-    const summaryInput = document.getElementById('tracking-summary');
     const opTypeInput = document.getElementById('tracking-optype');
 
-    // --- 2. Ховаємо всі специфічні групи полів ---
+    // Ховаємо всі специфічні групи полів
     document.querySelectorAll('.form-group-specific').forEach(el => el.style.display = 'none');
 
-    // --- 3. ✅ ВИПРАВЛЕННЯ: Скидаємо 'required' для всіх специфічних полів ---
-    // Це гарантує, що валідація спрацює лише на видимих полях.
+    // Скидаємо 'required' для специфічних полів
     locationSelect.required = false;
     hospitalSelect.required = false;
     opTypeInput.required = false;
-    // (dischargeDate та summary не є required, тому їх не чіпаємо)
 
-    // --- 4. Налаштовуємо загальні поля (завжди видимі та потрібні) ---
+    // Загальні поля
     patientSelect.disabled = isEdit;
     patientSelect.required = true;
     doctorSelect.required = true;
@@ -367,17 +381,12 @@ function setupModalForMode(mode, isEdit = false) {
     document.getElementById('form-group-datetime').style.display = 'block';
 
 
-    // --- 5. Налаштовуємо UI та 'required' для конкретного режиму ---
     if (mode === 'appointment') {
         document.getElementById('modal-title').textContent = `${titlePrefix} запис на прийом`;
         document.getElementById('tracking-doctor-label').textContent = 'Лікар';
         document.getElementById('tracking-datetime-label').textContent = 'Дата/Час візиту';
-
-        // Поля для цього режиму
         document.getElementById('form-group-location').style.display = 'block';
         document.getElementById('form-group-summary').style.display = 'block';
-
-        // ✅ Вмикаємо 'required'
         locationSelect.required = true;
 
     } else if (mode === 'admission') {
@@ -385,24 +394,20 @@ function setupModalForMode(mode, isEdit = false) {
         document.getElementById('tracking-doctor-label').textContent = 'Лікуючий лікар';
         document.getElementById('tracking-datetime-label').textContent = 'Дата госпіталізації';
 
-        // Поля для цього режиму
         document.getElementById('form-group-hospital').style.display = 'block';
+
+        // Поле виписки показуємо завжди в режимі admission, але required ставимо тільки при редагуванні
         document.getElementById('form-group-dischargedate').style.display = 'block';
 
-        // ✅ Вмикаємо 'required'
         hospitalSelect.required = true;
 
     } else if (mode === 'operation') {
         document.getElementById('modal-title').textContent = `${titlePrefix} операцію`;
         document.getElementById('tracking-doctor-label').textContent = 'Лікар (Хірург)';
         document.getElementById('tracking-datetime-label').textContent = 'Дата/Час операції';
-
-        // Поля для цього режиму
         document.getElementById('form-group-location').style.display = 'block';
         document.getElementById('form-group-optype').style.display = 'block';
         document.getElementById('form-group-isfatal').style.display = 'block';
-
-        // ✅ Вмикаємо 'required'
         locationSelect.required = true;
         opTypeInput.required = true;
     }
@@ -412,9 +417,6 @@ function setupModalForMode(mode, isEdit = false) {
 // ЛОГІКА КАСКАДНИХ ДРОПДАУНІВ
 // ===================================================================
 
-/**
- * (КРОК 1) Обрано пацієнта. Заповнюємо список локацій.
- */
 function handlePatientChange() {
     const patientId = document.getElementById('tracking-patient').value;
     resetLocationSelect();
@@ -430,37 +432,28 @@ function handlePatientChange() {
 
     const locationSelect = document.getElementById('tracking-location');
 
-    // 1. Завжди додаємо клініку пацієнта
-    if (patient.clinicId && patient.clinic) { // patient.clinic має бути з all-with-associations
+    if (patient.clinicId && patient.clinic) {
         locationSelect.innerHTML += `<option value="clinic-${patient.clinicId}">${patient.clinic.name} (Поліклініка)</option>`;
     } else {
-        // Фоллбек, якщо асоціація не завантажилась
         const clinic = allClinics.find(c => c.id === patient.clinicId);
         if(clinic) locationSelect.innerHTML += `<option value="clinic-${clinic.id}">${clinic.name} (Поліклініка)</option>`;
     }
 
-    // 2. Додаємо лікарню, ТІЛЬКИ ЯКЩО він госпіталізований
     if (patient.hospitalId && patient.hospital) {
         locationSelect.innerHTML += `<option value="hospital-${patient.hospitalId}">${patient.hospital.name} (Лікарня)</option>`;
     } else {
-        // Фоллбек
         const hospital = allHospitals.find(h => h.id === patient.hospitalId);
         if(hospital) locationSelect.innerHTML += `<option value="hospital-${hospital.id}">${hospital.name} (Лікарня)</option>`;
     }
-
-    // (Для госпіталізацій нічого не робимо, там статичний список лікарень)
 }
 
-/**
- * (КРОК 2 - Appt/Op) Обрано локацію. Фільтруємо лікарів.
- */
 function handleLocationChange() {
     const locationValue = document.getElementById('tracking-location').value;
     resetDoctorSelect();
 
     if (!locationValue) return;
 
-    const [type, id] = locationValue.split('-'); // "clinic-5" -> ["clinic", "5"]
+    const [type, id] = locationValue.split('-');
     const locationId = parseInt(id, 10);
 
     let availableDoctors = [];
@@ -478,9 +471,6 @@ function handleLocationChange() {
     populateDoctorSelect(availableDoctors);
 }
 
-/**
- * (КРОК 2 - Admission) Обрано лікарню. Фільтруємо лікарів.
- */
 function handleHospitalChange() {
     const hospitalId = document.getElementById('tracking-hospital').value;
     resetDoctorSelect();
@@ -497,9 +487,6 @@ function handleHospitalChange() {
 }
 
 
-/**
- * (КРОК 3) Допоміжна функція для заповнення списку лікарів
- */
 function populateDoctorSelect(doctors) {
     const doctorSelect = document.getElementById('tracking-doctor');
     if (doctors.length === 0) {
@@ -528,6 +515,35 @@ async function handleFormSubmit(event) {
     const id = document.getElementById('tracking-id').value;
     const mode = document.getElementById('tracking-mode').value;
 
+    // ✅ СПЕЦІАЛЬНА ЛОГІКА ДЛЯ ВИПИСКИ (DISCHARGE)
+    if (mode === 'admission' && id) {
+        const dischargeDateInput = document.getElementById('tracking-dischargedate').value;
+        if (!dischargeDateInput) {
+            showModalError("Будь ласка, вкажіть дату виписки.");
+            return;
+        }
+
+        const dischargeDateIso = new Date(dischargeDateInput).toISOString();
+        // Використовуємо Query Parameter для дати, як в контролері
+        const endpoint = `/api/admission/${id}/discharge?dischargeDate=${dischargeDateIso}`;
+
+        try {
+            await apiFetch(endpoint, { method: 'PUT' });
+            trackingModal.hide();
+
+            allAdmissions = await apiFetch('/api/admission');
+            renderAdmissionsTable(allAdmissions);
+            allPatients = await apiFetch('/api/patient/all-with-associations'); // Оновити статус пацієнтів
+
+        } catch (error) {
+            console.error('Error discharging:', error);
+            showModalError(`Не вдалося виписати: ${error.message}`);
+        }
+        return; // Виходимо, щоб не виконувати стандартну логіку нижче
+    }
+
+    // --- СТАНДАРТНА ЛОГІКА ДЛЯ ІНШИХ ТИПІВ ---
+
     const method = id ? 'PUT' : 'POST';
     let endpoint = getEndpoint(mode);
     if (id) endpoint += `/${id}`;
@@ -552,8 +568,6 @@ async function handleFormSubmit(event) {
         } else if (mode === 'admission') {
             allAdmissions = await apiFetch('/api/admission');
             renderAdmissionsTable(allAdmissions);
-
-            // Також оновлюємо кеш пацієнтів, оскільки госпіталізація могла змінити patient.hospitalId
             allPatients = await apiFetch('/api/patient/all-with-associations');
         } else if (mode === 'operation') {
             allOperations = await apiFetch('/api/operation');
@@ -600,11 +614,12 @@ function buildDto(mode) {
         const hospitalId = parseInt(document.getElementById('tracking-hospital').value, 10);
         if (!hospitalId) throw new Error("Лікарня не обрана.");
 
+        // При створенні нової госпіталізації дата виписки зазвичай null
         const dischargeDate = document.getElementById('tracking-dischargedate').value;
 
         return {
             patientId: patientId,
-            attendingDoctorId: doctorId, // Увага: інше ім'я поля
+            attendingDoctorId: doctorId,
             hospitalId: hospitalId,
             admissionDate: isoDateTime,
             dischargeDate: dischargeDate ? new Date(dischargeDate).toISOString() : null
