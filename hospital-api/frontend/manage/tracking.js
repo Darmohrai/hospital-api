@@ -1,4 +1,6 @@
-﻿// Глобальні змінні (кеш)
+﻿// frontend/manage/tracking.js
+
+// Глобальні змінні (кеш)
 let currentUserRole = null;
 let trackingModal = null;
 let allClinics = [];
@@ -15,7 +17,23 @@ let allOperations = [];
  * Головна функція, що виконується при завантаженні сторінки
  */
 document.addEventListener('DOMContentLoaded', () => {
-    trackingModal = new bootstrap.Modal(document.getElementById('tracking-modal'));
+    // 1. Перевірка залежностей
+    if (typeof apiFetch === 'undefined') {
+        console.error("КРИТИЧНА ПОМИЛКА: 'apiFetch' не знайдено.");
+        alert("Помилка: Не вдалося завантажити API модуль. Перезавантажте сторінку.");
+        return;
+    }
+    if (typeof bootstrap === 'undefined' || typeof bootstrap.Modal === 'undefined') {
+        console.error("КРИТИЧНА ПОМИЛКА: 'bootstrap' не знайдено.");
+        alert("Помилка: Не вдалося завантажити інтерфейс. Перезавантажте сторінку.");
+        return;
+    }
+
+    // Ініціалізація модального вікна
+    const modalEl = document.getElementById('tracking-modal');
+    if (modalEl) {
+        trackingModal = new bootstrap.Modal(modalEl);
+    }
 
     setupUIBasedOnRole();
     loadInitialData();
@@ -26,15 +44,18 @@ document.addEventListener('DOMContentLoaded', () => {
  * Перевіряє роль користувача та налаштовує UI
  */
 function setupUIBasedOnRole() {
-    currentUserRole = getUserRole();
+    currentUserRole = getUserRole(); // Функція з auth.js
 
     if (currentUserRole === 'Admin' || currentUserRole === 'Operator') {
-        document.getElementById('create-buttons-group').style.display = 'block';
+        const btnGroup = document.getElementById('create-buttons-group');
+        if (btnGroup) btnGroup.style.display = 'block';
 
-        // Показываем колонки "Дії" для всех таблиц
-        document.getElementById('actions-header-app').style.display = 'table-cell';
-        document.getElementById('actions-header-adm').style.display = 'table-cell';
-        document.getElementById('actions-header-op').style.display = 'table-cell';
+        // Показуємо колонки "Дії" для всіх таблиць
+        const headers = ['actions-header-app', 'actions-header-adm', 'actions-header-op'];
+        headers.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'table-cell';
+        });
     }
 }
 
@@ -43,22 +64,28 @@ function setupUIBasedOnRole() {
  */
 function setupEventListeners() {
     // Кнопки "Створити"
-    document.getElementById('create-appointment-btn').addEventListener('click', () => openCreateModal('appointment'));
-    document.getElementById('create-admission-btn').addEventListener('click', () => openCreateModal('admission'));
-    document.getElementById('create-operation-btn').addEventListener('click', () => openCreateModal('operation'));
+    const btnApp = document.getElementById('create-appointment-btn');
+    if (btnApp) btnApp.addEventListener('click', () => openCreateModal('appointment'));
+
+    const btnAdm = document.getElementById('create-admission-btn');
+    if (btnAdm) btnAdm.addEventListener('click', () => openCreateModal('admission'));
+
+    const btnOp = document.getElementById('create-operation-btn');
+    if (btnOp) btnOp.addEventListener('click', () => openCreateModal('operation'));
 
     // Форма
-    document.getElementById('tracking-form').addEventListener('submit', handleFormSubmit);
+    const form = document.getElementById('tracking-form');
+    if (form) form.addEventListener('submit', handleFormSubmit);
 
     // Каскадні дропдауни
-    document.getElementById('tracking-patient').addEventListener('change', handlePatientChange);
-    document.getElementById('tracking-location').addEventListener('change', handleLocationChange);
-    document.getElementById('tracking-hospital').addEventListener('change', handleHospitalChange);
+    document.getElementById('tracking-patient')?.addEventListener('change', handlePatientChange);
+    document.getElementById('tracking-location')?.addEventListener('change', handleLocationChange);
+    document.getElementById('tracking-hospital')?.addEventListener('change', handleHospitalChange);
 
     // Обробники кліків на таблицях (делегування)
-    document.getElementById('appointments-table-body').addEventListener('click', (e) => handleTableClick(e, 'appointment'));
-    document.getElementById('admissions-table-body').addEventListener('click', (e) => handleTableClick(e, 'admission'));
-    document.getElementById('operations-table-body').addEventListener('click', (e) => handleTableClick(e, 'operation'));
+    document.getElementById('appointments-table-body')?.addEventListener('click', (e) => handleTableClick(e, 'appointment'));
+    document.getElementById('admissions-table-body')?.addEventListener('click', (e) => handleTableClick(e, 'admission'));
+    document.getElementById('operations-table-body')?.addEventListener('click', (e) => handleTableClick(e, 'operation'));
 }
 
 
@@ -68,32 +95,35 @@ function setupEventListeners() {
 async function loadInitialData() {
     try {
         // 1. Завантажуємо кеш (пацієнти, лікарі, локації)
-        // Використовуємо .GetAllWithAssociationsAsync для пацієнтів
         const [patients, doctors, clinics, hospitals] = await Promise.all([
             apiFetch('/api/patient/all-with-associations'),
-            apiFetch('/api/staff/doctors'), // Має містити .employments
+            apiFetch('/api/staff/doctors'),
             apiFetch('/api/clinic'),
             apiFetch('/api/hospital')
         ]);
 
-        allPatients = patients;
-        allDoctors = doctors;
-        allClinics = clinics;
-        allHospitals = hospitals;
+        allPatients = patients || [];
+        allDoctors = doctors || [];
+        allClinics = clinics || [];
+        allHospitals = hospitals || [];
 
         // Заповнюємо головний список пацієнтів
         const patientSelect = document.getElementById('tracking-patient');
-        patientSelect.innerHTML = '<option value="">Оберіть пацієнта...</option>';
-        allPatients.forEach(p => {
-            patientSelect.innerHTML += `<option value="${p.id}">${p.id}: ${p.fullName}</option>`;
-        });
+        if (patientSelect) {
+            patientSelect.innerHTML = '<option value="">Оберіть пацієнта...</option>';
+            allPatients.forEach(p => {
+                patientSelect.innerHTML += `<option value="${p.id}">${p.id}: ${p.fullName}</option>`;
+            });
+        }
 
         // Заповнюємо список лікарень (для госпіталізації)
         const hospitalSelect = document.getElementById('tracking-hospital');
-        hospitalSelect.innerHTML = '<option value="">Оберіть лікарню...</option>';
-        allHospitals.forEach(h => {
-            hospitalSelect.innerHTML += `<option value="${h.id}">${h.name}</option>`;
-        });
+        if (hospitalSelect) {
+            hospitalSelect.innerHTML = '<option value="">Оберіть лікарню...</option>';
+            allHospitals.forEach(h => {
+                hospitalSelect.innerHTML += `<option value="${h.id}">${h.name}</option>`;
+            });
+        }
 
         // 2. Завантажуємо дані для таблиць
         const [appointments, admissions, operations] = await Promise.all([
@@ -102,15 +132,15 @@ async function loadInitialData() {
             apiFetch('/api/operation')
         ]);
 
-        allAppointments = appointments;
-        allAdmissions = admissions;
-        allOperations = operations;
+        allAppointments = appointments || [];
+        allAdmissions = admissions || [];
+        allOperations = operations || [];
 
         // 3. Рендеримо таблиці
         renderAllTables();
 
     } catch (error) {
-        showError(`Критична помилка завантаження даних: ${error.message}`);
+        showError(`Не вдалося завантажити дані: ${error.message}`);
     }
 }
 
@@ -126,7 +156,9 @@ function renderAllTables() {
 
 function renderAppointmentsTable(data) {
     const tableBody = document.getElementById('appointments-table-body');
+    if (!tableBody) return;
     tableBody.innerHTML = '';
+
     if (!data || data.length === 0) {
         tableBody.innerHTML = '<tr><td colspan="7" class="text-center">Записів не знайдено.</td></tr>';
         return;
@@ -158,7 +190,7 @@ function renderAppointmentsTable(data) {
                 <td>${doctor?.fullName || 'Н/Д'}</td>
                 <td>${location}</td>
                 <td>${new Date(item.visitDateTime).toLocaleString()}</td>
-                <td>${item.summary.substring(0, 50) || '...'}</td>
+                <td>${item.summary ? item.summary.substring(0, 50) : '...'}</td>
                 ${actions}
             </tr>`;
         tableBody.innerHTML += row;
@@ -167,7 +199,9 @@ function renderAppointmentsTable(data) {
 
 function renderAdmissionsTable(data) {
     const tableBody = document.getElementById('admissions-table-body');
+    if (!tableBody) return;
     tableBody.innerHTML = '';
+
     if (!data || data.length === 0) {
         tableBody.innerHTML = '<tr><td colspan="7" class="text-center">Госпіталізацій не знайдено.</td></tr>';
         return;
@@ -202,7 +236,9 @@ function renderAdmissionsTable(data) {
 
 function renderOperationsTable(data) {
     const tableBody = document.getElementById('operations-table-body');
+    if (!tableBody) return;
     tableBody.innerHTML = '';
+
     if (!data || data.length === 0) {
         tableBody.innerHTML = '<tr><td colspan="8" class="text-center">Операцій не знайдено.</td></tr>';
         return;
@@ -304,8 +340,6 @@ async function handleEdit(id, mode) {
 
         } else if (mode === 'admission') {
             // ✅ ЛОГІКА ВИПИСКИ (DISCHARGE)
-            // Якщо ми редагуємо госпіталізацію, ми переводимо форму в режим "Виписка"
-
             document.getElementById('modal-title').textContent = `Виписати пацієнта`;
             document.getElementById('tracking-hospital').value = item.hospitalId;
             await handleHospitalChange();
@@ -396,7 +430,7 @@ function setupModalForMode(mode, isEdit = false) {
 
         document.getElementById('form-group-hospital').style.display = 'block';
 
-        // Поле виписки показуємо завжди в режимі admission, але required ставимо тільки при редагуванні
+        // Поле виписки показуємо завжди в режимі admission
         document.getElementById('form-group-dischargedate').style.display = 'block';
 
         hospitalSelect.required = true;
@@ -432,18 +466,20 @@ function handlePatientChange() {
 
     const locationSelect = document.getElementById('tracking-location');
 
-    if (patient.clinicId && patient.clinic) {
-        locationSelect.innerHTML += `<option value="clinic-${patient.clinicId}">${patient.clinic.name} (Поліклініка)</option>`;
-    } else {
-        const clinic = allClinics.find(c => c.id === patient.clinicId);
-        if(clinic) locationSelect.innerHTML += `<option value="clinic-${clinic.id}">${clinic.name} (Поліклініка)</option>`;
+    // Безпечна перевірка clinicId та hospitalId
+    if (patient.clinicId) {
+        // Якщо об'єкт clinic не підвантажився, шукаємо в allClinics
+        const clinic = patient.clinic || allClinics.find(c => c.id === patient.clinicId);
+        if (clinic) {
+            locationSelect.innerHTML += `<option value="clinic-${clinic.id}">${clinic.name} (Поліклініка)</option>`;
+        }
     }
 
-    if (patient.hospitalId && patient.hospital) {
-        locationSelect.innerHTML += `<option value="hospital-${patient.hospitalId}">${patient.hospital.name} (Лікарня)</option>`;
-    } else {
-        const hospital = allHospitals.find(h => h.id === patient.hospitalId);
-        if(hospital) locationSelect.innerHTML += `<option value="hospital-${hospital.id}">${hospital.name} (Лікарня)</option>`;
+    if (patient.hospitalId) {
+        const hospital = patient.hospital || allHospitals.find(h => h.id === patient.hospitalId);
+        if (hospital) {
+            locationSelect.innerHTML += `<option value="hospital-${hospital.id}">${hospital.name} (Лікарня)</option>`;
+        }
     }
 }
 
@@ -524,7 +560,6 @@ async function handleFormSubmit(event) {
         }
 
         const dischargeDateIso = new Date(dischargeDateInput).toISOString();
-        // Використовуємо Query Parameter для дати, як в контролері
         const endpoint = `/api/admission/${id}/discharge?dischargeDate=${dischargeDateIso}`;
 
         try {
@@ -533,13 +568,14 @@ async function handleFormSubmit(event) {
 
             allAdmissions = await apiFetch('/api/admission');
             renderAdmissionsTable(allAdmissions);
-            allPatients = await apiFetch('/api/patient/all-with-associations'); // Оновити статус пацієнтів
+            // Оновити статус пацієнтів, бо хтось звільнився
+            allPatients = await apiFetch('/api/patient/all-with-associations');
 
         } catch (error) {
             console.error('Error discharging:', error);
             showModalError(`Не вдалося виписати: ${error.message}`);
         }
-        return; // Виходимо, щоб не виконувати стандартну логіку нижче
+        return;
     }
 
     // --- СТАНДАРТНА ЛОГІКА ДЛЯ ІНШИХ ТИПІВ ---
@@ -553,7 +589,7 @@ async function handleFormSubmit(event) {
         dto = buildDto(mode);
         if (id) dto.id = parseInt(id, 10);
     } catch (error) {
-        showModalError(error.message);
+        showModalError(error.message); // Тут буде українізована помилка з buildDto
         return;
     }
 
@@ -646,7 +682,7 @@ function buildDto(mode) {
         };
     }
 
-    throw new Error('Невідомий режим форми.');
+    throw new Error('Внутрішня помилка: Невідомий режим форми.');
 }
 
 /**
@@ -708,7 +744,7 @@ function getEndpoint(mode) {
     if (mode === 'appointment') return '/api/appointment';
     if (mode === 'admission') return '/api/admission';
     if (mode === 'operation') return '/api/operation';
-    throw new Error('Invalid mode');
+    throw new Error('Невірний режим роботи (invalid mode)');
 }
 
 function resetLocationSelect(showDefault = false) {

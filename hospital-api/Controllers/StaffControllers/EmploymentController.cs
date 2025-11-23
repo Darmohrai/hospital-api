@@ -16,6 +16,19 @@ public class EmploymentController : ControllerBase
     {
         _employmentService = employmentService;
     }
+    
+    [HttpGet("staff/{staffId}")]
+    public async Task<IActionResult> GetByStaffId(int staffId)
+    {
+        var response = await _employmentService.GetEmploymentsByStaffIdAsync(staffId);
+        
+        if (!response.IsSuccess)
+        {
+            return NotFound(response.ErrorMessage);
+        }
+
+        return Ok(response.Data);
+    }
 
     /// <summary>
     /// Створює зв'язок Staff-Hospital/Clinic

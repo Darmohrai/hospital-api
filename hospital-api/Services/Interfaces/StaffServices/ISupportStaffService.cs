@@ -6,8 +6,8 @@ public interface ISupportStaffService
 {
     Task<IEnumerable<SupportStaff>> GetAllAsync();
     Task<SupportStaff?> GetByIdAsync(int id);
-    Task CreateAsync(SupportStaff staff);
-    Task UpdateAsync(SupportStaff staff);
+    Task CreateAsync(SupportStaff staff, int? hospitalId, int? clinicId);
+    Task UpdateAsync(SupportStaff staffFromRequest, int? hospitalId, int? clinicId);
     Task DeleteAsync(int id);
         
     Task<IEnumerable<SupportStaff>> GetByRoleAsync(SupportRole role);

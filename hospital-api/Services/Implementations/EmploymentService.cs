@@ -16,15 +16,21 @@ namespace hospital_api.Services.Implementations
         private readonly IClinicRepository _clinicRepo;
 
         public EmploymentService(
-            IEmploymentRepository employmentRepo, 
-            IStaffRepository staffRepo, 
-            IHospitalRepository hospitalRepo, 
+            IEmploymentRepository employmentRepo,
+            IStaffRepository staffRepo,
+            IHospitalRepository hospitalRepo,
             IClinicRepository clinicRepo)
         {
             _employmentRepo = employmentRepo;
             _staffRepo = staffRepo;
             _hospitalRepo = hospitalRepo;
             _clinicRepo = clinicRepo;
+        }
+
+        public async Task<ServiceResponse<IEnumerable<Employment>>> GetEmploymentsByStaffIdAsync(int staffId)
+        {
+            var employments = await _employmentRepo.GetEmploymentsByStaffIdAsync(staffId);
+            return ServiceResponse<IEnumerable<Employment>>.Success(employments);
         }
 
         public async Task<ServiceResponse<Employment>> CreateEmploymentAsync(CreateEmploymentDto dto)
@@ -39,7 +45,7 @@ namespace hospital_api.Services.Implementations
             {
                 return ServiceResponse<Employment>.Fail("Необхідно вказати HospitalId або ClinicId.");
             }
-            
+
             if (dto.HospitalId != null && dto.ClinicId != null)
             {
                 return ServiceResponse<Employment>.Fail("Вкажіть АБО HospitalId, АБО ClinicId, але не обидва.");
@@ -47,7 +53,7 @@ namespace hospital_api.Services.Implementations
 
             // --- ✅ НОВА ПЕРЕВІРКА НА ДУБЛІКАТИ ---
             bool alreadyExists = false;
-            if(dto.HospitalId.HasValue)
+            if (dto.HospitalId.HasValue)
             {
                 if (await _hospitalRepo.GetByIdAsync(dto.HospitalId.Value) == null)
                     return ServiceResponse<Employment>.Fail("Лікарні з таким ID не знайдено.");
@@ -55,7 +61,7 @@ namespace hospital_api.Services.Implementations
                 alreadyExists = await _employmentRepo.GetAll()
                     .AnyAsync(e => e.StaffId == dto.StaffId && e.HospitalId == dto.HospitalId);
             }
-            else if(dto.ClinicId.HasValue)
+            else if (dto.ClinicId.HasValue)
             {
                 if (await _clinicRepo.GetByIdAsync(dto.ClinicId.Value) == null)
                     return ServiceResponse<Employment>.Fail("Клініки з таким ID не знайдено.");
@@ -69,7 +75,7 @@ namespace hospital_api.Services.Implementations
                 return ServiceResponse<Employment>.Fail("Цей лікар вже призначений у цей заклад.");
             }
             // --- Кінець перевірки ---
-            
+
             var employment = new Employment
             {
                 StaffId = dto.StaffId,

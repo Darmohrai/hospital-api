@@ -14,4 +14,16 @@ public class CreateSupportStaffDto
 
     [Required(ErrorMessage = "Role is required.")]
     public SupportRole Role { get; set; }
+    
+    public int? HospitalId { get; set; }
+    public int? ClinicId { get; set; }
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (HospitalId.HasValue && ClinicId.HasValue)
+        {
+            yield return new ValidationResult(
+                "Staff cannot be assigned to both a Hospital and a Clinic at the same time.",
+                new[] { nameof(HospitalId), nameof(ClinicId) });
+        }
+    }
 }

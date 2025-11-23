@@ -1,5 +1,6 @@
 ﻿using hospital_api.DTOs.Staff;
 using hospital_api.Models.StaffAggregate;
+using hospital_api.Repositories.Interfaces.StaffRepo;
 using hospital_api.Services.Interfaces.StaffServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,126 +12,141 @@ namespace hospital_api.Controllers.StaffControllers;
 [Route("api/staff/support")] // Більш чіткий базовий маршрут
 public class SupportStaffController : ControllerBase
 {
-    private readonly ISupportStaffService _supportStaffService;
+    private readonly ISupportStaffService _service;
+    private readonly IEmploymentRepository _employmentRepository;
 
-    public SupportStaffController(ISupportStaffService supportStaffService)
+    public SupportStaffController(
+        ISupportStaffService service,
+        IEmploymentRepository employmentRepository)
     {
-        _supportStaffService = supportStaffService;
+        _service = service;
+        _employmentRepository = employmentRepository;
     }
 
-    /// <summary>
-    /// Отримує весь допоміжний персонал.
-    /// </summary>
-    [Authorize(Roles = "Authorized, Operator, Admin")]
+    // GET: api/staff/support
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<ActionResult<IEnumerable<SupportStaff>>> GetAll()
     {
-        var staff = await _supportStaffService.GetAllAsync();
+        var staff = await _service.GetAllAsync();
         return Ok(staff);
     }
 
-    /// <summary>
-    /// Отримує співробітника за його ID.
-    /// </summary>
-    [Authorize(Roles = "Authorized, Operator, Admin")]
+    // GET: api/staff/support/{id}
+    // Оновлено: повертає розширені дані для форми редагування
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<ActionResult<object>> GetById(int id)
     {
-        var staff = await _supportStaffService.GetByIdAsync(id);
+        var staff = await _service.GetByIdAsync(id);
         if (staff == null)
-            return NotFound();
+        {
+            return NotFound($"Support staff with ID {id} not found.");
+        }
 
-        return Ok(staff);
+        // Отримуємо місце роботи, щоб заповнити форму на фронтенді
+        var employments = await _employmentRepository.GetEmploymentsByStaffIdAsync(id);
+        var activeEmployment = employments.FirstOrDefault();
+
+        // Повертаємо анонімний об'єкт з додатковими полями
+        return Ok(new 
+        {
+            staff.Id,
+            staff.FullName,
+            staff.Role,
+            staff.WorkExperienceYears,
+            // Додаємо ID прив'язок
+            HospitalId = activeEmployment?.HospitalId,
+            ClinicId = activeEmployment?.ClinicId
+        });
     }
 
-    /// <summary>
-    /// Створює нового співробітника допоміжного персоналу.
-    /// </summary>
-    [Authorize(Roles = "Operator, Admin")]
+    // POST: api/staff/support
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateSupportStaffDto dto)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
         var staff = new SupportStaff
         {
             FullName = dto.FullName,
-            WorkExperienceYears = dto.WorkExperienceYears,
-            Role = dto.Role
+            Role = dto.Role,
+            WorkExperienceYears = dto.WorkExperienceYears
         };
 
-        await _supportStaffService.CreateAsync(staff);
-        return CreatedAtAction(nameof(GetById), new { id = staff.Id }, staff);
+        try
+        {
+            //
+            // Передаємо нові параметри у сервіс
+            await _service.CreateAsync(staff, dto.HospitalId, dto.ClinicId);
+            
+            return CreatedAtAction(nameof(GetById), new { id = staff.Id }, staff);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
-    /// <summary>
-    /// Оновлює дані існуючого співробітника.
-    /// </summary>
-    [Authorize(Roles = "Operator, Admin")]
+    // PUT: api/staff/support/{id}
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] SupportStaff staff)
+    public async Task<IActionResult> Update(int id, [FromBody] CreateSupportStaffDto dto)
     {
-        if (id != staff.Id)
-            return BadRequest("ID mismatch.");
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
 
-        await _supportStaffService.UpdateAsync(staff);
-        return NoContent();
+        var existingStaff = await _service.GetByIdAsync(id);
+        if (existingStaff == null)
+            return NotFound();
+
+        // Оновлюємо поля моделі
+        existingStaff.FullName = dto.FullName;
+        existingStaff.Role = dto.Role;
+        existingStaff.WorkExperienceYears = dto.WorkExperienceYears;
+
+        try
+        {
+            //
+            // Передаємо нові параметри у сервіс для оновлення зв'язків
+            await _service.UpdateAsync(existingStaff, dto.HospitalId, dto.ClinicId);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
     }
 
-    /// <summary>
-    /// Видаляє співробітника за його ID.
-    /// </summary>
-    [Authorize(Roles = "Operator, Admin")]
+    // DELETE: api/staff/support/{id}
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        await _supportStaffService.DeleteAsync(id);
+        var existingStaff = await _service.GetByIdAsync(id);
+        if (existingStaff == null)
+        {
+            return NotFound();
+        }
+
+        await _service.DeleteAsync(id);
         return NoContent();
     }
 
-    /// <summary>
-    /// Отримує персонал за вказаною роллю.
-    /// </summary>
-    [Authorize(Roles = "Authorized, Operator, Admin")]
+    // GET: api/staff/support/role/{role}
     [HttpGet("role/{role}")]
-    public async Task<IActionResult> GetByRole(SupportRole role)
+    public async Task<ActionResult<IEnumerable<SupportStaff>>> GetByRole(SupportRole role)
     {
-        var staff = await _supportStaffService.GetByRoleAsync(role);
+        var staff = await _service.GetByRoleAsync(role);
         return Ok(staff);
     }
 
-    /// <summary>
-    /// Отримує персонал з вказаної клініки (опціонально - за роллю).
-    /// </summary>
-    [Authorize(Roles = "Authorized, Operator, Admin")]
-    [HttpGet("clinic/{clinicId}")]
-    public async Task<IActionResult> GetByClinic(int clinicId, [FromQuery] SupportRole? role)
-    {
-        var staff = await _supportStaffService.GetByClinicAsync(clinicId, role);
-        return Ok(staff);
-    }
-
-    /// <summary>
-    /// Отримує персонал з вказаної лікарні (опціонально - за роллю).
-    /// </summary>
-    [Authorize(Roles = "Authorized, Operator, Admin")]
-    [HttpGet("hospital/{hospitalId}")]
-    public async Task<IActionResult> GetByHospital(int hospitalId, [FromQuery] SupportRole? role)
-    {
-        var staff = await _supportStaffService.GetByHospitalAsync(hospitalId, role);
-        return Ok(staff);
-    }
-
-    /// <summary>
-    /// Отримує профіль співробітника у вигляді текстового звіту.
-    /// </summary>
-    [Authorize(Roles = "Authorized, Operator, Admin")]
+    // GET: api/staff/support/{id}/profile-summary
     [HttpGet("{id}/profile-summary")]
-    public async Task<IActionResult> GetProfileSummary(int id)
+    public async Task<ActionResult<string>> GetProfileSummary(int id)
     {
-        var summary = await _supportStaffService.GetProfileSummaryAsync(id);
-
-        if (summary.Contains("not found")) // Проста перевірка на помилку
+        var summary = await _service.GetProfileSummaryAsync(id);
+        if (summary == "Support staff not found.")
+        {
             return NotFound(summary);
-
+        }
         return Ok(summary);
     }
 }

@@ -34,52 +34,80 @@ public class SupportStaffService : ISupportStaffService
         return staff as SupportStaff;
     }
 
-    public async Task CreateAsync(SupportStaff staff)
+    // ОНОВЛЕНО: Додані параметри hospitalId та clinicId
+    public async Task CreateAsync(SupportStaff staff, int? hospitalId, int? clinicId)
     {
         if (string.IsNullOrWhiteSpace(staff.FullName))
         {
             throw new ArgumentException("Support staff full name is required.");
         }
 
-        // Додаємо через загальний репозиторій
+        // 1. Спочатку створюємо самого співробітника, щоб отримати його ID
         await _staffRepository.AddAsync(staff);
+
+        // 2. Якщо вказано місце роботи, створюємо запис в Employment
+        if (hospitalId.HasValue || clinicId.HasValue)
+        {
+            var employment = new Employment
+            {
+                StaffId = staff.Id,
+                HospitalId = hospitalId,
+                ClinicId = clinicId
+            };
+            await _employmentRepository.AddAsync(employment);
+        }
     }
 
-    // --- 💡 ПОЧАТОК ВИПРАВЛЕННЯ ---
-    // Повертаємо метод до найпростішого вигляду.
-    // 'staffFromRequest' - це об'єкт, що прийшов з [FromBody] у контролері.
-    // Він "від'єднаний", і ваш GenericRepository.UpdateAsync()
-    // (який викликає _dbSet.Update(entity)) саме для цього і призначений.
-    public async Task UpdateAsync(SupportStaff staffFromRequest)
+    // ОНОВЛЕНО: Додані параметри hospitalId та clinicId
+    public async Task UpdateAsync(SupportStaff staffFromRequest, int? hospitalId, int? clinicId)
     {
-        // Просто передаємо об'єкт далі.
-        // EF Core приєднає його і позначить як "Modified".
-        // Це уникне помилки "already being tracked".
+        // 1. Оновлюємо основні дані співробітника (ім'я, роль, досвід)
         await _staffRepository.UpdateAsync(staffFromRequest);
+
+        // 2. Отримуємо поточне працевлаштування співробітника
+        var employments = await _employmentRepository.GetEmploymentsByStaffIdAsync(staffFromRequest.Id);
+        var currentEmployment = employments.FirstOrDefault();
+
+        // 3. Логіка оновлення місця роботи
+        if (currentEmployment != null)
+        {
+            // Якщо запис вже є - оновлюємо його
+            currentEmployment.HospitalId = hospitalId;
+            currentEmployment.ClinicId = clinicId;
+            await _employmentRepository.UpdateAsync(currentEmployment);
+        }
+        else if (hospitalId.HasValue || clinicId.HasValue)
+        {
+            // Якщо запису не було, але ми обрали лікарню/поліклініку - створюємо новий
+            var newEmployment = new Employment
+            {
+                StaffId = staffFromRequest.Id,
+                HospitalId = hospitalId,
+                ClinicId = clinicId
+            };
+            await _employmentRepository.AddAsync(newEmployment);
+        }
     }
-    // --- 💡 КІНЕЦЬ ВИПРАВЛЕННЯ ---
 
     public async Task DeleteAsync(int id)
     {
         // Видаляємо через загальний репозиторій
+        // (Cascading delete в БД має подбати про видалення Employment, або це зробить EF Core)
         await _staffRepository.DeleteAsync(id);
     }
 
     public async Task<IEnumerable<SupportStaff>> GetByRoleAsync(SupportRole role)
     {
-        // Викликаємо відповідний метод з IStaffRepository
         return await _staffRepository.GetSupportStaffByRoleAsync(role);
     }
 
     public async Task<IEnumerable<SupportStaff>> GetByClinicAsync(int clinicId, SupportRole? role = null)
     {
-        // Викликаємо відповідний метод з IStaffRepository
         return await _staffRepository.GetSupportStaffByClinicAsync(clinicId, role);
     }
 
     public async Task<IEnumerable<SupportStaff>> GetByHospitalAsync(int hospitalId, SupportRole? role = null)
     {
-        // Викликаємо відповідний метод з IStaffRepository
         return await _staffRepository.GetSupportStaffByHospitalAsync(hospitalId, role);
     }
 
@@ -94,23 +122,40 @@ public class SupportStaffService : ISupportStaffService
         var summaryBuilder = new StringBuilder();
         summaryBuilder.AppendLine($"Профіль співробітника: {staff.FullName}");
         summaryBuilder.AppendLine($"Роль: {staff.Role}");
+        summaryBuilder.AppendLine($"Досвід: {staff.WorkExperienceYears} років");
 
+        // Отримуємо місце роботи
         var employments = await _employmentRepository.GetEmploymentsByStaffIdAsync(staffId);
-        summaryBuilder.AppendLine("Місця роботи:");
+        summaryBuilder.AppendLine("Місце роботи:");
 
         var employmentList = employments.ToList();
         if (!employmentList.Any())
         {
-            summaryBuilder.AppendLine("- Наразі не працевлаштований.");
+            summaryBuilder.AppendLine("- Наразі не працевлаштований (або дані не вказані).");
         }
         else
         {
             foreach (var employment in employmentList)
             {
-                if (employment.Hospital != null)
-                    summaryBuilder.AppendLine($"- Лікарня: {employment.Hospital.Name}");
-                if (employment.Clinic != null)
-                    summaryBuilder.AppendLine($"- Поліклініка: {employment.Clinic.Name}");
+                // Перевіряємо, де саме працює
+                if (employment.HospitalId.HasValue)
+                {
+                    // Якщо навігаційна властивість Hospital не завантажена, показуємо ID (або треба Include в репозиторії)
+                    var hospitalName = employment.Hospital?.Name ?? $"ID: {employment.HospitalId}";
+                    summaryBuilder.AppendLine($"- Лікарня: {hospitalName}");
+                }
+                
+                if (employment.ClinicId.HasValue)
+                {
+                    var clinicName = employment.Clinic?.Name ?? $"ID: {employment.ClinicId}";
+                    summaryBuilder.AppendLine($"- Поліклініка: {clinicName}");
+                }
+
+                // Якщо записано, але обидва null (теоретично можливо при ручному редагуванні БД)
+                if (!employment.HospitalId.HasValue && !employment.ClinicId.HasValue)
+                {
+                    summaryBuilder.AppendLine("- Закріплений запис про працевлаштування без прив'язки до закладу.");
+                }
             }
         }
 

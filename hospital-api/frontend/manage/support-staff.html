@@ -4,15 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Керування: Допоміжний Персонал</title>
-    <!-- Підключення Bootstrap CSS та Icons з CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- Ваш кастомний CSS -->
     <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
 
-<!-- Навігаційна панель (скопійована з clinics.html) -->
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container-fluid">
@@ -22,33 +19,24 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item" id="nav-reports" style="display:none;"><a class="nav-link"
-                                                                                   href="../reports.html">Звіти</a></li>
+                    <li class="nav-item" id="nav-reports" style="display:none;"><a class="nav-link" href="../reports.html">Звіти</a></li>
                     <li class="nav-item dropdown" id="nav-crud" style="display:none;">
-                        <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown">Керування
-                            даними</a>
+                        <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown">Керування даними</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="hospitals.html">Лікарні</a></li>
                             <li><a class="dropdown-item" href="clinics.html">Поліклініки</a></li>
                             <li><a class="dropdown-item" href="laboratories.html">Лабораторії</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
+                            <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="patients.html">Пацієнти</a></li>
                             <li><a class="dropdown-item" href="doctors.html">Лікарі</a></li>
                             <li><a class="dropdown-item" href="support-staff.html">Доп. Персонал</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
+                            <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="tracking.html">Відстеження (Записи/Операції)</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
+                            <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="query.html">SQL Запити</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item" id="nav-admin" style="display:none;"><a class="nav-link" href="../admin.html">Адмін-панель</a>
-                    </li>
+                    <li class="nav-item" id="nav-admin" style="display:none;"><a class="nav-link" href="../admin.html">Адмін-панель</a></li>
                 </ul>
                 <div class="d-flex" id="auth-section">
                     <div id="anonymous-links">
@@ -65,12 +53,10 @@
     </nav>
 </header>
 
-<!-- Основний контент -->
 <main class="container mt-4">
     <div class="content-area">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2>Керування: Допоміжний Персонал</h2>
-            <!-- Кнопка "Додати", яка тепер прихована, якщо не Адмін (керується JS) -->
             <button class="btn btn-primary" id="add-staff-btn" data-bs-toggle="modal"
                     data-bs-target="#staff-manage-modal" style="display: none;">
                 <i class="bi bi-plus-lg"></i> Додати співробітника
@@ -79,7 +65,6 @@
 
         <div class="alert alert-danger" id="page-error" style="display: none;"></div>
 
-        <!-- Таблиця зі стилями Bootstrap -->
         <table class="table table-striped table-hover" id="staff-table">
             <thead>
             <tr>
@@ -87,7 +72,7 @@
                 <th>Повне ім'я</th>
                 <th>Роль</th>
                 <th>Досвід (років)</th>
-                <!-- Колонка "Дії" буде показана JS, якщо є права -->
+                <th>Місце роботи</th>
                 <th id="actions-header" style="display: none; width: 200px;">Дії</th>
             </tr>
             </thead>
@@ -100,10 +85,6 @@
     </div>
 </main>
 
-<!-- 
-  МОДАЛЬНЕ ВІКНО 
-  для створення та редагування персоналу
--->
 <div class="modal fade" id="staff-manage-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -115,10 +96,8 @@
                 <div class="modal-body">
                     <div class="alert alert-danger" id="modal-error" style="display: none;"></div>
 
-                    <!-- Приховане поле для ID (для редагування) -->
                     <input type="hidden" id="staff-id">
 
-                    <!-- Поля форми зі стилями Bootstrap -->
                     <div class="mb-3">
                         <label for="fullName" class="form-label">Повне ім'я:</label>
                         <input type="text" class="form-control" id="fullName" required>
@@ -130,7 +109,6 @@
                     <div class="mb-3">
                         <label for="role" class="form-label">Роль:</label>
                         <select class="form-select" id="role" required>
-                            <!-- Оновлений список, що відповідає вашому C# Enum 'SupportRole' -->
                             <option value="0">Не обрано (None)</option>
                             <option value="1">Медсестра (Nurse)</option>
                             <option value="2">Санітар (Orderly)</option>
@@ -144,6 +122,38 @@
                         </select>
                     </div>
 
+                    <hr>
+                    <h6 class="mb-3">Місце працевлаштування</h6>
+
+                    <div class="mb-3">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="workplaceType" id="workplaceNone" value="none" checked>
+                            <label class="form-check-label" for="workplaceNone">Без прив'язки</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="workplaceType" id="workplaceHospital" value="hospital">
+                            <label class="form-check-label" for="workplaceHospital">Лікарня</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="workplaceType" id="workplaceClinic" value="clinic">
+                            <label class="form-check-label" for="workplaceClinic">Поліклініка</label>
+                        </div>
+                    </div>
+
+                    <div class="mb-3" id="hospital-select-container" style="display: none;">
+                        <label for="hospitalSelect" class="form-label">Оберіть Лікарню:</label>
+                        <select class="form-select" id="hospitalSelect">
+                            <option value="">-- Оберіть лікарню --</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3" id="clinic-select-container" style="display: none;">
+                        <label for="clinicSelect" class="form-label">Оберіть Поліклініку:</label>
+                        <select class="form-select" id="clinicSelect">
+                            <option value="">-- Оберіть поліклініку --</option>
+                        </select>
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
@@ -154,16 +164,14 @@
     </div>
 </div>
 
-<!-- Модальне вікно для профілю (ваш оригінальний код, трохи стилізований) -->
 <div class="modal fade" id="profile-modal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Профіль співробітника</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
+<!--            <div class="modal-header">-->
+<!--                <h5 class="modal-title">Профіль співробітника</h5>-->
+<!--                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>-->
+<!--            </div>-->
             <div class="modal-body">
-                <!-- 'pre' для збереження форматування тексту з бекенду -->
                 <pre id="profile-summary-content" style="white-space: pre-wrap; word-wrap: break-word;"></pre>
             </div>
             <div class="modal-footer">
@@ -173,16 +181,10 @@
     </div>
 </div>
 
-
-<!-- Підключення скриптів -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../js/api.js"></script>
 <script src="../js/auth.js"></script>
 <script src="../js/main.js"></script>
-<!-- 
-  Підключаємо JS-файл, який я надав раніше. 
-  Потрібно буде трохи змінити його, щоб він працював з ID модального вікна.
--->
 <script src="support-staff.js"></script>
 </body>
 </html>

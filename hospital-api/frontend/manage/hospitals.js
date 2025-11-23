@@ -23,6 +23,17 @@
         'Cardiologist'
     ];
 
+    const SPEC_TRANSLATIONS = {
+        Surgeon: "Хірург",
+        Neurologist: "Невролог",
+        Ophthalmologist: "Офтальмолог",
+        Dentist: "Стоматолог",
+        Radiologist: "Рентгенолог",
+        Gynecologist: "Гінеколог",
+        Cardiologist: "Кардіолог"
+    };
+
+
     // --- Елементи DOM ---
     const hospitalsTableBody = document.getElementById('hospitals-table-body');
     const addHospitalBtn = document.getElementById('add-hospital-btn');
@@ -52,11 +63,10 @@
     // 1. Додати Корпус
     const addBuildingModalEl = document.getElementById('add-building-modal');
     const addBuildingModal = new bootstrap.Modal(addBuildingModalEl, {
-        backdrop: 'static',  // ← важливо: фон статичний
-        keyboard: false      // ← Esc не закриває модалку
+        backdrop: 'static',
+        keyboard: false
     });
 
-// --- FIX: відкриває модалку поверх головної ---
     addBuildingModalEl.addEventListener('show.bs.modal', () => {
         mainModalEl.classList.add("modal-static-fix");
     });
@@ -64,8 +74,6 @@
     addBuildingModalEl.addEventListener('hidden.bs.modal', () => {
         mainModalEl.classList.remove("modal-static-fix");
     });
-
-// Запобігає приховуванню попередньої модалки (офіційний Bootstrap fix)
 
     const addBuildingForm = document.getElementById('add-building-form');
     const addBuildingError = document.getElementById('add-building-error');
@@ -107,44 +115,31 @@
 
     // --- Функції ---
 
-    /**
-     * Показує повідомлення про помилку на сторінці
-     */
     function showPageError(message) {
         pageError.textContent = message;
         pageError.style.display = message ? 'block' : 'none';
     }
 
-    /**
-     * Показує/ховає помилку в головному модальному вікні
-     */
     function showMainModalError(message) {
         mainModalError.textContent = message;
         mainModalError.style.display = message ? 'block' : 'none';
     }
 
-    /**
-     * Динамічно генерує чекбокси спеціалізацій
-     */
     function populateHospitalSpecsCheckboxes(specs = []) {
-        hospitalSpecsContainer.innerHTML = ''; // Очищуємо
+        hospitalSpecsContainer.innerHTML = '';
         ALL_SPECIALIZATIONS.forEach(spec => {
             const isChecked = specs.includes(spec);
             hospitalSpecsContainer.innerHTML += `
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="${spec}" id="spec-${spec}" ${isChecked ? 'checked' : ''}>
                     <label class="form-check-label" for="spec-${spec}">
-                        ${spec}
+                        ${SPEC_TRANSLATIONS[spec] || spec}
                     </label>
                 </div>
             `;
         });
     }
 
-    /**
-     * Отримує обрані спеціалізації з чекбоксів
-     * @returns {string[]} Масив обраних спеціалізацій
-     */
     function getSelectedSpecs() {
         const specs = [];
         hospitalSpecsContainer.querySelectorAll('input[type="checkbox"]:checked').forEach(chk => {
@@ -166,10 +161,11 @@
                 hospitals.forEach(hospital => {
                     const row = document.createElement('tr');
                     const specsHtml = hospital.specializations?.length
-                        ? hospital.specializations.map(s => `<span class="badge bg-secondary me-1">${s}</span>`).join(' ')
+                        ? hospital.specializations
+                            .map(s => `<span class="badge bg-secondary me-1">${SPEC_TRANSLATIONS[s] || s}</span>`)
+                            .join(' ')
                         : '<span class="text-muted small">Не вказано</span>';
 
-                    // Кнопки дій в залежності від ролі
                     let actionsHtml = '';
                     if (currentUserRole === 'Admin' || currentUserRole === 'Operator') {
                         actionsHtml = `
@@ -204,9 +200,6 @@
         }
     }
 
-    /**
-     * Обробник кліків на головній таблиці (для кнопок "Керувати" та "Видалити")
-     */
     function handleTableClick(event) {
         const target = event.target.closest('button');
         if (!target) return;
@@ -221,31 +214,24 @@
         }
     }
 
-    /**
-     * Готує модальне вікно для СТВОРЕННЯ нової лікарні
-     */
     function handleCreate() {
         currentMode = 'create';
-        currentHospitalData = null; // Немає даних
+        currentHospitalData = null;
         showMainModalError(null);
 
         hospitalForm.reset();
         hospitalIdInput.value = '';
-        populateHospitalSpecsCheckboxes([]); // Порожні чекбокси
+        populateHospitalSpecsCheckboxes([]);
 
         mainModalTitle.textContent = 'Створити нову лікарню';
         saveHospitalBtn.textContent = 'Створити і перейти до структури';
 
-        // Налаштування вкладок
         tabStructure.setAttribute('disabled', 'true');
-        tabMainInfo.show(); // Примусово показуємо першу вкладку
+        tabMainInfo.show();
 
         mainModal.show();
     }
 
-    /**
-     * Готує модальне вікно для КЕРУВАННЯ (Редагування) існуючої лікарні
-     */
     async function handleManage(id) {
         currentMode = 'edit';
         showMainModalError(null);
@@ -254,26 +240,21 @@
         structureAccordion.innerHTML = '';
         structureLoading.style.display = 'block';
 
-        // Вимикаємо вкладку структури, поки дані не завантажено
         tabStructure.setAttribute('disabled', 'true');
         tabMainInfo.show();
         mainModal.show();
 
         try {
-            // ✅ ГОЛОВНИЙ ЗАПИТ: Отримуємо все дерево даних
             const hospital = await apiFetch(`/api/hospital/${id}`);
-            currentHospitalData = hospital; // Зберігаємо повні дані
+            currentHospitalData = hospital;
 
-            // 1. Заповнюємо вкладку "Основна інформація"
             hospitalIdInput.value = hospital.id;
             hospitalNameInput.value = hospital.name;
             hospitalAddressInput.value = hospital.address;
             populateHospitalSpecsCheckboxes(hospital.specializations);
 
-            // 2. Рендеримо вкладку "Структура"
             await renderHospitalStructure(hospital);
 
-            // 3. Налаштовуємо модальне вікно
             mainModalTitle.textContent = `Керування: ${hospital.name}`;
             saveHospitalBtn.textContent = 'Зберегти зміни';
             tabStructure.removeAttribute('disabled');
@@ -285,9 +266,6 @@
         }
     }
 
-    /**
-     * Обробник збереження з вкладки "Основна інформація"
-     */
     async function handleHospitalFormSubmit(event) {
         event.preventDefault();
         showMainModalError(null);
@@ -309,14 +287,12 @@
             showMainModalError('Назва лікарні не може бути порожньою.');
             return;
         }
-
         if (!hospitalBody.address) {
             showMainModalError('Адреса лікарні не може бути порожньою.');
             return;
         }
 
         try {
-            // --- CREATE MODE ---
             if (currentMode === 'create') {
                 const newHospital = await apiFetch('/api/hospital', {
                     method: 'POST',
@@ -336,27 +312,20 @@
 
                 tabStructure.removeAttribute('disabled');
 
-                // Переключення на вкладку структури
-                const tabInstance = bootstrap.Tab.getInstance(tabStructure) ||
-                    new bootstrap.Tab(tabStructure);
+                const tabInstance = bootstrap.Tab.getInstance(tabStructure) || new bootstrap.Tab(tabStructure);
                 tabInstance.show();
 
                 await renderHospitalStructure(newHospital);
                 loadHospitals();
 
-                // --- EDIT MODE ---
             } else if (currentMode === 'edit' && currentHospitalData) {
-
                 await apiFetch(`/api/hospital/${currentHospitalData.id}`, {
                     method: 'PUT',
                     body: JSON.stringify(hospitalBody)
                 });
 
-                // Оновлюємо локальні дані
                 Object.assign(currentHospitalData, hospitalBody);
-
                 mainModalTitle.textContent = `Керування: ${hospitalBody.name}`;
-
                 await renderHospitalStructure(currentHospitalData);
                 loadHospitals();
                 showMainModalError(null);
@@ -375,43 +344,30 @@
      * Головна функція рендерингу. Будує дерево акордеонів.
      */
     async function renderHospitalStructure(hospital) {
-        structureAccordion.innerHTML = ''; // Очищуємо
+        structureAccordion.innerHTML = '';
         if (!hospital.buildings || hospital.buildings.length === 0) {
             structureAccordion.innerHTML = '<p class="text-center text-muted">Корпуси відсутні. Додайте перший корпус.</p>';
             return;
         }
 
-        // 1. Створюємо масив промісів (кожен запитує дані одного корпусу)
-        const buildingPromises = hospital.buildings.map(building =>
-            createBuildingAccordionItem(building)
-        );
-
-        // 2. Чекаємо, поки ВСІ вони не виконаються паралельно
+        const buildingPromises = hospital.buildings.map(building => createBuildingAccordionItem(building));
         const buildingHtmlArray = await Promise.all(buildingPromises);
-
-        // 3. Додаємо весь готовий HTML на сторінку одним махом
         structureAccordion.innerHTML = buildingHtmlArray.join('');
     }
+
+    // --- ФУНКЦІЇ ГЕНЕРАЦІЇ HTML ---
 
     async function createBuildingAccordionItem(building) {
         const departments = await apiFetch(`/api/hospital/department/building/${building.id}/with-rooms`, {
             method: 'GET'
         });
 
-        console.log(departments.length);
-
         let departmentsHtml;
 
         if (departments && departments.length > 0) {
-            // 1. Створюємо масив промісів
             const departmentPromises = departments.map(dept => createDepartmentAccordionItem(dept));
-
-            // 2. Чекаємо на виконання ВСІХ промісів
             const resolvedDepartmentsHtmlArray = await Promise.all(departmentPromises);
-
-            // 3. З'єднуємо результати
             departmentsHtml = resolvedDepartmentsHtmlArray.join('');
-
         } else {
             departmentsHtml = `<div class="p-3 text-muted small">Відділення відсутні.
                              <button class="btn btn-sm btn-outline-success" data-action="add-department" data-building-id="${building.id}">
@@ -420,14 +376,14 @@
                            </div>`;
         }
 
-        // Повертаємо HTML для самого корпусу
+        // FIX: Додано style="padding-right: 150px;" для зсуву стрілки
         return `
         <div class="accordion-item">
-            <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#b-${building.id}">
+            <h2 class="accordion-header position-relative">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#b-${building.id}" style="padding-right: 150px;">
                     <i class="bi bi-building me-2"></i> Корпус: ${building.name}
                 </button>
-                <div class="btn-group">
+                <div class="btn-group position-absolute top-50 end-0 translate-middle-y me-2" style="z-index: 5;">
                     <button class="btn btn-sm btn-outline-success" data-action="add-department" data-building-id="${building.id}" title="Додати Відділення">
                         <i class="bi bi-plus-lg"></i>
                     </button>
@@ -439,7 +395,8 @@
             <div id="b-${building.id}" class="accordion-collapse collapse" data-bs-parent="#structure-accordion">
                 <div class="accordion-body">
                     <div class="accordion">
-                        ${departmentsHtml} </div>
+                        ${departmentsHtml} 
+                    </div>
                 </div>
             </div>
         </div>`;
@@ -449,18 +406,10 @@
         let roomsHtml;
 
         if (dept.rooms && dept.rooms.length > 0) {
-            // 1. Створюємо масив промісів. 
-            // Кожен елемент - це виклик createRoomAccordionItem(room), який повертає проміс.
             const roomPromises = dept.rooms.map(room => createRoomAccordionItem(room));
-
-            // 2. Чекаємо, поки ВСІ проміси в масиві не виконаються.
             const resolvedRoomsHtmlArray = await Promise.all(roomPromises);
-
-            // 3. З'єднуємо масив готових HTML-рядків.
             roomsHtml = resolvedRoomsHtmlArray.join('');
-
         } else {
-            // Якщо dept.rooms порожній або відсутній
             roomsHtml = `<div class="p-3 text-muted small">Палати відсутні.
                          <button class="btn btn-sm btn-outline-success" data-action="add-room" data-department-id="${dept.id}">
                              <i class="bi bi-plus-lg"></i> Додати палату
@@ -468,16 +417,16 @@
                        </div>`;
         }
 
-        // ВАЖЛИВО: Переконайтеся, що ваш API повертає buildingId для кожного департаменту
         const buildingId = dept.buildingId || (dept.room ? dept.room.department.buildingId : currentHospitalData.buildings.find(b => b.departments.some(d => d.id === dept.id))?.id);
 
+        // FIX: Додано style="padding-right: 150px;" для зсуву стрілки
         return `
         <div class="accordion-item">
-            <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#d-${dept.id}">
-                    <i class="bi bi-heart-pulse me-2"></i> Відділення: ${dept.name} (${dept.specialization})
+            <h2 class="accordion-header position-relative">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#d-${dept.id}" style="padding-right: 150px;">
+                    <i class="bi bi-heart-pulse me-2"></i> Відділення: ${dept.name} (${SPEC_TRANSLATIONS[dept.specialization] || dept.specialization})
                 </button>
-                <div class="btn-group">
+                <div class="btn-group position-absolute top-50 end-0 translate-middle-y me-2" style="z-index: 5;">
                     <button class="btn btn-sm btn-outline-primary" 
                             data-action="edit-department" 
                             data-id="${dept.id}" 
@@ -500,36 +449,34 @@
             <div id="d-${dept.id}" class="accordion-collapse collapse">
                 <div class="accordion-body">
                     <div class="accordion">
-                        ${roomsHtml} </div>
+                        ${roomsHtml} 
+                    </div>
                 </div>
             </div>
         </div>`;
     }
 
     async function createRoomAccordionItem(room) {
-        // ✅ ВИПРАВЛЕНО: Додано початковий слеш (/)
         const beds = await apiFetch(`/api/hospital/bed/room/${room.id}`, {
             method: 'GET'
         });
 
-        console.log(beds)
-        // ✅ ВИПРАВЛЕНО: Використовуємо 'beds.map' (змінну, яку завантажили), 
-        // а не 'room.beds.map'
         const bedsHtml = beds?.length
             ? beds.map(createBedItem).join('')
             : 'Ліжка відсутні.';
 
-        const bedCount = beds?.length || 0; // Рахуємо на основі завантажених даних
+        const bedCount = beds?.length || 0;
         const capacityColor = bedCount > room.capacity ? 'text-danger' : (bedCount === room.capacity ? 'text-success' : 'text-warning');
 
+        // FIX: Додано style="padding-right: 150px;" для зсуву стрілки
         return `
             <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#r-${room.id}">
+                <h2 class="accordion-header position-relative">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#r-${room.id}" style="padding-right: 150px;">
                         <i class="bi bi-door-open me-2"></i> Палата: ${room.number} 
                         <span class="badge ${capacityColor} ms-2">(${bedCount} / ${room.capacity} ліжок)</span>
                     </button>
-                    <div class="btn-group">
+                    <div class="btn-group position-absolute top-50 end-0 translate-middle-y me-2" style="z-index: 5;">
                         <button class="btn btn-sm btn-outline-success" data-action="add-beds" data-room-id="${room.id}" data-room-name="${room.number}" data-room-capacity="${room.capacity}" title="Додати Ліжка">
                             <i class="bi bi-plus-lg"></i>
                         </button>
@@ -549,7 +496,7 @@
     }
 
     function createBedItem(bed) {
-        patient = bed.isOccupied ? "зайняте" : "вільне"
+        let patient = bed.isOccupied ? "зайняте" : "вільне";
         return `
             <li class="list-group-item d-flex justify-content-between align-items-center">
                 <i class="bi bi-bed me-2"></i> ${patient} (ID: ${bed.id})
@@ -559,9 +506,6 @@
             </li>`;
     }
 
-    /**
-     * Головний обробник кліків для вкладки "Структура"
-     */
     function handleStructureClick(event) {
         const target = event.target.closest('button');
         if (!target) return;
@@ -569,7 +513,6 @@
         const action = target.dataset.action;
         const id = target.dataset.id;
 
-        // Зупиняємо спливання, якщо кнопка НЕ data-bs-toggle (щоб не закрити акордеон)
         if (!target.dataset.bsToggle) {
             event.stopPropagation();
         }
@@ -585,7 +528,7 @@
                 openAddDepartmentModal(target.dataset.buildingId);
                 break;
             case 'edit-department':
-                openEditDepartmentModal(target.dataset); // dataset містить всі data-* атрибути
+                openEditDepartmentModal(target.dataset);
                 break;
             case 'delete-department':
                 handleDeleteStructureItem('department', id);
@@ -607,16 +550,37 @@
 
     /**
      * Оновлює дерево структури (заново запитує дані лікарні)
+     * ЗБЕРІГАЄ СТАН ВІДКРИТИХ ВКЛАДОК
      */
     async function refreshStructure() {
         if (!currentHospitalData || !currentHospitalData.id) return;
 
+        // 1. Запам'ятовуємо ID всіх відкритих елементів
+        const openIds = Array.from(structureAccordion.querySelectorAll('.accordion-collapse.show'))
+            .map(el => el.id);
+
         structureLoading.style.display = 'block';
         structureAccordion.innerHTML = '';
+
         try {
             const hospital = await apiFetch(`/api/hospital/${currentHospitalData.id}`);
-            currentHospitalData = hospital; // Оновлюємо кеш
+            currentHospitalData = hospital;
             await renderHospitalStructure(hospital);
+
+            // 2. Відновлюємо стан відкритих вкладок
+            openIds.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.classList.add('show');
+                    // Знаходимо відповідну кнопку і оновлюємо її стан
+                    const button = document.querySelector(`button[data-bs-target="#${id}"]`);
+                    if (button) {
+                        button.classList.remove('collapsed');
+                        button.setAttribute('aria-expanded', 'true');
+                    }
+                }
+            });
+
         } catch (error) {
             showMainModalError(`Не вдалося оновити структуру: ${error.message}`);
         } finally {
@@ -626,12 +590,10 @@
 
     // --- Обробники для ДОПОМІЖНИХ модальних вікон ---
 
-    // КОРПУС
     function openAddBuildingModal() {
         addBuildingForm.reset();
         addBuildingError.style.display = 'none';
         document.getElementById('add-building-hospital-id').value = currentHospitalData.id;
-        // Модальне вікно відкривається через data-bs-toggle в HTML
     }
 
     async function handleAddBuildingSubmit(event) {
@@ -645,26 +607,22 @@
                 body: JSON.stringify({name: number, hospitalId: parseInt(hospitalId)})
             });
             addBuildingModal.hide();
-            refreshStructure(); // Оновлюємо дерево
+            refreshStructure();
         } catch (error) {
             addBuildingError.textContent = error.message;
             addBuildingError.style.display = 'block';
         }
     }
 
-    // ВІДДІЛЕННЯ (ДОДАВАННЯ)
     function openAddDepartmentModal(buildingId) {
         addDepartmentForm.reset();
         addDepartmentError.style.display = 'none';
         document.getElementById('add-department-building-id').value = buildingId;
 
-        // Заповнюємо <select> спеціалізаціями лікарні
         addDepartmentSpecSelect.innerHTML = '<option value="" disabled selected>Оберіть...</option>';
         currentHospitalData.specializations.forEach(spec => {
             addDepartmentSpecSelect.innerHTML += `<option value="${spec}">${spec}</option>`;
         });
-
-        // ✅ ВИПРАВЛЕНО: Кнопка не має data-bs-toggle, тому відкриваємо вручну
         addDepartmentModal.show();
     }
 
@@ -686,39 +644,32 @@
                 body: JSON.stringify({name: name, specialization: specialization, buildingId: parseInt(buildingId)})
             });
             addDepartmentModal.hide();
-            refreshStructure(); // Оновлюємо дерево
+            refreshStructure();
         } catch (error) {
             addDepartmentError.textContent = error.message;
             addDepartmentError.style.display = 'block';
         }
     }
 
-    // ВІДДІЛЕННЯ (РЕДАГУВАННЯ)
     function openEditDepartmentModal(dataset) {
         if (!editDepartmentModal) {
             console.error("Модальне вікно 'edit-department-modal' не знайдено в HTML!");
             return;
         }
-
         editDepartmentForm.reset();
         editDepartmentError.style.display = 'none';
 
-        // Заповнюємо поля даними з кнопки
         editDepartmentIdInput.value = dataset.id;
         editDepartmentNameInput.value = dataset.name;
         editDepartmentBuildingIdInput.value = dataset.buildingId;
 
-        // Заповнюємо <select> і обираємо поточну спеціалізацію
         editDepartmentSpecSelect.innerHTML = '<option value="" disabled>Оберіть...</option>';
         currentHospitalData.specializations.forEach(spec => {
             const selected = (spec === dataset.specialization) ? 'selected' : '';
             editDepartmentSpecSelect.innerHTML += `<option value="${spec}" ${selected}>${spec}</option>`;
         });
-
-        // Модальне вікно відкривається через data-bs-toggle на кнопці
     }
 
-    // ОБРОБНИК РЕДАГУВАННЯ ВІДДІЛЕННЯ
     async function handleEditDepartmentSubmit(event) {
         event.preventDefault();
 
@@ -744,7 +695,7 @@
                 })
             });
             editDepartmentModal.hide();
-            refreshStructure(); // Оновлюємо дерево
+            refreshStructure();
         } catch (error) {
             editDepartmentError.textContent = error.message;
             editDepartmentError.style.display = 'block';
@@ -752,13 +703,10 @@
     }
 
 
-    // ПАЛАТА
     function openAddRoomModal(departmentId) {
         addRoomForm.reset();
         addRoomError.style.display = 'none';
         document.getElementById('add-room-department-id').value = departmentId;
-
-        // ✅ ВИПРАВЛЕНО: Кнопка не має data-bs-toggle, тому відкриваємо вручну
         addRoomModal.show();
     }
 
@@ -774,14 +722,13 @@
                 body: JSON.stringify({number, capacity, departmentId: parseInt(departmentId)})
             });
             addRoomModal.hide();
-            refreshStructure(); // Оновлюємо дерево
+            refreshStructure();
         } catch (error) {
             addRoomError.textContent = error.message;
             addRoomError.style.display = 'block';
         }
     }
 
-    // ЛІЖКА
     function openAddBedsModal(roomId, roomName, roomCapacity) {
         addBedsForm.reset();
         addBedsError.style.display = 'none';
@@ -789,9 +736,7 @@
         document.getElementById('add-beds-room-name').textContent = roomName;
         document.getElementById('add-beds-room-capacity').textContent = roomCapacity;
         document.getElementById('add-beds-count').value = 1;
-        document.getElementById('add-beds-count').max = roomCapacity; // TODO: треба рахувати вільні
-
-        // ✅ ВИПРАВЛЕНО: Кнопка не має data-bs-toggle, тому відкриваємо вручну
+        document.getElementById('add-beds-count').max = roomCapacity;
         addBedsModal.show();
     }
 
@@ -800,29 +745,24 @@
         const roomId = parseInt(document.getElementById('add-beds-room-id').value, 10);
         const count = parseInt(document.getElementById('add-beds-count').value, 10);
 
-        // TODO: Додати валідацію на основі (capacity - currentBeds)
-
         try {
             const bedPromises = [];
             for (let i = 1; i <= count; i++) {
                 bedPromises.push(apiFetch('/api/hospital/bed', {
                     method: 'POST',
-                    body: JSON.stringify({number: `Ліжко-${Date.now() + i}`, roomId}) // Унікальне ім'я
+                    body: JSON.stringify({number: `Ліжко-${Date.now() + i}`, roomId})
                 }));
             }
             await Promise.all(bedPromises);
 
             addBedsModal.hide();
-            refreshStructure(); // Оновлюємо дерево
+            refreshStructure();
         } catch (error) {
             addBedsError.textContent = error.message;
             addBedsError.style.display = 'block';
         }
     }
 
-    /**
-     * Універсальна функція видалення (для корпусів, відділень і т.д.)
-     */
     async function handleDeleteStructureItem(itemType, id) {
         const typeMap = {
             building: {name: 'корпус', endpoint: 'building'},
@@ -840,15 +780,12 @@
         try {
             showMainModalError(null);
             await apiFetch(`/api/hospital/${itemInfo.endpoint}/${id}`, {method: 'DELETE'});
-            refreshStructure(); // Оновлюємо дерево
+            refreshStructure();
         } catch (error) {
             showMainModalError(`Помилка видалення: ${error.message}`);
         }
     }
 
-    /**
-     * Головна функція видалення лікарні
-     */
     async function handleDelete(id) {
         if (!confirm('ВИ ВПЕВНЕНІ?\n\nЦе видалить лікарню, всі її корпуси, відділення, палати та ліжка. Ця дія НЕОБОРОТНА.')) {
             return;
@@ -864,20 +801,14 @@
 
     // --- Ініціалізація та слухачі подій ---
 
-    // Ініціалізуємо модальні вікна (для ручного керування)
-    // (Переміщено вище, щоб мати до них доступ)
+    populateHospitalSpecsCheckboxes();
 
-    populateHospitalSpecsCheckboxes(); // Заповнюємо чекбокси при завантаженні
-
-    // Головна таблиця
     hospitalsTableBody.addEventListener('click', handleTableClick);
 
-    // Головне модальне вікно
     addHospitalBtn.addEventListener('click', handleCreate);
     hospitalForm.addEventListener('submit', handleHospitalFormSubmit);
     tabStructureContent.addEventListener('click', handleStructureClick);
 
-    // Допоміжні модальні вікна (форми)
     addBuildingForm.addEventListener('submit', handleAddBuildingSubmit);
     addDepartmentForm.addEventListener('submit', handleAddDepartmentSubmit);
     addRoomForm.addEventListener('submit', handleAddRoomSubmit);
@@ -889,6 +820,5 @@
         console.warn("Форма 'edit-department-form' не знайдена. Редагування не працюватиме.");
     }
 
-    // Перше завантаження даних
     loadHospitals();
 });
