@@ -74,16 +74,6 @@ public class DoctorService : IDoctorService
             .ToListAsync();
     }
 
-    // ✅ Коректна реалізація з жадібним завантаженням (Eager Loading)
-    public async Task<IEnumerable<Doctor>> GetProfessorsWithMultipleAssignmentsAsync()
-    {
-        return await _staffRepository.GetAll()
-            .OfType<Doctor>()
-            .Include(d => d.Assignments) // Підвантажуємо пов'язані дані
-            .Where(d => d.AcademicTitle == AcademicTitle.Professor && d.Assignments.Count > 1)
-            .ToListAsync();
-    }
-
     public async Task<IEnumerable<Doctor>> GetAllAsync(string? specialty, AcademicDegree? degree, AcademicTitle? title)
     {
         // Починаємо запит як IQueryable<Doctor>

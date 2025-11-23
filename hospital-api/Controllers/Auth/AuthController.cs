@@ -214,7 +214,6 @@ public class AuthController : ControllerBase
 
         // ✅ ОНОВЛЮЄМО СТАТУС ЗАЯВКИ
         request.Status = RequestStatus.Rejected;
-        request.AdminComment = comment;
         await _requestRepo.UpdateAsync(request);
 
         return Ok(new { Status = "Success", Message = $"Заявку відхилено. Причина: {comment}" });

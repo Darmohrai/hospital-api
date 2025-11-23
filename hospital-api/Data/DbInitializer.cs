@@ -79,8 +79,8 @@ public static class DbInitializer
 
         // --- Створення Довідників ---
 
-        var hospital1 = new Hospital { Name = "Міська лікарня №1", Address = "вул. Головна, 1", Phone = "111-22-33", Specializations = new List<HospitalSpecialization> { HospitalSpecialization.Surgeon, HospitalSpecialization.Cardiologist } };
-        var hospital2 = new Hospital { Name = "Обласна дитяча лікарня", Address = "просп. Незалежності, 100", Phone = "555-66-77", Specializations = new List<HospitalSpecialization> { HospitalSpecialization.Neurologist, HospitalSpecialization.Ophthalmologist } };
+        var hospital1 = new Hospital { Name = "Міська лікарня №1", Address = "вул. Головна, 1", Specializations = new List<HospitalSpecialization> { HospitalSpecialization.Surgeon, HospitalSpecialization.Cardiologist } };
+        var hospital2 = new Hospital { Name = "Обласна дитяча лікарня", Address = "просп. Незалежності, 100", Specializations = new List<HospitalSpecialization> { HospitalSpecialization.Neurologist, HospitalSpecialization.Ophthalmologist } };
         context.Hospitals.AddRange(hospital1, hospital2);
         await context.SaveChangesAsync(); // Важливо зберігати ID
 

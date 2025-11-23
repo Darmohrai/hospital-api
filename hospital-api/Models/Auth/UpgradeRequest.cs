@@ -20,9 +20,6 @@ public class UpgradeRequest
     public String RequestedRole { get; set; }
     
     public RequestStatus Status { get; set; } = RequestStatus.Pending;
-
-    // Опціональне поле для коментаря адміна при відхиленні
-    public string AdminComment { get; set; } = string.Empty;
 }
 
 public enum RequestStatus

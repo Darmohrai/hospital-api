@@ -9,8 +9,6 @@ public abstract class Doctor : Staff
     
     [Required] public AcademicDegree? AcademicDegree { get; set; }
     [Required] public AcademicTitle? AcademicTitle { get; set; }
-
-    public List<DoctorAssignment> Assignments { get; set; } = new();
 }
 
 public enum AcademicDegree

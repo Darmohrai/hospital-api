@@ -8,6 +8,7 @@ using hospital_api.Models.LaboratoryAggregate;
 using hospital_api.Models.OperationsAggregate;
 using hospital_api.Models.StaffAggregate.DoctorAggregate;
 using hospital_api.Models.Tracking;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking; // <-- Додайте цей using
 
@@ -31,7 +32,6 @@ namespace hospital_api.Data
         public DbSet<Operation> Operations { get; set; }
         public DbSet<Staff> Staffs { get; set; }
         public DbSet<Employment> Employments { get; set; }
-        public DbSet<DoctorAssignment> DoctorAssignments { get; set; }
 
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<LabAnalysis> LabAnalyses { get; set; }
@@ -43,19 +43,47 @@ namespace hospital_api.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            
+            builder.Ignore<IdentityUserToken<string>>();
+            builder.Ignore<IdentityUserLogin<string>>();
+            builder.Ignore<IdentityUserClaim<string>>();
+            builder.Ignore<IdentityRoleClaim<string>>();
+            
+            builder.Entity<IdentityUser>(entity =>
+            {
+                // 2. Видалення поля телефонного номера
+                entity.Ignore(u => u.PhoneNumber);
+                entity.Ignore(u => u.PhoneNumberConfirmed);
 
-            // Ваше правильне рішення, яке змушує EF Core бачити ієрархію
-            builder.Entity<Staff>()
-                .ToTable("Staffs")
-                .HasDiscriminator<string>("StaffType")
-                .HasValue<SupportStaff>(nameof(SupportStaff))
-                .HasValue<Cardiologist>(nameof(Cardiologist))
-                .HasValue<Dentist>(nameof(Dentist))
-                .HasValue<Gynecologist>(nameof(Gynecologist))
-                .HasValue<Neurologist>(nameof(Neurologist))
-                .HasValue<Ophthalmologist>(nameof(Ophthalmologist))
-                .HasValue<Radiologist>(nameof(Radiologist))
-                .HasValue<Surgeon>(nameof(Surgeon));
+                // 3. Видалення поля для двофакторної автентифікації
+                entity.Ignore(u => u.TwoFactorEnabled);
+
+                // 4. Видалення полів, пов'язаних із блокуванням (якщо не потрібні)
+                entity.Ignore(u => u.LockoutEnabled);
+                entity.Ignore(u => u.LockoutEnd);
+                entity.Ignore(u => u.AccessFailedCount);
+
+                // 5. Видалення поля для оптимістичного паралелізму
+                entity.Ignore(u => u.ConcurrencyStamp);
+            });
+
+            // 1. Базова таблиця (Staff)
+            builder.Entity<Staff>().ToTable("Staffs"); 
+    
+            // 2. Середній рівень успадкування (успадковує від Staff)
+            // Зберігає лише спільні поля для Doctors/SupportStaffs
+            builder.Entity<Doctor>().ToTable("Doctors");
+            builder.Entity<SupportStaff>().ToTable("SupportStaffs");
+    
+            // 3. Конкретні класи (успадковують від Doctor/SupportStaff)
+            // Зберігають унікальні поля (наприклад, ExtendedVacationDays)
+            builder.Entity<Cardiologist>().ToTable("Cardiologists");
+            builder.Entity<Dentist>().ToTable("Dentists");
+            builder.Entity<Gynecologist>().ToTable("Gynecologists");
+            builder.Entity<Neurologist>().ToTable("Neurologists");
+            builder.Entity<Ophthalmologist>().ToTable("Ophthalmologists");
+            builder.Entity<Radiologist>().ToTable("Radiologists");
+            builder.Entity<Surgeon>().ToTable("Surgeons");
 
             builder.Entity<Employment>(entity =>
             {

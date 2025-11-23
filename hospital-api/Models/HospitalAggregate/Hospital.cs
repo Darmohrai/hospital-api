@@ -15,9 +15,7 @@ public class Hospital
 
     [Required]
     public string Address { get; set; } = string.Empty;
-
-    public string Phone { get; set; } = string.Empty;
-
+    
     public List<Building> Buildings { get; set; } = new();
     
     public List<Department> Departments { get; set; } = new();
