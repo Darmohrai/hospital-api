@@ -33,7 +33,27 @@ public class GenericRepository<T> : IRepository<T> where T : class
 
     public async Task UpdateAsync(T entity)
     {
-        _dbSet.Update(entity);
+        // Припускаємо, що у вашого entity є властивість Id. 
+        // Якщо T не має інтерфейсу з Id, цей код треба адаптувати.
+    
+        // 1. Отримуємо Id сутності, яку хочемо оновити
+        var entityId = (int)entity.GetType().GetProperty("Id").GetValue(entity, null);
+
+        // 2. Перевіряємо, чи є вже така сутність у локальному кеші Context
+        var local = _context.Set<T>()
+            .Local
+            .FirstOrDefault(entry => 
+                (int)entry.GetType().GetProperty("Id").GetValue(entry, null) == entityId);
+
+        // 3. Якщо є — від'єднуємо стару версію (щоб перестати її відстежувати)
+        if (local != null)
+        {
+            _context.Entry(local).State = EntityState.Detached;
+        }
+
+        // 4. Оновлюємо нову сутність
+        _context.Entry(entity).State = EntityState.Modified;
+    
         await _context.SaveChangesAsync();
     }
 

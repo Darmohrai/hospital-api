@@ -352,6 +352,7 @@ async function handleFormSubmit(event) {
 
     const doctorDto = {
         fullName: document.getElementById('doctor-fullname').value,
+        specialty: specialty,
         workExperienceYears: parseInt(document.getElementById('doctor-experience').value, 10),
         academicDegree: parseInt(document.getElementById('doctor-degree').value, 10),
         academicTitle: parseInt(document.getElementById('doctor-title').value, 10),
