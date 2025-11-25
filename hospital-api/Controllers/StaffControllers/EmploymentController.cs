@@ -29,37 +29,27 @@ public class EmploymentController : ControllerBase
 
         return Ok(response.Data);
     }
-
-    /// <summary>
-    /// Створює зв'язок Staff-Hospital/Clinic
-    /// </summary>
+    
     [HttpPost]
     public async Task<IActionResult> CreateEmployment([FromBody] CreateEmploymentDto dto)
     {
         var response = await _employmentService.CreateEmploymentAsync(dto);
 
-        // ✅ ВИПРАВЛЕНО: Перевіряємо .IsSuccess
         if (!response.IsSuccess)
         {
-            // ✅ ВИПРАВЛЕНО: Повертаємо .ErrorMessage
             return BadRequest(response.ErrorMessage);
         }
 
         return Ok(response.Data);
     }
-
-    /// <summary>
-    /// Видаляє запис про працевлаштування
-    /// </summary>
+    
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteEmployment(int id)
     {
         var response = await _employmentService.DeleteEmploymentAsync(id);
 
-        // ✅ ВИПРАВЛЕНО: Перевіряємо .IsSuccess
         if (!response.IsSuccess)
         {
-            // ✅ ВИПРАВЛЕНО: Повертаємо .ErrorMessage
             return NotFound(response.ErrorMessage);
         }
 

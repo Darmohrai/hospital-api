@@ -1,6 +1,5 @@
 ﻿namespace hospital_api.DTOs.Auth;
 
-// Цей DTO ми повертатимемо при успішному логіні
 public class AuthResponseDto
 {
     public string UserId { get; set; } = string.Empty;

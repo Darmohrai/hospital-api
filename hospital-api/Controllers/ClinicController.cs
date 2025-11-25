@@ -21,23 +21,14 @@ public class ClinicController : ControllerBase
         _clinicService = clinicService;
     }
 
-    // --- CRUD Операції ---
-
-    /// <summary>
-    /// Отримує список всіх поліклінік.
-    /// </summary>
     [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        // ✅ ВИПРАВЛЕНО: Викликаємо новий метод DTO
         var clinics = await _clinicService.GetAllDtosAsync();
         return Ok(clinics);
     }
 
-    /// <summary>
-    /// Отримує поліклініку за її ID.
-    /// </summary>
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
@@ -49,9 +40,6 @@ public class ClinicController : ControllerBase
         return Ok(clinic);
     }
 
-    /// <summary>
-    /// Створює нову поліклініку.
-    /// </summary>
     [Authorize(Roles = "Operator, Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateClinicDto dto)
@@ -67,9 +55,6 @@ public class ClinicController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = clinic.Id }, clinic);
     }
 
-    /// <summary>
-    /// Оновлює існуючу поліклініку.
-    /// </summary>
     [Authorize(Roles = "Operator, Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] Clinic clinic)
@@ -78,12 +63,9 @@ public class ClinicController : ControllerBase
             return BadRequest("ID mismatch.");
 
         await _clinicService.UpdateAsync(clinic);
-        return NoContent(); // Стандартна відповідь для успішного оновлення
+        return NoContent();
     }
 
-    /// <summary>
-    /// Видаляє поліклініку за її ID.
-    /// </summary>
     [Authorize(Roles = "Operator, Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
@@ -91,12 +73,7 @@ public class ClinicController : ControllerBase
         await _clinicService.DeleteAsync(id);
         return NoContent();
     }
-
-    // --- Бізнес-логіка ---
-
-    /// <summary>
-    /// Призначає поліклініку до лікарні.
-    /// </summary>
+    
     [Authorize(Roles = "Operator, Admin")]
     [HttpPost("{clinicId}/assign-hospital/{hospitalId}")]
     public async Task<IActionResult> AssignHospital(int clinicId, int hospitalId)
@@ -109,11 +86,8 @@ public class ClinicController : ControllerBase
         return Ok(result.Data);
     }
 
-    /// <summary>
-    /// Працевлаштовує співробітника в поліклініку.
-    /// </summary>
     [Authorize(Roles = "Operator, Admin")]
-    [HttpPost("{clinicId}/staff/{staffId}")] // ✅ REST-сумісний маршрут
+    [HttpPost("{clinicId}/staff/{staffId}")]
     public async Task<IActionResult> AddStaffToClinic(int clinicId, int staffId)
     {
         var result = await _clinicService.AddStaffToClinicAsync(clinicId, staffId);
@@ -121,12 +95,9 @@ public class ClinicController : ControllerBase
         if (!result.IsSuccess)
             return BadRequest(new { message = result.ErrorMessage });
 
-        return Ok(result.Data); // Повертаємо створений об'єкт Employment
+        return Ok(result.Data);
     }
 
-    /// <summary>
-    /// Реєструє пацієнта в поліклініці.
-    /// </summary>
     [Authorize(Roles = "Operator, Admin")]
     [HttpPost("{clinicId}/patients")]
     public async Task<IActionResult> AddPatient(int clinicId, [FromBody] Patient patient)
@@ -136,13 +107,9 @@ public class ClinicController : ControllerBase
         if (!result.IsSuccess)
             return NotFound(new { message = result.ErrorMessage });
 
-        // Повертаємо 201 Created з посиланням на нового пацієнта (потрібен PatientController)
         return CreatedAtAction(nameof(AddPatient), new { id = result.Data!.Id }, result.Data);
     }
 
-    /// <summary>
-    /// Направляє пацієнта до лікарні з потрібною спеціалізацією.
-    /// </summary>
     [Authorize(Roles = "Operator, Admin")]
     [HttpPost("refer-patient/{patientId}")]
     public async Task<IActionResult> ReferPatient(int patientId, [FromQuery] HospitalSpecialization specialization)
@@ -150,7 +117,7 @@ public class ClinicController : ControllerBase
         var result = await _clinicService.ReferPatientToHospitalAsync(patientId, specialization);
 
         if (!result.IsSuccess)
-            return NotFound(new { message = result.ErrorMessage }); // Наприклад, "Лікарню не знайдено"
+            return NotFound(new { message = result.ErrorMessage });
 
         return Ok(result.Data);
     }

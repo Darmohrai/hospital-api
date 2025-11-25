@@ -1,13 +1,18 @@
 ﻿document.addEventListener('DOMContentLoaded', () => {
 
-    // --- Перевірка залежностей ---
-    if (typeof apiFetch === 'undefined') { /* ... */ return; }
-    if (typeof bootstrap === 'undefined') { /* ... */ return; }
-    if (typeof TomSelect === 'undefined') { /* ... */ return; }
+    if (typeof apiFetch === 'undefined') {
+        console.error("КРИТИЧНА ПОМИЛКА: 'apiFetch' функцію не знайдено.");
+        return;
+    }
+    if (typeof bootstrap === 'undefined') {
+        console.error("КРИТИЧНА ПОМИЛКА: 'bootstrap' не завантажено.");
+        return;
+    }
+    if (typeof TomSelect === 'undefined') {
+        console.error("КРИТИЧНА ПОМИЛКА: 'TomSelect' не завантажено.");
+        return;
+    }
 
-    // ✅ 1. ДОДАЄМО СПИСОК ПРОФІЛІВ
-    // Ти можеш з часом завантажувати цей список з API,
-    // але поки почнемо з константи.
     const ALL_LAB_PROFILES = [
         { value: 'Загальний аналіз крові', text: 'Загальний аналіз крові' },
         { value: 'Біохімічний аналіз крові', text: 'Біохімічний аналіз крові' },
@@ -17,13 +22,10 @@
         { value: 'Цитологія', text: 'Цитологія' },
     ];
 
-
-    // --- Елементи DOM ---
     const laboratoriesTableBody = document.getElementById('laboratories-table-body');
     const addLaboratoryBtn = document.getElementById('add-laboratory-btn');
     const pageError = document.getElementById('page-error');
 
-    // --- Модальне вікно ---
     const mainModalEl = document.getElementById('laboratory-manage-modal');
     const mainModal = new bootstrap.Modal(mainModalEl);
     const mainModalTitle = document.getElementById('laboratory-modal-title');
@@ -31,35 +33,32 @@
     const laboratoryForm = document.getElementById('laboratory-form');
     const laboratoryIdInput = document.getElementById('laboratory-id');
     const laboratoryNameInput = document.getElementById('laboratory-name');
-    // ❌ (Видалено: laboratoryProfileInput)
     const saveLaboratoryBtn = document.getElementById('save-laboratory-btn');
 
-    // --- Стан ---
     let currentMode = 'create';
     let currentUserRole = getUserRole();
     let allHospitals = [];
     let allClinics = [];
 
-    // ✅ 2. ДОДАЄМО ЗМІННУ ДЛЯ TomSelect ПРОФІЛІВ
     let tomSelectHospitals, tomSelectClinics, tomSelectProfiles;
 
-    // --- Функції ---
+    function showPageError(message) {
+        pageError.textContent = message;
+        pageError.style.display = message ? 'block' : 'none';
+    }
 
-    function showPageError(message) { /* ... */ }
-    function showMainModalError(message) { /* ... */ }
+    function showMainModalError(message) {
+        mainModalError.textContent = message;
+        mainModalError.style.display = message ? 'block' : 'none';
+    }
 
-    /**
-     * ✅ 3. ОНОВЛЕНО: Ініціалізуємо ВСІ три TomSelect
-     */
     async function initializeSelects() {
         try {
-            // Запити для лікарень та клінік
             [allHospitals, allClinics] = await Promise.all([
                 apiFetch('/api/hospital'),
                 apiFetch('/api/clinic')
             ]);
 
-            // Ініціалізуємо Tom Select для Лікарень (без створення)
             tomSelectHospitals = new TomSelect('#laboratory-hospitals', {
                 plugins: ['remove_button'],
                 options: allHospitals.map(h => ({ value: h.id, text: h.name })),
@@ -67,7 +66,6 @@
                 preload: true
             });
 
-            // Ініціалізуємо Tom Select для Клінік (без створення)
             tomSelectClinics = new TomSelect('#laboratory-clinics', {
                 plugins: ['remove_button'],
                 options: allClinics.map(c => ({ value: c.id, text: c.name })),
@@ -75,12 +73,10 @@
                 preload: true
             });
 
-            // ✅ Ініціалізуємо Tom Select для Профілів (ЗІ СТВОРЕННЯМ)
-            // Це дозволить обирати зі списку АБО вписувати нові
             tomSelectProfiles = new TomSelect('#laboratory-profile-select', {
                 plugins: ['remove_button'],
-                options: ALL_LAB_PROFILES, // Використовуємо наш список
-                create: true, // Дозволяє додавати нові елементи
+                options: ALL_LAB_PROFILES,
+                create: true,
                 preload: true
             });
 
@@ -90,12 +86,7 @@
         }
     }
 
-    /**
-     * Завантажує список лабораторій у головну таблицю
-     */
     async function loadLaboratories() {
-        // ... (Ця функція залишається БЕЗ ЗМІН, 
-        // оскільки вона вже коректно рендерила `lab.profile` як список)
         try {
             showPageError(null);
             const laboratories = await apiFetch('/api/laboratory');
@@ -142,7 +133,6 @@
     }
 
     function handleTableClick(event) {
-        // ... (Без змін)
         const target = event.target.closest('button');
         if (!target) return;
         const action = target.dataset.action;
@@ -155,9 +145,6 @@
         }
     }
 
-    /**
-     * ✅ 4. ОНОВЛЕНО: Готує модальне вікно для СТВОРЕННЯ
-     */
     async function handleCreateLaboratory() {
         currentMode = 'create';
         showMainModalError(null);
@@ -167,7 +154,6 @@
         mainModalTitle.textContent = 'Створити нову лабораторію';
         saveLaboratoryBtn.textContent = 'Створити';
 
-        // Очищуємо всі селектори
         if (tomSelectHospitals) tomSelectHospitals.clear();
         if (tomSelectClinics) tomSelectClinics.clear();
         if (tomSelectProfiles) tomSelectProfiles.clear();
@@ -175,9 +161,6 @@
         mainModal.show();
     }
 
-    /**
-     * ✅ 5. ОНОВЛЕНО: Готує модальне вікно для РЕДАГУВАННЯ
-     */
     async function handleEditLaboratory(id) {
         currentMode = 'edit';
         showMainModalError(null);
@@ -188,21 +171,15 @@
         mainModal.show();
 
         try {
-            // GetById тепер повертає { ..., profile: ["Аналіз 1", "Аналіз 2"], ... }
             const lab = await apiFetch(`/api/laboratory/${id}`);
 
             if (lab) {
-                // 1. Заповнюємо поля
                 laboratoryIdInput.value = lab.id;
                 laboratoryNameInput.value = lab.name;
-                // ❌ (Поле профілю тепер - select)
 
-                // 2. Встановлюємо значення для TomSelect
                 if (tomSelectHospitals) tomSelectHospitals.setValue(lab.hospitalIds || []);
                 if (tomSelectClinics) tomSelectClinics.setValue(lab.clinicIds || []);
 
-                // Встановлюємо профілі.
-                // Нам потрібно додати нові опції, якщо їх немає у списку
                 if (tomSelectProfiles) {
                     (lab.profile || []).forEach(profileName => {
                         tomSelectProfiles.addOption({ value: profileName, text: profileName });
@@ -220,22 +197,17 @@
         }
     }
 
-    /**
-     * ✅ 6. ОНОВЛЕНО: Обробник збереження форми
-     */
     async function handleLaboratoryFormSubmit(event) {
         event.preventDefault();
         showMainModalError(null);
 
-        // Отримуємо значення з TomSelect
         const hospitalIds = Array.from(tomSelectHospitals.getValue()).map(v => parseInt(v, 10));
         const clinicIds = Array.from(tomSelectClinics.getValue()).map(v => parseInt(v, 10));
-        const profiles = Array.from(tomSelectProfiles.getValue()); // Це вже список рядків
+        const profiles = Array.from(tomSelectProfiles.getValue());
 
-        // Збираємо дані у формат DTO
         const dto = {
             name: laboratoryNameInput.value,
-            profile: profiles, // <-- Передаємо список рядків
+            profile: profiles,
             hospitalIds: hospitalIds,
             clinicIds: clinicIds
         };
@@ -255,7 +227,7 @@
             }
 
             mainModal.hide();
-            loadLaboratories(); // Оновлюємо таблицю
+            loadLaboratories();
 
         } catch (error) {
             showMainModalError(`Не вдалося зберегти: ${error.message}`);
@@ -263,7 +235,6 @@
     }
 
     async function handleDeleteLaboratory(id) {
-        // ... (Без змін)
         if (!confirm(`Ви впевнені, що хочете видалити лабораторію з ID: ${id}?`)) {
             return;
         }
@@ -275,17 +246,14 @@
         }
     }
 
-    // --- Ініціалізація ---
     addLaboratoryBtn.addEventListener('click', handleCreateLaboratory);
     laboratoriesTableBody.addEventListener('click', handleTableClick);
     laboratoryForm.addEventListener('submit', handleLaboratoryFormSubmit);
 
     async function initializePage() {
-        // Запускаємо обидва завантаження паралельно
-        // (initializeSelects тепер містить завантаження)
         await Promise.all([
-            initializeSelects(), // Завантажить дані та ініціалізує ВСІ Tom Select
-            loadLaboratories()   // Завантажить таблицю
+            initializeSelects(),
+            loadLaboratories()
         ]);
     }
 

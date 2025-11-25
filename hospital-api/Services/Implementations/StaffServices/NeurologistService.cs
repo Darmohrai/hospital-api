@@ -1,7 +1,5 @@
 ﻿using System.Text;
 using hospital_api.DTOs.Staff;
-using hospital_api.Models.HospitalAggregate;
-using hospital_api.Models.StaffAggregate;
 using hospital_api.Models.StaffAggregate.DoctorAggregate;
 using hospital_api.Repositories.Interfaces.HospitalRepo;
 using hospital_api.Repositories.Interfaces.StaffRepo;
@@ -12,11 +10,10 @@ namespace hospital_api.Services.Implementations.StaffServices;
 
 public class NeurologistService : INeurologistService
 {
-    private readonly IStaffRepository _staffRepository; // Єдиний репозиторій для всього персоналу
+    private readonly IStaffRepository _staffRepository;
     private readonly IHospitalRepository _hospitalRepository;
     private readonly IEmploymentRepository _employmentRepository;
 
-    // ✅ Правильний конструктор з коректними залежностями
     public NeurologistService(
         IStaffRepository staffRepository,
         IEmploymentRepository employmentRepository,
@@ -27,11 +24,10 @@ public class NeurologistService : INeurologistService
         _hospitalRepository = hospitalRepository;
     }
 
-    // ✅ Отримання всіх неврологів через загальний репозиторій з фільтрацією по типу
     public async Task<IEnumerable<Neurologist>> GetAllNeurologistsAsync()
     {
         return await _staffRepository.GetAll()
-            .OfType<Neurologist>() // Магія TPH: фільтруємо тільки неврологів
+            .OfType<Neurologist>()
             .ToListAsync();
     }
 
@@ -42,22 +38,19 @@ public class NeurologistService : INeurologistService
             .FirstOrDefaultAsync(n => n.Id == id);
     }
 
-    // ✅ Повністю переписана логіка працевлаштування
     public async Task<ServiceResponse<Neurologist>> AddNeurologistToHospitalAsync(int? hospitalId,
         CreateNeurologistDto dto)
     {
-        // 1. Створюємо об'єкт Neurologist
         var neurologist = new Neurologist
         {
             FullName = dto.FullName,
             WorkExperienceYears = dto.WorkExperienceYears,
-            Specialty = "Neurologist", // Спеціальність визначена типом класу
+            Specialty = "Neurologist",
             AcademicDegree = dto.AcademicDegree,
             AcademicTitle = dto.AcademicTitle,
             ExtendedVacationDays = dto.ExtendedVacationDays,
         };
 
-        // 2. Зберігаємо його як звичайного співробітника
         await _staffRepository.AddAsync(neurologist);
 
         return ServiceResponse<Neurologist>.Success(neurologist);
@@ -65,7 +58,6 @@ public class NeurologistService : INeurologistService
 
     public async Task UpdateNeurologistAsync(Neurologist neurologist)
     {
-        // Для оновлення ми також працюємо через загальний репозиторій
         await _staffRepository.UpdateAsync(neurologist);
     }
 
@@ -82,7 +74,6 @@ public class NeurologistService : INeurologistService
             .ToListAsync();
     }
 
-    // ✅ Повністю переписаний метод для генерації профілю
     public async Task<string> GetNeurologistProfileSummaryAsync(int neurologistId)
     {
         var neurologist = await GetNeurologistByIdAsync(neurologistId);

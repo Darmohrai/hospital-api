@@ -1,20 +1,40 @@
 {
   "Files": [
     {
-      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\hospital-api.bundle.scp.css",
-      "PackagePath": "staticwebassets\\hospital-api.cpwirrc16t.bundle.scp.css"
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\admin.html",
+      "PackagePath": "staticwebassets\\admin.html"
     },
     {
-      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\css\\site.css",
-      "PackagePath": "staticwebassets\\css\\site.css"
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\css\\style.css",
+      "PackagePath": "staticwebassets\\css\\style.css"
     },
     {
       "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\favicon.ico",
       "PackagePath": "staticwebassets\\favicon.ico"
     },
     {
-      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\js\\site.js",
-      "PackagePath": "staticwebassets\\js\\site.js"
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\index.html",
+      "PackagePath": "staticwebassets\\index.html"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\js\\admin.js",
+      "PackagePath": "staticwebassets\\js\\admin.js"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\js\\api.js",
+      "PackagePath": "staticwebassets\\js\\api.js"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\js\\auth.js",
+      "PackagePath": "staticwebassets\\js\\auth.js"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\js\\main.js",
+      "PackagePath": "staticwebassets\\js\\main.js"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\js\\reports.js",
+      "PackagePath": "staticwebassets\\js\\reports.js"
     },
     {
       "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\lib\\bootstrap\\LICENSE",
@@ -255,6 +275,86 @@
     {
       "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\lib\\jquery\\dist\\jquery.slim.min.map",
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.slim.min.map"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\login.html",
+      "PackagePath": "staticwebassets\\login.html"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\clinics.html",
+      "PackagePath": "staticwebassets\\manage\\clinics.html"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\clinics.js",
+      "PackagePath": "staticwebassets\\manage\\clinics.js"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\doctors.html",
+      "PackagePath": "staticwebassets\\manage\\doctors.html"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\doctors.js",
+      "PackagePath": "staticwebassets\\manage\\doctors.js"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\hospitals.html",
+      "PackagePath": "staticwebassets\\manage\\hospitals.html"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\hospitals.js",
+      "PackagePath": "staticwebassets\\manage\\hospitals.js"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\laboratories.html",
+      "PackagePath": "staticwebassets\\manage\\laboratories.html"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\laboratories.js",
+      "PackagePath": "staticwebassets\\manage\\laboratories.js"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\patients.html",
+      "PackagePath": "staticwebassets\\manage\\patients.html"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\patients.js",
+      "PackagePath": "staticwebassets\\manage\\patients.js"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\query.html",
+      "PackagePath": "staticwebassets\\manage\\query.html"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\query.js",
+      "PackagePath": "staticwebassets\\manage\\query.js"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\support-staff.html",
+      "PackagePath": "staticwebassets\\manage\\support-staff.html"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\support-staff.js",
+      "PackagePath": "staticwebassets\\manage\\support-staff.js"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\tracking.html",
+      "PackagePath": "staticwebassets\\manage\\tracking.html"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\tracking.js",
+      "PackagePath": "staticwebassets\\manage\\tracking.js"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\register.html",
+      "PackagePath": "staticwebassets\\register.html"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\reports.html",
+      "PackagePath": "staticwebassets\\reports.html"
+    },
+    {
+      "Id": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\reset-password.html",
+      "PackagePath": "staticwebassets\\reset-password.html"
     },
     {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.hospital-api.props",

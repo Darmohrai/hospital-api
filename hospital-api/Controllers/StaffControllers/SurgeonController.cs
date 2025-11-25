@@ -8,7 +8,7 @@ namespace hospital_api.Controllers.StaffControllers;
 
 [Authorize]
 [ApiController]
-[Route("api/staff/surgeons")] // Більш чіткий та REST-сумісний маршрут
+[Route("api/staff/surgeons")]
 public class SurgeonController : ControllerBase
 {
     private readonly ISurgeonService _surgeonService;
@@ -18,9 +18,6 @@ public class SurgeonController : ControllerBase
         _surgeonService = surgeonService;
     }
 
-    /// <summary>
-    /// Отримує список всіх хірургів.
-    /// </summary>
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAll()
@@ -29,9 +26,6 @@ public class SurgeonController : ControllerBase
         return Ok(surgeons);
     }
 
-    /// <summary>
-    /// Отримує хірурга за його ID.
-    /// </summary>
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
@@ -43,9 +37,6 @@ public class SurgeonController : ControllerBase
         return Ok(surgeon);
     }
 
-    /// <summary>
-    /// Створює нового хірурга.
-    /// </summary>
     [Authorize(Roles = "Operator, Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateSurgeonDto dto)
@@ -66,9 +57,6 @@ public class SurgeonController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = result.Data!.Id }, result.Data);
     }
 
-    /// <summary>
-    /// Оновлює дані існуючого хірурга.
-    /// </summary>
     [Authorize(Roles = "Operator, Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] Surgeon surgeon)
@@ -84,9 +72,6 @@ public class SurgeonController : ControllerBase
         return NoContent();
     }
 
-    /// <summary>
-    /// Видаляє хірурга за його ID.
-    /// </summary>
     [Authorize(Roles = "Operator, Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
@@ -99,9 +84,6 @@ public class SurgeonController : ControllerBase
         return NoContent();
     }
 
-    /// <summary>
-    /// Отримує хірургів з кількістю операцій не менше вказаної.
-    /// </summary>
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("min-operations/{count}")]
     public async Task<IActionResult> GetByMinimumOperationCount(int count)
@@ -110,9 +92,6 @@ public class SurgeonController : ControllerBase
         return Ok(surgeons);
     }
 
-    /// <summary>
-    /// Отримує профіль хірурга у вигляді текстового звіту.
-    /// </summary>
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}/profile-summary")]
     public async Task<IActionResult> GetProfileSummary(int id)

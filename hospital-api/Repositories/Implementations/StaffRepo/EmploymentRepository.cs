@@ -15,8 +15,8 @@ public class EmploymentRepository : GenericRepository<Employment>, IEmploymentRe
     {
         return await _context.Employments
             .Where(e => e.StaffId == staffId)
-            .Include(e => e.Hospital) // Включаємо дані про лікарню
-            .Include(e => e.Clinic)   // Включаємо дані про клініку
+            .Include(e => e.Hospital)
+            .Include(e => e.Clinic)
             .ToListAsync();
     }
 
@@ -24,7 +24,7 @@ public class EmploymentRepository : GenericRepository<Employment>, IEmploymentRe
     {
         return await _context.Employments
             .Where(e => e.HospitalId == hospitalId)
-            .Include(e => e.Staff) // Включаємо дані про співробітника
+            .Include(e => e.Staff)
             .ToListAsync();
     }
     
@@ -32,7 +32,7 @@ public class EmploymentRepository : GenericRepository<Employment>, IEmploymentRe
     {
         return await _context.Employments
             .Where(e => e.ClinicId == clinicId)
-            .Include(e => e.Staff) // Включаємо дані про співробітника
+            .Include(e => e.Staff)
             .ToListAsync();
     }
 }

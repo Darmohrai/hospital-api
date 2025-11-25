@@ -4,7 +4,7 @@ using hospital_api.Repositories.Interfaces;
 using hospital_api.Repositories.Interfaces.HospitalRepo;
 using hospital_api.Repositories.Interfaces.StaffRepo;
 using hospital_api.Services.Interfaces;
-using Microsoft.EntityFrameworkCore; // ✅ ДОДАЙТЕ ЦЕЙ USING
+using Microsoft.EntityFrameworkCore;
 
 namespace hospital_api.Services.Implementations
 {
@@ -35,7 +35,6 @@ namespace hospital_api.Services.Implementations
 
         public async Task<ServiceResponse<Employment>> CreateEmploymentAsync(CreateEmploymentDto dto)
         {
-            // 1. Валідація
             if (await _staffRepo.GetByIdAsync(dto.StaffId) == null)
             {
                 return ServiceResponse<Employment>.Fail("Лікаря (Staff) з таким ID не знайдено.");
@@ -51,7 +50,6 @@ namespace hospital_api.Services.Implementations
                 return ServiceResponse<Employment>.Fail("Вкажіть АБО HospitalId, АБО ClinicId, але не обидва.");
             }
 
-            // --- ✅ НОВА ПЕРЕВІРКА НА ДУБЛІКАТИ ---
             bool alreadyExists = false;
             if (dto.HospitalId.HasValue)
             {
@@ -74,7 +72,6 @@ namespace hospital_api.Services.Implementations
             {
                 return ServiceResponse<Employment>.Fail("Цей лікар вже призначений у цей заклад.");
             }
-            // --- Кінець перевірки ---
 
             var employment = new Employment
             {

@@ -1,8 +1,5 @@
-﻿using System;
+﻿namespace hospital_api.DTOs.Reports;
 
-namespace hospital_api.DTOs.Reports;
-
-// DTO для Запиту №5
 public class PatientOperationDto
 {
     public int PatientId { get; set; }

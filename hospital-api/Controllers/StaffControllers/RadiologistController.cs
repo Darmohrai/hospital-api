@@ -8,7 +8,7 @@ namespace hospital_api.Controllers.StaffControllers;
 
 [Authorize]
 [ApiController]
-[Route("api/staff/radiologists")] // Більш чіткий маршрут
+[Route("api/staff/radiologists")]
 public class RadiologistController : ControllerBase
 {
     private readonly IRadiologistService _radiologistService;
@@ -18,9 +18,6 @@ public class RadiologistController : ControllerBase
         _radiologistService = radiologistService;
     }
 
-    /// <summary>
-    /// Отримує список всіх радіологів.
-    /// </summary>
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAll()
@@ -29,9 +26,6 @@ public class RadiologistController : ControllerBase
         return Ok(radiologists);
     }
 
-    /// <summary>
-    /// Отримує радіолога за його ID.
-    /// </summary>
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
@@ -43,9 +37,6 @@ public class RadiologistController : ControllerBase
         return Ok(radiologist);
     }
 
-    /// <summary>
-    /// Створює нового радіолога.
-    /// </summary>
     [Authorize(Roles = "Operator, Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateRadiologistDto dto)
@@ -68,9 +59,6 @@ public class RadiologistController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = result.Data!.Id }, result.Data);
     }
 
-    /// <summary>
-    /// Оновлює дані існуючого радіолога.
-    /// </summary>
     [Authorize(Roles = "Operator, Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] Radiologist radiologist)
@@ -86,9 +74,6 @@ public class RadiologistController : ControllerBase
         return NoContent();
     }
 
-    /// <summary>
-    /// Видаляє радіолога за його ID.
-    /// </summary>
     [Authorize(Roles = "Operator, Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
@@ -101,9 +86,6 @@ public class RadiologistController : ControllerBase
         return NoContent();
     }
 
-    /// <summary>
-    /// Фільтрація за коефіцієнтом шкідливості.
-    /// </summary>
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("hazard-pay")]
     public async Task<IActionResult> GetByHazardPay([FromQuery] float minCoefficient)
@@ -112,9 +94,6 @@ public class RadiologistController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>
-    /// Фільтрація за розширеною відпусткою.
-    /// </summary>
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("extended-vacation")]
     public async Task<IActionResult> GetByExtendedVacation([FromQuery] int minDays)
@@ -123,9 +102,6 @@ public class RadiologistController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>
-    /// Фільтрація за коефіцієнтом шкідливості та відпусткою.
-    /// </summary>
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("hazard-and-vacation")]
     public async Task<IActionResult> GetByHazardAndVacation([FromQuery] float minCoefficient, [FromQuery] int minDays)
@@ -134,9 +110,6 @@ public class RadiologistController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>
-    /// Отримує профіль радіолога у вигляді текстового звіту.
-    /// </summary>
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}/profile-summary")]
     public async Task<IActionResult> GetProfileSummary(int id)

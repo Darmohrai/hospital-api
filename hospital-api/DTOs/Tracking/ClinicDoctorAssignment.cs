@@ -2,7 +2,6 @@
 
 namespace hospital_api.DTOs.Tracking;
 
-// DTO для створення та видалення зв'язку M:M
 public class ClinicDoctorAssignmentDto
 {
     [Required]

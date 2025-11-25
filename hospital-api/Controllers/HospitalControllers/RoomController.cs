@@ -17,9 +17,6 @@ public class RoomController : ControllerBase
         _roomService = roomService;
     }
 
-    // --- CRUD ---
-
-    // Отримати всі кімнати
     [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetAll()
@@ -28,7 +25,6 @@ public class RoomController : ControllerBase
         return Ok(rooms);
     }
 
-    // Отримати кімнату за ID
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
@@ -38,7 +34,6 @@ public class RoomController : ControllerBase
         return Ok(room);
     }
 
-    // Додати нову кімнату
     [Authorize(Roles = "Operator, Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Room room)
@@ -47,7 +42,6 @@ public class RoomController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = room.Id }, room);
     }
 
-    // Оновити кімнату
     [Authorize(Roles = "Operator, Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] Room room)
@@ -57,7 +51,6 @@ public class RoomController : ControllerBase
         return NoContent();
     }
 
-    // Видалити кімнату
     [Authorize(Roles = "Operator, Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
@@ -65,10 +58,7 @@ public class RoomController : ControllerBase
         await _roomService.DeleteAsync(id);
         return NoContent();
     }
-
-    // --- Специфічні методи ---
-
-    // Отримати кімнату за номером
+    
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("number/{roomNumber}")]
     public async Task<IActionResult> GetByNumber(string roomNumber)
@@ -78,7 +68,6 @@ public class RoomController : ControllerBase
         return Ok(room);
     }
 
-    // Отримати кімнати за ID відділення
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("department/{departmentId}")]
     public async Task<IActionResult> GetByDepartment(int departmentId)
@@ -87,7 +76,6 @@ public class RoomController : ControllerBase
         return Ok(rooms);
     }
 
-    // Отримати кімнати за місткістю
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("capacity/{capacity}")]
     public async Task<IActionResult> GetByCapacity(int capacity)
@@ -96,7 +84,6 @@ public class RoomController : ControllerBase
         return Ok(rooms);
     }
 
-    // Отримати всі кімнати разом із ліжками та відділенням
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("with-beds-department")]
     public async Task<IActionResult> GetAllWithBedsAndDepartment()

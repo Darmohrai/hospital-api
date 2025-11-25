@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace hospital_api.DTOs.Reports;
 
-namespace hospital_api.DTOs.Reports;
-
-// DTO для Запиту №3
 public class LaboratoryReportDto
 {
     public string FilterDescription { get; set; } = string.Empty;
@@ -13,7 +9,6 @@ public class LaboratoryReportDto
     public int TotalAnalysesConducted { get; set; }
     public double AverageAnalysesPerDay { get; set; }
 
-    // Опціональна деталізація по днях
     public List<DailyLabCountDto> DailyCounts { get; set; } = new();
 }
 

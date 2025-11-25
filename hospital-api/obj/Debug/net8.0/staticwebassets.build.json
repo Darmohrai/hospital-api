@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "KhJ1JRvLHu15T1LXq1cV798lL+myD5FkxmJLdzGXEFI=",
+  "Hash": "Q6GR+48sDMsMM/nGTLU1aVC9YylAYsjkz9r/W8kof5c=",
   "Source": "hospital-api",
   "BasePath": "_content/hospital-api",
   "Mode": "Default",
@@ -17,54 +17,12 @@
   ],
   "Assets": [
     {
-      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\obj\\Debug\\net8.0\\scopedcss\\bundle\\hospital-api.styles.css",
-      "SourceId": "hospital-api",
-      "SourceType": "Computed",
-      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\obj\\Debug\\net8.0\\scopedcss\\bundle\\",
-      "BasePath": "_content/hospital-api",
-      "RelativePath": "hospital-api#[.{fingerprint}]?.styles.css",
-      "AssetKind": "All",
-      "AssetMode": "CurrentProject",
-      "AssetRole": "Primary",
-      "AssetMergeBehavior": "",
-      "AssetMergeSource": "",
-      "RelatedAsset": "",
-      "AssetTraitName": "ScopedCss",
-      "AssetTraitValue": "ApplicationBundle",
-      "Fingerprint": "cpwirrc16t",
-      "Integrity": "8EKis56WuMOeVKHb3Iz+8sWtrMV+AqX/IkeErzPFz4Q=",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\obj\\Debug\\net8.0\\scopedcss\\bundle\\hospital-api.styles.css"
-    },
-    {
-      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\hospital-api.bundle.scp.css",
-      "SourceId": "hospital-api",
-      "SourceType": "Computed",
-      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\",
-      "BasePath": "_content/hospital-api",
-      "RelativePath": "hospital-api#[.{fingerprint}]!.bundle.scp.css",
-      "AssetKind": "All",
-      "AssetMode": "Reference",
-      "AssetRole": "Primary",
-      "AssetMergeBehavior": "",
-      "AssetMergeSource": "",
-      "RelatedAsset": "",
-      "AssetTraitName": "ScopedCss",
-      "AssetTraitValue": "ProjectBundle",
-      "Fingerprint": "cpwirrc16t",
-      "Integrity": "8EKis56WuMOeVKHb3Iz+8sWtrMV+AqX/IkeErzPFz4Q=",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\hospital-api.bundle.scp.css"
-    },
-    {
-      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\css\\site.css",
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\admin.html",
       "SourceId": "hospital-api",
       "SourceType": "Discovered",
       "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
       "BasePath": "_content/hospital-api",
-      "RelativePath": "css/site#[.{fingerprint}]?.css",
+      "RelativePath": "admin#[.{fingerprint}]?.html",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -73,11 +31,32 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "b9sayid5wm",
-      "Integrity": "j6fhJSuuyLpOSLuPJU0TsDV0iNjor5S3rDnvxJrt4bg=",
+      "Fingerprint": "tzkjaeorv9",
+      "Integrity": "94y/6cakf9+97/Azmvj2JioxR+6z8PFcolsFCa9t+CE=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\css\\site.css"
+      "OriginalItemSpec": "wwwroot\\admin.html"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\css\\style.css",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "css/style#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "yikl1eaqpv",
+      "Integrity": "1uuDnx1+gkS9R8Yxz+kkm1Wzzzci3vtDisz9MHbxAnc=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\style.css"
     },
     {
       "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\favicon.ico",
@@ -101,12 +80,12 @@
       "OriginalItemSpec": "wwwroot\\favicon.ico"
     },
     {
-      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\js\\site.js",
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\index.html",
       "SourceId": "hospital-api",
       "SourceType": "Discovered",
       "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
       "BasePath": "_content/hospital-api",
-      "RelativePath": "js/site#[.{fingerprint}]?.js",
+      "RelativePath": "index#[.{fingerprint}]?.html",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -115,11 +94,116 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "xtxxf3hu2r",
-      "Integrity": "hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo=",
+      "Fingerprint": "wnedn8ocr2",
+      "Integrity": "hF38hUsnF0qo02/wdzHo/E9FZ1N1CvV+u6SYqIp/1Hw=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\js\\site.js"
+      "OriginalItemSpec": "wwwroot\\index.html"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\js\\admin.js",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "js/admin#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "bfpru36lhw",
+      "Integrity": "dyMLaVd4nqJpiPnsIQYxd1yzFBpEU0ewMRGnDJ5WaIY=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\admin.js"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\js\\api.js",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "js/api#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "o7e84favlt",
+      "Integrity": "DIb6lt/AwGKC/Iwv2tV4j6L++cxbJkEjPJuGQErdVeI=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\api.js"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\js\\auth.js",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "js/auth#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "4r17muvxbj",
+      "Integrity": "YL3HVQopOxyFurQohfIAy9c8vjw7Fvf9M1VYWUAPwH8=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\auth.js"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\js\\main.js",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "js/main#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "eeheftrk0i",
+      "Integrity": "lgJrQ4zAcmtcOXg8EhWnxUZPxwmX0DIj3EEX/RVxk6s=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\main.js"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\js\\reports.js",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "js/reports#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "ap1d74ts1a",
+      "Integrity": "3hCEbns2zwcq5yeYl7/v6QR68MTzuJCJ1cuqBBNoR+E=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\reports.js"
     },
     {
       "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css",
@@ -1380,12 +1464,432 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\lib\\jquery\\LICENSE.txt"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\login.html",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "login#[.{fingerprint}]?.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "sj2kmymmaz",
+      "Integrity": "6Md2ZuEl0gMMVmsOZiGMuFafJaeZwM86L6XWhLOSpGA=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\login.html"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\clinics.html",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "manage/clinics#[.{fingerprint}]?.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "9nke03fltl",
+      "Integrity": "+4NnmwS8glfRlvumeWPHmOf3GIBd9PeRqsSDGRGzuuA=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\manage\\clinics.html"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\clinics.js",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "manage/clinics#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "n6nagpxhl5",
+      "Integrity": "3/fnSVgwetdgj5zjeKv0Jmq1y/LebqyhdXOfsrbI4bc=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\manage\\clinics.js"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\doctors.html",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "manage/doctors#[.{fingerprint}]?.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "4bgg33o3bt",
+      "Integrity": "kMX7dr4IJ0tHRe/2FTTBVbwCdw7et6PIjeUrLDifWsU=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\manage\\doctors.html"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\doctors.js",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "manage/doctors#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "gtlhbcxy2t",
+      "Integrity": "TEyOFDwOJSHK4UL+aHY1hGVQ/NNmqhEUgnjPSqx3CcY=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\manage\\doctors.js"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\hospitals.html",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "manage/hospitals#[.{fingerprint}]?.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "tw3hondj13",
+      "Integrity": "DZKHca/6OtJmY3tPvIw8MMGNBSVLExIZQXvyq2W8Z8g=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\manage\\hospitals.html"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\hospitals.js",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "manage/hospitals#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "3v9xevt4el",
+      "Integrity": "Lyr4CKqa+idHkvhM+dTiGAiBeLvaZOrG6rctGXIyp60=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\manage\\hospitals.js"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\laboratories.html",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "manage/laboratories#[.{fingerprint}]?.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "2wfrtwe4cq",
+      "Integrity": "MiZ/UnJ/Calv7l5w6vR4OMdH2kUadXjN3u80Wk35rYo=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\manage\\laboratories.html"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\laboratories.js",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "manage/laboratories#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "7hjqsf0kzr",
+      "Integrity": "Gx28WWtzJ5EARoqk3wWNHZB/EFaLYK50mF4+6b50GMA=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\manage\\laboratories.js"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\patients.html",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "manage/patients#[.{fingerprint}]?.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "w71zfbulpq",
+      "Integrity": "7ItObkBTJkcyEp8vxPn+eWe263Zplmu0ct4uYZWt5/k=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\manage\\patients.html"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\patients.js",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "manage/patients#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "tzwufqju6i",
+      "Integrity": "icnSBWhqa7RrBfrIRKP62TDyit3jGkL6nTEbr2mo980=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\manage\\patients.js"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\query.html",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "manage/query#[.{fingerprint}]?.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "xzyx968ivo",
+      "Integrity": "k0/5skl6/gyxUa7EpCDjQLRBwFnIoRDjuZRM+uf5rJw=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\manage\\query.html"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\query.js",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "manage/query#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "ad22hirjid",
+      "Integrity": "gt5PpY8OJBmSjNLi62sPq8PQ7+eF1Xf/yvNWhuHncqQ=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\manage\\query.js"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\support-staff.html",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "manage/support-staff#[.{fingerprint}]?.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "caw2fr00sg",
+      "Integrity": "9MpdjCEZqddDmw5X8cmhqYIbHubcrauZ4iFDnWPFUxE=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\manage\\support-staff.html"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\support-staff.js",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "manage/support-staff#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "eniv6v8u72",
+      "Integrity": "KhKtYeC1GMM7Q49Sgo+LpKVDVL6Yr6CWFQYG1ImmUig=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\manage\\support-staff.js"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\tracking.html",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "manage/tracking#[.{fingerprint}]?.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "0y4huf0b3l",
+      "Integrity": "SG0Aal+1v9gC7BLV6AlyLaWXknjjU2DvJsvZbgMwQm8=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\manage\\tracking.html"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\tracking.js",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "manage/tracking#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "6cjxm4lmrg",
+      "Integrity": "JhaHnxLs5jxQlaDgbe1pxbjSzVZic6WWhAYwW8qKt+g=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\manage\\tracking.js"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\register.html",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "register#[.{fingerprint}]?.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "fu4z204i46",
+      "Integrity": "ufpaquIdNAikx5WYqmAK19h09a2eaL50dPqHUMdPzC8=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\register.html"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\reports.html",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "reports#[.{fingerprint}]?.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "z359drd58r",
+      "Integrity": "HwtSFjeMdWEpj65lxVJOKh3j2ohhOwSHKN01+Q9WoPc=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\reports.html"
+    },
+    {
+      "Identity": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\reset-password.html",
+      "SourceId": "hospital-api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\",
+      "BasePath": "_content/hospital-api",
+      "RelativePath": "reset-password#[.{fingerprint}]?.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "n8xmm9gxd5",
+      "Integrity": "OdSzpxx0U5y9wy9g44wm7A/eQvN5g+9tMWk/hvhf84w=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\reset-password.html"
     }
   ],
   "Endpoints": [
     {
-      "Route": "css/site.b9sayid5wm.css",
-      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\css\\site.css",
+      "Route": "admin.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\admin.html",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1394,64 +1898,19 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "667"
+          "Value": "4874"
         },
         {
           "Name": "Content-Type",
-          "Value": "text/css"
+          "Value": "text/html"
         },
         {
           "Name": "ETag",
-          "Value": "\"j6fhJSuuyLpOSLuPJU0TsDV0iNjor5S3rDnvxJrt4bg=\""
+          "Value": "\"94y/6cakf9+97/Azmvj2JioxR+6z8PFcolsFCa9t+CE=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 06 Jul 2025 12:14:34 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "b9sayid5wm"
-        },
-        {
-          "Name": "label",
-          "Value": "css/site.css"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-j6fhJSuuyLpOSLuPJU0TsDV0iNjor5S3rDnvxJrt4bg="
-        }
-      ]
-    },
-    {
-      "Route": "css/site.css",
-      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\css\\site.css",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "667"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"j6fhJSuuyLpOSLuPJU0TsDV0iNjor5S3rDnvxJrt4bg=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Sun, 06 Jul 2025 12:14:34 GMT"
+          "Value": "Sun, 16 Nov 2025 21:35:03 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1461,7 +1920,134 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-j6fhJSuuyLpOSLuPJU0TsDV0iNjor5S3rDnvxJrt4bg="
+          "Value": "sha256-94y/6cakf9+97/Azmvj2JioxR+6z8PFcolsFCa9t+CE="
+        }
+      ]
+    },
+    {
+      "Route": "admin.tzkjaeorv9.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\admin.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "4874"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"94y/6cakf9+97/Azmvj2JioxR+6z8PFcolsFCa9t+CE=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 16 Nov 2025 21:35:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "tzkjaeorv9"
+        },
+        {
+          "Name": "label",
+          "Value": "admin.html"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-94y/6cakf9+97/Azmvj2JioxR+6z8PFcolsFCa9t+CE="
+        }
+      ]
+    },
+    {
+      "Route": "css/style.css",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\css\\style.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "945"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"1uuDnx1+gkS9R8Yxz+kkm1Wzzzci3vtDisz9MHbxAnc=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 00:29:40 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-1uuDnx1+gkS9R8Yxz+kkm1Wzzzci3vtDisz9MHbxAnc="
+        }
+      ]
+    },
+    {
+      "Route": "css/style.yikl1eaqpv.css",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\css\\style.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "945"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"1uuDnx1+gkS9R8Yxz+kkm1Wzzzci3vtDisz9MHbxAnc=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 00:29:40 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "yikl1eaqpv"
+        },
+        {
+          "Name": "label",
+          "Value": "css/style.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-1uuDnx1+gkS9R8Yxz+kkm1Wzzzci3vtDisz9MHbxAnc="
         }
       ]
     },
@@ -1548,8 +2134,8 @@
       ]
     },
     {
-      "Route": "hospital-api.bundle.scp.css",
-      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\hospital-api.bundle.scp.css",
+      "Route": "index.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\index.html",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1558,19 +2144,19 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1130"
+          "Value": "5157"
         },
         {
           "Name": "Content-Type",
-          "Value": "text/css"
+          "Value": "text/html"
         },
         {
           "Name": "ETag",
-          "Value": "\"8EKis56WuMOeVKHb3Iz+8sWtrMV+AqX/IkeErzPFz4Q=\""
+          "Value": "\"hF38hUsnF0qo02/wdzHo/E9FZ1N1CvV+u6SYqIp/1Hw=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 12 Oct 2025 15:44:35 GMT"
+          "Value": "Sun, 16 Nov 2025 21:35:03 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1580,13 +2166,13 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-8EKis56WuMOeVKHb3Iz+8sWtrMV+AqX/IkeErzPFz4Q="
+          "Value": "sha256-hF38hUsnF0qo02/wdzHo/E9FZ1N1CvV+u6SYqIp/1Hw="
         }
       ]
     },
     {
-      "Route": "hospital-api.cpwirrc16t.bundle.scp.css",
-      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\hospital-api.bundle.scp.css",
+      "Route": "index.wnedn8ocr2.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\index.html",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1595,19 +2181,19 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1130"
+          "Value": "5157"
         },
         {
           "Name": "Content-Type",
-          "Value": "text/css"
+          "Value": "text/html"
         },
         {
           "Name": "ETag",
-          "Value": "\"8EKis56WuMOeVKHb3Iz+8sWtrMV+AqX/IkeErzPFz4Q=\""
+          "Value": "\"hF38hUsnF0qo02/wdzHo/E9FZ1N1CvV+u6SYqIp/1Hw=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 12 Oct 2025 15:44:35 GMT"
+          "Value": "Sun, 16 Nov 2025 21:35:03 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1617,21 +2203,21 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "cpwirrc16t"
+          "Value": "wnedn8ocr2"
         },
         {
           "Name": "label",
-          "Value": "hospital-api.bundle.scp.css"
+          "Value": "index.html"
         },
         {
           "Name": "integrity",
-          "Value": "sha256-8EKis56WuMOeVKHb3Iz+8sWtrMV+AqX/IkeErzPFz4Q="
+          "Value": "sha256-hF38hUsnF0qo02/wdzHo/E9FZ1N1CvV+u6SYqIp/1Hw="
         }
       ]
     },
     {
-      "Route": "hospital-api.cpwirrc16t.styles.css",
-      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\obj\\Debug\\net8.0\\scopedcss\\bundle\\hospital-api.styles.css",
+      "Route": "js/admin.bfpru36lhw.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\js\\admin.js",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1640,89 +2226,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1130"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"8EKis56WuMOeVKHb3Iz+8sWtrMV+AqX/IkeErzPFz4Q=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Sun, 12 Oct 2025 15:44:35 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "cpwirrc16t"
-        },
-        {
-          "Name": "label",
-          "Value": "hospital-api.styles.css"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-8EKis56WuMOeVKHb3Iz+8sWtrMV+AqX/IkeErzPFz4Q="
-        }
-      ]
-    },
-    {
-      "Route": "hospital-api.styles.css",
-      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\obj\\Debug\\net8.0\\scopedcss\\bundle\\hospital-api.styles.css",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "1130"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"8EKis56WuMOeVKHb3Iz+8sWtrMV+AqX/IkeErzPFz4Q=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Sun, 12 Oct 2025 15:44:35 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "no-cache"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "integrity",
-          "Value": "sha256-8EKis56WuMOeVKHb3Iz+8sWtrMV+AqX/IkeErzPFz4Q="
-        }
-      ]
-    },
-    {
-      "Route": "js/site.js",
-      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\js\\site.js",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "231"
+          "Value": "3098"
         },
         {
           "Name": "Content-Type",
@@ -1730,48 +2234,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo=\""
+          "Value": "\"dyMLaVd4nqJpiPnsIQYxd1yzFBpEU0ewMRGnDJ5WaIY=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 06 Jul 2025 12:14:34 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "no-cache"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "integrity",
-          "Value": "sha256-hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo="
-        }
-      ]
-    },
-    {
-      "Route": "js/site.xtxxf3hu2r.js",
-      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\js\\site.js",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "231"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/javascript"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Sun, 06 Jul 2025 12:14:34 GMT"
+          "Value": "Tue, 25 Nov 2025 00:31:07 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1781,15 +2248,380 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "xtxxf3hu2r"
+          "Value": "bfpru36lhw"
         },
         {
           "Name": "label",
-          "Value": "js/site.js"
+          "Value": "js/admin.js"
         },
         {
           "Name": "integrity",
-          "Value": "sha256-hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo="
+          "Value": "sha256-dyMLaVd4nqJpiPnsIQYxd1yzFBpEU0ewMRGnDJ5WaIY="
+        }
+      ]
+    },
+    {
+      "Route": "js/admin.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\js\\admin.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3098"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"dyMLaVd4nqJpiPnsIQYxd1yzFBpEU0ewMRGnDJ5WaIY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 00:31:07 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-dyMLaVd4nqJpiPnsIQYxd1yzFBpEU0ewMRGnDJ5WaIY="
+        }
+      ]
+    },
+    {
+      "Route": "js/api.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\js\\api.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3134"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"DIb6lt/AwGKC/Iwv2tV4j6L++cxbJkEjPJuGQErdVeI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 00:32:30 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-DIb6lt/AwGKC/Iwv2tV4j6L++cxbJkEjPJuGQErdVeI="
+        }
+      ]
+    },
+    {
+      "Route": "js/api.o7e84favlt.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\js\\api.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3134"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"DIb6lt/AwGKC/Iwv2tV4j6L++cxbJkEjPJuGQErdVeI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 00:32:30 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "o7e84favlt"
+        },
+        {
+          "Name": "label",
+          "Value": "js/api.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-DIb6lt/AwGKC/Iwv2tV4j6L++cxbJkEjPJuGQErdVeI="
+        }
+      ]
+    },
+    {
+      "Route": "js/auth.4r17muvxbj.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\js\\auth.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "10330"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"YL3HVQopOxyFurQohfIAy9c8vjw7Fvf9M1VYWUAPwH8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 20:32:01 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "4r17muvxbj"
+        },
+        {
+          "Name": "label",
+          "Value": "js/auth.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-YL3HVQopOxyFurQohfIAy9c8vjw7Fvf9M1VYWUAPwH8="
+        }
+      ]
+    },
+    {
+      "Route": "js/auth.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\js\\auth.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "10330"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"YL3HVQopOxyFurQohfIAy9c8vjw7Fvf9M1VYWUAPwH8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 20:32:01 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-YL3HVQopOxyFurQohfIAy9c8vjw7Fvf9M1VYWUAPwH8="
+        }
+      ]
+    },
+    {
+      "Route": "js/main.eeheftrk0i.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\js\\main.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "6203"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"lgJrQ4zAcmtcOXg8EhWnxUZPxwmX0DIj3EEX/RVxk6s=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 00:35:11 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "eeheftrk0i"
+        },
+        {
+          "Name": "label",
+          "Value": "js/main.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-lgJrQ4zAcmtcOXg8EhWnxUZPxwmX0DIj3EEX/RVxk6s="
+        }
+      ]
+    },
+    {
+      "Route": "js/main.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\js\\main.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "6203"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"lgJrQ4zAcmtcOXg8EhWnxUZPxwmX0DIj3EEX/RVxk6s=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 00:35:11 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-lgJrQ4zAcmtcOXg8EhWnxUZPxwmX0DIj3EEX/RVxk6s="
+        }
+      ]
+    },
+    {
+      "Route": "js/reports.ap1d74ts1a.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\js\\reports.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "15259"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"3hCEbns2zwcq5yeYl7/v6QR68MTzuJCJ1cuqBBNoR+E=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 00:36:25 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ap1d74ts1a"
+        },
+        {
+          "Name": "label",
+          "Value": "js/reports.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-3hCEbns2zwcq5yeYl7/v6QR68MTzuJCJ1cuqBBNoR+E="
+        }
+      ]
+    },
+    {
+      "Route": "js/reports.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\js\\reports.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "15259"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"3hCEbns2zwcq5yeYl7/v6QR68MTzuJCJ1cuqBBNoR+E=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 00:36:25 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-3hCEbns2zwcq5yeYl7/v6QR68MTzuJCJ1cuqBBNoR+E="
         }
       ]
     },
@@ -6710,6 +7542,1646 @@
         {
           "Name": "integrity",
           "Value": "sha256-hjIBkvmgxQXbNXK3B9YQ3t06RwLuQSQzC/dpvuB/lMk="
+        }
+      ]
+    },
+    {
+      "Route": "login.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\login.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2967"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"6Md2ZuEl0gMMVmsOZiGMuFafJaeZwM86L6XWhLOSpGA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 12 Nov 2025 21:08:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-6Md2ZuEl0gMMVmsOZiGMuFafJaeZwM86L6XWhLOSpGA="
+        }
+      ]
+    },
+    {
+      "Route": "login.sj2kmymmaz.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\login.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2967"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"6Md2ZuEl0gMMVmsOZiGMuFafJaeZwM86L6XWhLOSpGA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 12 Nov 2025 21:08:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "sj2kmymmaz"
+        },
+        {
+          "Name": "label",
+          "Value": "login.html"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-6Md2ZuEl0gMMVmsOZiGMuFafJaeZwM86L6XWhLOSpGA="
+        }
+      ]
+    },
+    {
+      "Route": "manage/clinics.9nke03fltl.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\clinics.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "7505"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"+4NnmwS8glfRlvumeWPHmOf3GIBd9PeRqsSDGRGzuuA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 16 Nov 2025 21:35:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "9nke03fltl"
+        },
+        {
+          "Name": "label",
+          "Value": "manage/clinics.html"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-+4NnmwS8glfRlvumeWPHmOf3GIBd9PeRqsSDGRGzuuA="
+        }
+      ]
+    },
+    {
+      "Route": "manage/clinics.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\clinics.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "7505"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"+4NnmwS8glfRlvumeWPHmOf3GIBd9PeRqsSDGRGzuuA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 16 Nov 2025 21:35:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-+4NnmwS8glfRlvumeWPHmOf3GIBd9PeRqsSDGRGzuuA="
+        }
+      ]
+    },
+    {
+      "Route": "manage/clinics.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\clinics.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "9098"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"3/fnSVgwetdgj5zjeKv0Jmq1y/LebqyhdXOfsrbI4bc=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 00:46:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-3/fnSVgwetdgj5zjeKv0Jmq1y/LebqyhdXOfsrbI4bc="
+        }
+      ]
+    },
+    {
+      "Route": "manage/clinics.n6nagpxhl5.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\clinics.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "9098"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"3/fnSVgwetdgj5zjeKv0Jmq1y/LebqyhdXOfsrbI4bc=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 00:46:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "n6nagpxhl5"
+        },
+        {
+          "Name": "label",
+          "Value": "manage/clinics.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-3/fnSVgwetdgj5zjeKv0Jmq1y/LebqyhdXOfsrbI4bc="
+        }
+      ]
+    },
+    {
+      "Route": "manage/doctors.4bgg33o3bt.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\doctors.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "13112"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"kMX7dr4IJ0tHRe/2FTTBVbwCdw7et6PIjeUrLDifWsU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 16 Nov 2025 21:37:16 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "4bgg33o3bt"
+        },
+        {
+          "Name": "label",
+          "Value": "manage/doctors.html"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-kMX7dr4IJ0tHRe/2FTTBVbwCdw7et6PIjeUrLDifWsU="
+        }
+      ]
+    },
+    {
+      "Route": "manage/doctors.gtlhbcxy2t.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\doctors.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "21322"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"TEyOFDwOJSHK4UL+aHY1hGVQ/NNmqhEUgnjPSqx3CcY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 00:48:45 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "gtlhbcxy2t"
+        },
+        {
+          "Name": "label",
+          "Value": "manage/doctors.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-TEyOFDwOJSHK4UL+aHY1hGVQ/NNmqhEUgnjPSqx3CcY="
+        }
+      ]
+    },
+    {
+      "Route": "manage/doctors.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\doctors.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "13112"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"kMX7dr4IJ0tHRe/2FTTBVbwCdw7et6PIjeUrLDifWsU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 16 Nov 2025 21:37:16 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-kMX7dr4IJ0tHRe/2FTTBVbwCdw7et6PIjeUrLDifWsU="
+        }
+      ]
+    },
+    {
+      "Route": "manage/doctors.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\doctors.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "21322"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"TEyOFDwOJSHK4UL+aHY1hGVQ/NNmqhEUgnjPSqx3CcY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 00:48:45 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-TEyOFDwOJSHK4UL+aHY1hGVQ/NNmqhEUgnjPSqx3CcY="
+        }
+      ]
+    },
+    {
+      "Route": "manage/hospitals.3v9xevt4el.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\hospitals.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "34632"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Lyr4CKqa+idHkvhM+dTiGAiBeLvaZOrG6rctGXIyp60=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 00:51:57 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "3v9xevt4el"
+        },
+        {
+          "Name": "label",
+          "Value": "manage/hospitals.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Lyr4CKqa+idHkvhM+dTiGAiBeLvaZOrG6rctGXIyp60="
+        }
+      ]
+    },
+    {
+      "Route": "manage/hospitals.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\hospitals.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "21344"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"DZKHca/6OtJmY3tPvIw8MMGNBSVLExIZQXvyq2W8Z8g=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 00:49:33 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-DZKHca/6OtJmY3tPvIw8MMGNBSVLExIZQXvyq2W8Z8g="
+        }
+      ]
+    },
+    {
+      "Route": "manage/hospitals.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\hospitals.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "34632"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Lyr4CKqa+idHkvhM+dTiGAiBeLvaZOrG6rctGXIyp60=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 00:51:57 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-Lyr4CKqa+idHkvhM+dTiGAiBeLvaZOrG6rctGXIyp60="
+        }
+      ]
+    },
+    {
+      "Route": "manage/hospitals.tw3hondj13.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\hospitals.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "21344"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"DZKHca/6OtJmY3tPvIw8MMGNBSVLExIZQXvyq2W8Z8g=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 00:49:33 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "tw3hondj13"
+        },
+        {
+          "Name": "label",
+          "Value": "manage/hospitals.html"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-DZKHca/6OtJmY3tPvIw8MMGNBSVLExIZQXvyq2W8Z8g="
+        }
+      ]
+    },
+    {
+      "Route": "manage/laboratories.2wfrtwe4cq.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\laboratories.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "8246"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"MiZ/UnJ/Calv7l5w6vR4OMdH2kUadXjN3u80Wk35rYo=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 16 Nov 2025 21:35:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "2wfrtwe4cq"
+        },
+        {
+          "Name": "label",
+          "Value": "manage/laboratories.html"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-MiZ/UnJ/Calv7l5w6vR4OMdH2kUadXjN3u80Wk35rYo="
+        }
+      ]
+    },
+    {
+      "Route": "manage/laboratories.7hjqsf0kzr.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\laboratories.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "10886"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Gx28WWtzJ5EARoqk3wWNHZB/EFaLYK50mF4+6b50GMA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 00:54:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "7hjqsf0kzr"
+        },
+        {
+          "Name": "label",
+          "Value": "manage/laboratories.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Gx28WWtzJ5EARoqk3wWNHZB/EFaLYK50mF4+6b50GMA="
+        }
+      ]
+    },
+    {
+      "Route": "manage/laboratories.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\laboratories.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "8246"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"MiZ/UnJ/Calv7l5w6vR4OMdH2kUadXjN3u80Wk35rYo=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 16 Nov 2025 21:35:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-MiZ/UnJ/Calv7l5w6vR4OMdH2kUadXjN3u80Wk35rYo="
+        }
+      ]
+    },
+    {
+      "Route": "manage/laboratories.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\laboratories.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "10886"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Gx28WWtzJ5EARoqk3wWNHZB/EFaLYK50mF4+6b50GMA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 00:54:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-Gx28WWtzJ5EARoqk3wWNHZB/EFaLYK50mF4+6b50GMA="
+        }
+      ]
+    },
+    {
+      "Route": "manage/patients.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\patients.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "12306"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"7ItObkBTJkcyEp8vxPn+eWe263Zplmu0ct4uYZWt5/k=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 16 Nov 2025 21:35:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-7ItObkBTJkcyEp8vxPn+eWe263Zplmu0ct4uYZWt5/k="
+        }
+      ]
+    },
+    {
+      "Route": "manage/patients.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\patients.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "24069"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"icnSBWhqa7RrBfrIRKP62TDyit3jGkL6nTEbr2mo980=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 00:56:56 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-icnSBWhqa7RrBfrIRKP62TDyit3jGkL6nTEbr2mo980="
+        }
+      ]
+    },
+    {
+      "Route": "manage/patients.tzwufqju6i.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\patients.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "24069"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"icnSBWhqa7RrBfrIRKP62TDyit3jGkL6nTEbr2mo980=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 00:56:56 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "tzwufqju6i"
+        },
+        {
+          "Name": "label",
+          "Value": "manage/patients.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-icnSBWhqa7RrBfrIRKP62TDyit3jGkL6nTEbr2mo980="
+        }
+      ]
+    },
+    {
+      "Route": "manage/patients.w71zfbulpq.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\patients.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "12306"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"7ItObkBTJkcyEp8vxPn+eWe263Zplmu0ct4uYZWt5/k=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 16 Nov 2025 21:35:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "w71zfbulpq"
+        },
+        {
+          "Name": "label",
+          "Value": "manage/patients.html"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-7ItObkBTJkcyEp8vxPn+eWe263Zplmu0ct4uYZWt5/k="
+        }
+      ]
+    },
+    {
+      "Route": "manage/query.ad22hirjid.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\query.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3576"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"gt5PpY8OJBmSjNLi62sPq8PQ7+eF1Xf/yvNWhuHncqQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 00:58:52 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ad22hirjid"
+        },
+        {
+          "Name": "label",
+          "Value": "manage/query.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-gt5PpY8OJBmSjNLi62sPq8PQ7+eF1Xf/yvNWhuHncqQ="
+        }
+      ]
+    },
+    {
+      "Route": "manage/query.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\query.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "6540"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"k0/5skl6/gyxUa7EpCDjQLRBwFnIoRDjuZRM+uf5rJw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 16 Nov 2025 21:35:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-k0/5skl6/gyxUa7EpCDjQLRBwFnIoRDjuZRM+uf5rJw="
+        }
+      ]
+    },
+    {
+      "Route": "manage/query.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\query.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3576"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"gt5PpY8OJBmSjNLi62sPq8PQ7+eF1Xf/yvNWhuHncqQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 00:58:52 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-gt5PpY8OJBmSjNLi62sPq8PQ7+eF1Xf/yvNWhuHncqQ="
+        }
+      ]
+    },
+    {
+      "Route": "manage/query.xzyx968ivo.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\query.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "6540"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"k0/5skl6/gyxUa7EpCDjQLRBwFnIoRDjuZRM+uf5rJw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 16 Nov 2025 21:35:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "xzyx968ivo"
+        },
+        {
+          "Name": "label",
+          "Value": "manage/query.html"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-k0/5skl6/gyxUa7EpCDjQLRBwFnIoRDjuZRM+uf5rJw="
+        }
+      ]
+    },
+    {
+      "Route": "manage/support-staff.caw2fr00sg.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\support-staff.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "10783"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"9MpdjCEZqddDmw5X8cmhqYIbHubcrauZ4iFDnWPFUxE=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 23 Nov 2025 15:45:18 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "caw2fr00sg"
+        },
+        {
+          "Name": "label",
+          "Value": "manage/support-staff.html"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-9MpdjCEZqddDmw5X8cmhqYIbHubcrauZ4iFDnWPFUxE="
+        }
+      ]
+    },
+    {
+      "Route": "manage/support-staff.eniv6v8u72.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\support-staff.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "11430"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"KhKtYeC1GMM7Q49Sgo+LpKVDVL6Yr6CWFQYG1ImmUig=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 01:00:41 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "eniv6v8u72"
+        },
+        {
+          "Name": "label",
+          "Value": "manage/support-staff.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-KhKtYeC1GMM7Q49Sgo+LpKVDVL6Yr6CWFQYG1ImmUig="
+        }
+      ]
+    },
+    {
+      "Route": "manage/support-staff.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\support-staff.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "10783"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"9MpdjCEZqddDmw5X8cmhqYIbHubcrauZ4iFDnWPFUxE=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 23 Nov 2025 15:45:18 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-9MpdjCEZqddDmw5X8cmhqYIbHubcrauZ4iFDnWPFUxE="
+        }
+      ]
+    },
+    {
+      "Route": "manage/support-staff.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\support-staff.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "11430"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"KhKtYeC1GMM7Q49Sgo+LpKVDVL6Yr6CWFQYG1ImmUig=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 01:00:41 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-KhKtYeC1GMM7Q49Sgo+LpKVDVL6Yr6CWFQYG1ImmUig="
+        }
+      ]
+    },
+    {
+      "Route": "manage/tracking.0y4huf0b3l.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\tracking.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "12918"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"SG0Aal+1v9gC7BLV6AlyLaWXknjjU2DvJsvZbgMwQm8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 16 Nov 2025 21:35:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "0y4huf0b3l"
+        },
+        {
+          "Name": "label",
+          "Value": "manage/tracking.html"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-SG0Aal+1v9gC7BLV6AlyLaWXknjjU2DvJsvZbgMwQm8="
+        }
+      ]
+    },
+    {
+      "Route": "manage/tracking.6cjxm4lmrg.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\tracking.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "28022"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"JhaHnxLs5jxQlaDgbe1pxbjSzVZic6WWhAYwW8qKt+g=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 01:02:29 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "6cjxm4lmrg"
+        },
+        {
+          "Name": "label",
+          "Value": "manage/tracking.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-JhaHnxLs5jxQlaDgbe1pxbjSzVZic6WWhAYwW8qKt+g="
+        }
+      ]
+    },
+    {
+      "Route": "manage/tracking.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\tracking.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "12918"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"SG0Aal+1v9gC7BLV6AlyLaWXknjjU2DvJsvZbgMwQm8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 16 Nov 2025 21:35:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-SG0Aal+1v9gC7BLV6AlyLaWXknjjU2DvJsvZbgMwQm8="
+        }
+      ]
+    },
+    {
+      "Route": "manage/tracking.js",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\manage\\tracking.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "28022"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"JhaHnxLs5jxQlaDgbe1pxbjSzVZic6WWhAYwW8qKt+g=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Nov 2025 01:02:29 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-JhaHnxLs5jxQlaDgbe1pxbjSzVZic6WWhAYwW8qKt+g="
+        }
+      ]
+    },
+    {
+      "Route": "register.fu4z204i46.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\register.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2535"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"ufpaquIdNAikx5WYqmAK19h09a2eaL50dPqHUMdPzC8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 15 Nov 2025 13:13:26 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "fu4z204i46"
+        },
+        {
+          "Name": "label",
+          "Value": "register.html"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-ufpaquIdNAikx5WYqmAK19h09a2eaL50dPqHUMdPzC8="
+        }
+      ]
+    },
+    {
+      "Route": "register.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\register.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2535"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"ufpaquIdNAikx5WYqmAK19h09a2eaL50dPqHUMdPzC8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 15 Nov 2025 13:13:26 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-ufpaquIdNAikx5WYqmAK19h09a2eaL50dPqHUMdPzC8="
+        }
+      ]
+    },
+    {
+      "Route": "reports.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\reports.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "15612"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"HwtSFjeMdWEpj65lxVJOKh3j2ohhOwSHKN01+Q9WoPc=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 17 Nov 2025 11:15:42 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-HwtSFjeMdWEpj65lxVJOKh3j2ohhOwSHKN01+Q9WoPc="
+        }
+      ]
+    },
+    {
+      "Route": "reports.z359drd58r.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\reports.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "15612"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"HwtSFjeMdWEpj65lxVJOKh3j2ohhOwSHKN01+Q9WoPc=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 17 Nov 2025 11:15:42 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "z359drd58r"
+        },
+        {
+          "Name": "label",
+          "Value": "reports.html"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-HwtSFjeMdWEpj65lxVJOKh3j2ohhOwSHKN01+Q9WoPc="
+        }
+      ]
+    },
+    {
+      "Route": "reset-password.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\reset-password.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5268"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"OdSzpxx0U5y9wy9g44wm7A/eQvN5g+9tMWk/hvhf84w=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 17 Nov 2025 14:13:18 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-OdSzpxx0U5y9wy9g44wm7A/eQvN5g+9tMWk/hvhf84w="
+        }
+      ]
+    },
+    {
+      "Route": "reset-password.n8xmm9gxd5.html",
+      "AssetFile": "D:\\uni\\course-project\\project\\hospital-api\\hospital-api\\wwwroot\\reset-password.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5268"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"OdSzpxx0U5y9wy9g44wm7A/eQvN5g+9tMWk/hvhf84w=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 17 Nov 2025 14:13:18 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "n8xmm9gxd5"
+        },
+        {
+          "Name": "label",
+          "Value": "reset-password.html"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-OdSzpxx0U5y9wy9g44wm7A/eQvN5g+9tMWk/hvhf84w="
         }
       ]
     }

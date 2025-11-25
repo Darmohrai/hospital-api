@@ -13,7 +13,6 @@ public class RoomService : IRoomService
         _roomRepository = roomRepository;
     }
 
-    // --- CRUD ---
     public async Task<Room?> GetByIdAsync(int id)
     {
         return await _roomRepository.GetByIdAsync(id);
@@ -50,7 +49,6 @@ public class RoomService : IRoomService
         await _roomRepository.DeleteAsync(id);
     }
 
-    // --- Специфічні методи ---
     public async Task<Room?> GetByNumberAsync(string roomNumber)
     {
         return await _roomRepository.GetByNumberAsync(roomNumber);

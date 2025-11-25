@@ -10,7 +10,6 @@ namespace hospital_api.Services.Implementations.Tracking;
 public class ClinicDoctorAssignmentService : IClinicDoctorAssignmentService
 {
     private readonly IClinicDoctorAssignmentRepository _assignmentRepo;
-    // Репозиторії для валідації
     private readonly IPatientRepository _patientRepo;
     private readonly IStaffRepository _staffRepo;
     private readonly IClinicRepository _clinicRepo;
@@ -39,7 +38,6 @@ public class ClinicDoctorAssignmentService : IClinicDoctorAssignmentService
 
     public async Task<ClinicDoctorAssignment> CreateAsync(ClinicDoctorAssignmentDto dto)
     {
-        // 1. Валідація: Перевіряємо, чи існують сутності
         if (await _patientRepo.GetByIdAsync(dto.PatientId) == null)
             throw new KeyNotFoundException("Пацієнта з таким ID не знайдено.");
         
@@ -49,7 +47,6 @@ public class ClinicDoctorAssignmentService : IClinicDoctorAssignmentService
         if (await _clinicRepo.GetByIdAsync(dto.ClinicId) == null)
             throw new KeyNotFoundException("Клініку з таким ID не знайдено.");
 
-        // 2. Валідація: Перевіряємо, чи зв'язок вже існує
         var existing = (await _assignmentRepo.FindByConditionAsync(
             a => a.PatientId == dto.PatientId &&
                  a.DoctorId == dto.DoctorId &&
@@ -59,7 +56,6 @@ public class ClinicDoctorAssignmentService : IClinicDoctorAssignmentService
         if (existing)
             throw new InvalidOperationException("Таке призначення вже існує.");
 
-        // 3. Створення
         var assignment = new ClinicDoctorAssignment
         {
             PatientId = dto.PatientId,
@@ -67,18 +63,14 @@ public class ClinicDoctorAssignmentService : IClinicDoctorAssignmentService
             ClinicId = dto.ClinicId
         };
         
-        // Використовуємо кастомний метод з репозиторію
         await _assignmentRepo.AddAssignmentAsync(assignment);
         return assignment;
     }
 
     public async Task<bool> DeleteAsync(int patientId, int doctorId, int clinicId)
     {
-        // Кастомний метод репозиторію вже включає пошук
         await _assignmentRepo.RemoveAssignmentAsync(patientId, doctorId, clinicId);
         
-        // TODO: Репозиторій не повертає bool, тому ми просто припускаємо успіх.
-        // Для кращої практики, репозиторій мав би повертати bool.
         return true; 
     }
 }

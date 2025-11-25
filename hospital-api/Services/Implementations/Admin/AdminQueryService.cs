@@ -22,23 +22,19 @@ public class AdminQueryService : IAdminQueryService
     {
         var trimmedQuery = sqlQuery.Trim().ToUpperInvariant();
 
-        // 1. ВАЛІДАЦІЯ: Заборона небезпечних команд
         if (trimmedQuery.StartsWith("ALTER ") || trimmedQuery.StartsWith("DROP ") || trimmedQuery.StartsWith("CREATE "))
         {
             throw new ArgumentException("Команди зміни схеми (ALTER, DROP, CREATE) заборонені.");
         }
 
-        // 2. Визначення типу запиту
         if (trimmedQuery.StartsWith("SELECT "))
         {
-            // Виконання SELECT за допомогою ADO.NET для гнучкості
             return await ExecuteSelectQueryAsync(sqlQuery);
         }
         else if (trimmedQuery.StartsWith("INSERT ") || trimmedQuery.StartsWith("UPDATE ") || trimmedQuery.StartsWith("DELETE "))
         {
-            // Виконання команд модифікації через EF Core
             int affectedRows = await _context.Database.ExecuteSqlRawAsync(sqlQuery);
-            return new { AffectedRows = affectedRows }; // Повертаємо об'єкт з кількістю рядків
+            return new { AffectedRows = affectedRows };
         }
         else
         {
@@ -50,8 +46,6 @@ public class AdminQueryService : IAdminQueryService
     {
         var results = new List<Dictionary<string, object>>();
         
-        // Використовуємо NpgsqlConnection, якщо у тебе PostgreSQL.
-        // Заміни на SqlConnection, якщо використовуєш SQL Server.
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync();
         
@@ -68,7 +62,6 @@ public class AdminQueryService : IAdminQueryService
                 {
                     var columnName = reader.GetName(i);
                     var value = reader.GetValue(i);
-                    // Обробка DBNull (якщо значення в базі NULL)
                     row[columnName] = value == DBNull.Value ? null : value;
                 }
                 results.Add(row);
@@ -76,7 +69,6 @@ public class AdminQueryService : IAdminQueryService
         }
         catch (DbException ex)
         {
-            // Обробка помилок SQL (синтаксис, права доступу тощо)
             throw new InvalidOperationException($"Помилка виконання SQL-запиту: {ex.Message}", ex);
         }
 

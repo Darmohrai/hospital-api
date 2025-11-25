@@ -1,5 +1,4 @@
-﻿using hospital_api.Data;
-using hospital_api.DTOs.Clinic;
+﻿using hospital_api.DTOs.Clinic;
 using hospital_api.Models.ClinicAggregate;
 using hospital_api.Models.HospitalAggregate;
 using hospital_api.Models.PatientAggregate;
@@ -25,7 +24,6 @@ public class ClinicService : IClinicService
     private readonly IEmploymentRepository _employmentRepository;
     private readonly IPatientRepository _patientRepository;
 
-    // ✅ Правильний конструктор з усіма необхідними залежностями
     public ClinicService(
         IClinicRepository clinicRepository,
         IHospitalRepository hospitalRepository,
@@ -40,7 +38,6 @@ public class ClinicService : IClinicService
         _patientRepository = patientRepository;
     }
 
-    // --- Базові CRUD операції ---
     public async Task<IEnumerable<Clinic>> GetAllAsync() => await _clinicRepository.GetAllAsync();
     public async Task<Clinic?> GetByIdAsync(int id) => await _clinicRepository.GetByIdAsync(id);
     public async Task CreateAsync(Clinic clinic) => await _clinicRepository.AddAsync(clinic);
@@ -102,7 +99,7 @@ public class ClinicService : IClinicService
         if (clinic == null)
             return ServiceResponse<Patient>.Fail("Clinic not found.");
 
-        patient.ClinicId = clinic.Id; // Пацієнт приписується до клініки
+        patient.ClinicId = clinic.Id;
         await _patientRepository.AddAsync(patient);
 
         return ServiceResponse<Patient>.Success(patient);
@@ -113,7 +110,7 @@ public class ClinicService : IClinicService
     {
         var patient = await _patientRepository.GetAll()
             .Include(p => p.Clinic)
-            .ThenInclude(c => c!.Hospital) // '!' каже компілятору, що ми впевнені, що Clinic не null
+            .ThenInclude(c => c!.Hospital)
             .FirstOrDefaultAsync(p => p.Id == patientId);
 
         if (patient == null)
@@ -139,10 +136,8 @@ public class ClinicService : IClinicService
         return ServiceResponse<Hospital>.Success(alternativeHospital);
     }
 
-    // ✅ НОВА РЕАЛІЗАЦІЯ
     public async Task<IEnumerable<ClinicDto>> GetAllDtosAsync()
     {
-        // Використовуємо .GetAll() (IQueryable) з GenericRepository
         return await _clinicRepository.GetAll()
             .Select(c => new ClinicDto
             {

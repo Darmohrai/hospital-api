@@ -1,6 +1,5 @@
 ﻿document.addEventListener('DOMContentLoaded', () => {
 
-    // --- Перевірка залежностей ---
     if (typeof apiFetch === 'undefined') {
         console.error("КРИТИЧНА ПОМИЛКА: 'apiFetch' функцію не знайдено.");
         alert("Помилка: Не вдалося завантажити API. Перевірте консоль.");
@@ -12,7 +11,6 @@
         return;
     }
 
-    // --- Глобальні константи ---
     const ALL_SPECIALIZATIONS = [
         'Surgeon',
         'Neurologist',
@@ -33,13 +31,10 @@
         Cardiologist: "Кардіолог"
     };
 
-
-    // --- Елементи DOM ---
     const hospitalsTableBody = document.getElementById('hospitals-table-body');
     const addHospitalBtn = document.getElementById('add-hospital-btn');
     const pageError = document.getElementById('page-error');
 
-    // --- Головне модальне вікно ---
     const mainModalEl = document.getElementById('hospital-manage-modal');
     const mainModal = new bootstrap.Modal(mainModalEl);
     const mainModalTitle = document.getElementById('hospital-modal-title');
@@ -51,16 +46,12 @@
     const hospitalSpecsContainer = document.getElementById('hospital-specializations-container');
     const saveHospitalBtn = document.getElementById('save-hospital-btn');
 
-    // Вкладки
     const tabMainInfo = new bootstrap.Tab(document.getElementById('tab-main-info'));
     const tabStructure = document.getElementById('tab-structure');
     const tabStructureContent = document.getElementById('tab-structure-content');
     const structureAccordion = document.getElementById('structure-accordion');
     const structureLoading = document.getElementById('structure-loading');
 
-    // --- Допоміжні модальні вікна ---
-
-    // 1. Додати Корпус
     const addBuildingModalEl = document.getElementById('add-building-modal');
     const addBuildingModal = new bootstrap.Modal(addBuildingModalEl, {
         backdrop: 'static',
@@ -78,26 +69,22 @@
     const addBuildingForm = document.getElementById('add-building-form');
     const addBuildingError = document.getElementById('add-building-error');
 
-    // 2. Додати Відділення
     const addDepartmentModalEl = document.getElementById('add-department-modal');
     const addDepartmentModal = new bootstrap.Modal(addDepartmentModalEl);
     const addDepartmentForm = document.getElementById('add-department-form');
     const addDepartmentError = document.getElementById('add-department-error');
     const addDepartmentSpecSelect = document.getElementById('add-department-specialization');
 
-    // 3. Додати Палату
     const addRoomModalEl = document.getElementById('add-room-modal');
     const addRoomModal = new bootstrap.Modal(addRoomModalEl);
     const addRoomForm = document.getElementById('add-room-form');
     const addRoomError = document.getElementById('add-room-error');
 
-    // 4. Додати Ліжка
     const addBedsModalEl = document.getElementById('add-beds-modal');
     const addBedsModal = new bootstrap.Modal(addBedsModalEl);
     const addBedsForm = document.getElementById('add-beds-form');
     const addBedsError = document.getElementById('add-beds-error');
 
-    // 5. Редагувати Відділення
     const editDepartmentModalEl = document.getElementById('edit-department-modal');
     const editDepartmentModal = editDepartmentModalEl ? new bootstrap.Modal(editDepartmentModalEl) : null;
     const editDepartmentForm = document.getElementById('edit-department-form');
@@ -107,13 +94,9 @@
     const editDepartmentSpecSelect = document.getElementById('edit-department-specialization');
     const editDepartmentBuildingIdInput = document.getElementById('edit-department-building-id');
 
-
-    // --- Стан ---
-    let currentMode = 'create'; // 'create' або 'edit'
-    let currentHospitalData = null; // Тут зберігається повне дерево лікарні
-    let currentUserRole = getUserRole(); // Припускаємо, що ця функція є в auth.js
-
-    // --- Функції ---
+    let currentMode = 'create';
+    let currentHospitalData = null;
+    let currentUserRole = getUserRole();
 
     function showPageError(message) {
         pageError.textContent = message;
@@ -148,9 +131,6 @@
         return specs;
     }
 
-    /**
-     * Завантажує список лікарень у головну таблицю
-     */
     async function loadHospitals() {
         try {
             showPageError(null);
@@ -340,9 +320,6 @@
         }
     }
 
-    /**
-     * Головна функція рендерингу. Будує дерево акордеонів.
-     */
     async function renderHospitalStructure(hospital) {
         structureAccordion.innerHTML = '';
         if (!hospital.buildings || hospital.buildings.length === 0) {
@@ -354,8 +331,6 @@
         const buildingHtmlArray = await Promise.all(buildingPromises);
         structureAccordion.innerHTML = buildingHtmlArray.join('');
     }
-
-    // --- ФУНКЦІЇ ГЕНЕРАЦІЇ HTML ---
 
     async function createBuildingAccordionItem(building) {
         const departments = await apiFetch(`/api/hospital/department/building/${building.id}/with-rooms`, {
@@ -376,7 +351,6 @@
                            </div>`;
         }
 
-        // FIX: Додано style="padding-right: 150px;" для зсуву стрілки
         return `
         <div class="accordion-item">
             <h2 class="accordion-header position-relative">
@@ -419,7 +393,6 @@
 
         const buildingId = dept.buildingId || (dept.room ? dept.room.department.buildingId : currentHospitalData.buildings.find(b => b.departments.some(d => d.id === dept.id))?.id);
 
-        // FIX: Додано style="padding-right: 150px;" для зсуву стрілки
         return `
         <div class="accordion-item">
             <h2 class="accordion-header position-relative">
@@ -468,7 +441,6 @@
         const bedCount = beds?.length || 0;
         const capacityColor = bedCount > room.capacity ? 'text-danger' : (bedCount === room.capacity ? 'text-success' : 'text-warning');
 
-        // FIX: Додано style="padding-right: 150px;" для зсуву стрілки
         return `
             <div class="accordion-item">
                 <h2 class="accordion-header position-relative">
@@ -548,14 +520,9 @@
         }
     }
 
-    /**
-     * Оновлює дерево структури (заново запитує дані лікарні)
-     * ЗБЕРІГАЄ СТАН ВІДКРИТИХ ВКЛАДОК
-     */
     async function refreshStructure() {
         if (!currentHospitalData || !currentHospitalData.id) return;
 
-        // 1. Запам'ятовуємо ID всіх відкритих елементів
         const openIds = Array.from(structureAccordion.querySelectorAll('.accordion-collapse.show'))
             .map(el => el.id);
 
@@ -567,12 +534,10 @@
             currentHospitalData = hospital;
             await renderHospitalStructure(hospital);
 
-            // 2. Відновлюємо стан відкритих вкладок
             openIds.forEach(id => {
                 const element = document.getElementById(id);
                 if (element) {
                     element.classList.add('show');
-                    // Знаходимо відповідну кнопку і оновлюємо її стан
                     const button = document.querySelector(`button[data-bs-target="#${id}"]`);
                     if (button) {
                         button.classList.remove('collapsed');
@@ -587,8 +552,6 @@
             structureLoading.style.display = 'none';
         }
     }
-
-    // --- Обробники для ДОПОМІЖНИХ модальних вікон ---
 
     function openAddBuildingModal() {
         addBuildingForm.reset();
@@ -798,8 +761,6 @@
             showPageError(`Помилка видалення: ${error.message}`);
         }
     }
-
-    // --- Ініціалізація та слухачі подій ---
 
     populateHospitalSpecsCheckboxes();
 

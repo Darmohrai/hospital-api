@@ -268,12 +268,8 @@ D:\uni\course-project\project\hospital-api\hospital-api\obj\Debug\net8.0\hospita
 D:\uni\course-project\project\hospital-api\hospital-api\obj\Debug\net8.0\hospital-api.csproj.CoreCompileInputs.cache
 D:\uni\course-project\project\hospital-api\hospital-api\obj\Debug\net8.0\hospital-api.MvcApplicationPartsAssemblyInfo.cs
 D:\uni\course-project\project\hospital-api\hospital-api\obj\Debug\net8.0\hospital-api.MvcApplicationPartsAssemblyInfo.cache
-D:\uni\course-project\project\hospital-api\hospital-api\obj\Debug\net8.0\hospital-api.RazorAssemblyInfo.cache
-D:\uni\course-project\project\hospital-api\hospital-api\obj\Debug\net8.0\hospital-api.RazorAssemblyInfo.cs
 D:\uni\course-project\project\hospital-api\hospital-api\obj\Debug\net8.0\hospital-api.sourcelink.json
-D:\uni\course-project\project\hospital-api\hospital-api\obj\Debug\net8.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
 D:\uni\course-project\project\hospital-api\hospital-api\obj\Debug\net8.0\scopedcss\bundle\hospital-api.styles.css
-D:\uni\course-project\project\hospital-api\hospital-api\obj\Debug\net8.0\scopedcss\projectbundle\hospital-api.bundle.scp.css
 D:\uni\course-project\project\hospital-api\hospital-api\obj\Debug\net8.0\staticwebassets.build.json
 D:\uni\course-project\project\hospital-api\hospital-api\obj\Debug\net8.0\staticwebassets.development.json
 D:\uni\course-project\project\hospital-api\hospital-api\obj\Debug\net8.0\staticwebassets.build.endpoints.json

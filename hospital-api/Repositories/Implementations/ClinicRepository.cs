@@ -11,7 +11,6 @@ public class ClinicRepository : GenericRepository<Clinic>, IClinicRepository
     {
     }
 
-    // Переоприділяємо GetAllAsync для включення зв’язків
     public async Task<IEnumerable<Clinic>> GetAllAsync()
     {
         return await _context.Clinics
@@ -21,7 +20,6 @@ public class ClinicRepository : GenericRepository<Clinic>, IClinicRepository
             .ToListAsync();
     }
 
-    // Переоприділяємо GetByIdAsync для включення зв’язків
     public async Task<Clinic?> GetByIdAsync(int id)
     {
         return await _context.Clinics
@@ -31,7 +29,6 @@ public class ClinicRepository : GenericRepository<Clinic>, IClinicRepository
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 
-    // Додатковий метод ExistsAsync
     public async Task<bool> ExistsAsync(int id)
     {
         return await _context.Clinics.AnyAsync(c => c.Id == id);

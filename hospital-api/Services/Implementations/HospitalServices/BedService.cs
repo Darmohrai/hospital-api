@@ -13,7 +13,6 @@ public class BedService : IBedService
         _bedRepository = bedRepository;
     }
 
-    // --- CRUD базові методи ---
     public async Task<Bed?> GetByIdAsync(int id)
     {
         return await _bedRepository.GetByIdAsync(id);
@@ -39,7 +38,6 @@ public class BedService : IBedService
         await _bedRepository.DeleteAsync(id);
     }
 
-    // --- Специфічні методи ---
     public async Task<IEnumerable<Bed>> GetAvailableBedsAsync()
     {
         return await _bedRepository.GetAvailableBedsAsync();

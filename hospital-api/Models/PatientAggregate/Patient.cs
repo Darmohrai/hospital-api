@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using hospital_api.Models.ClinicAggregate;
 using hospital_api.Models.HospitalAggregate;
 using hospital_api.Models.StaffAggregate;
@@ -19,15 +18,12 @@ public class Patient
 
     public float Temperature { get; set; }
 
-    // Поліклініка (обов’язково)
     [Required]
     public int ClinicId { get; set; }
     public Clinic? Clinic { get; set; }
-    // Лікарня (опціонально, тільки за направленням)
     public int? HospitalId { get; set; }
     public Hospital? Hospital { get; set; }
 
-    // Призначений лікар (може бути відсутній)
     public int? AssignedDoctorId { get; set; }
     public Staff? AssignedDoctor { get; set; }
     

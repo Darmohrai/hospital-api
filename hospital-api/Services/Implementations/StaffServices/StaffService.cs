@@ -1,6 +1,5 @@
 ﻿using hospital_api.Models.StaffAggregate;
 using hospital_api.Repositories.Interfaces.StaffRepo;
-using hospital_api.Services.Interfaces;
 using hospital_api.Services.Interfaces.StaffServices;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,7 +8,7 @@ namespace hospital_api.Services.Implementations.StaffServices;
 public class StaffService : IStaffService
 {
     private readonly IStaffRepository _staffRepository;
-    private readonly IEmploymentRepository _employmentRepository; // ✅ Додана необхідна залежність
+    private readonly IEmploymentRepository _employmentRepository;
 
     public StaffService(IStaffRepository staffRepository, IEmploymentRepository employmentRepository)
     {
@@ -62,26 +61,23 @@ public class StaffService : IStaffService
         return ServiceResponse<bool>.Success(true);
     }
 
-    // ✅ Виправлено: використовуємо EmploymentRepository
     public async Task<IEnumerable<Staff>> GetByClinicAsync(int clinicId)
     {
         var employments = await _employmentRepository.GetEmploymentsByClinicIdAsync(clinicId);
         return employments.Select(e => e.Staff);
     }
 
-    // ✅ Виправлено: використовуємо EmploymentRepository
     public async Task<IEnumerable<Staff>> GetByHospitalAsync(int hospitalId)
     {
         var employments = await _employmentRepository.GetEmploymentsByHospitalIdAsync(hospitalId);
         return employments.Select(e => e.Staff);
     }
 
-    // ✅ Виправлено: фільтрація на стороні БД для максимальної ефективності
     public async Task<IEnumerable<Staff>> GetExperiencedStaffAsync(int minExperienceYears)
     {
-        return await _staffRepository.GetAll() // Отримуємо IQueryable
-            .Where(s => s.WorkExperienceYears >= minExperienceYears) // Будуємо запит
-            .ToListAsync(); // Виконуємо запит до БД
+        return await _staffRepository.GetAll()
+            .Where(s => s.WorkExperienceYears >= minExperienceYears)
+            .ToListAsync();
     }
 
     public async Task<ServiceResponse<decimal>> CalculateAnnualBonusAsync(int staffId)
@@ -92,8 +88,8 @@ public class StaffService : IStaffService
             return ServiceResponse<decimal>.Fail("Staff member not found.");
         }
 
-        decimal baseSalary = 50000m; // Умовна базова зарплата
-        decimal bonusRate = 0.01m; // Мінімальний бонус
+        decimal baseSalary = 50000m;
+        decimal bonusRate = 0.01m;
 
         if (staff.WorkExperienceYears > 10)
         {

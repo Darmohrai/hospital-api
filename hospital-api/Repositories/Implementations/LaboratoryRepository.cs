@@ -11,8 +11,6 @@ public class LaboratoryRepository : GenericRepository<Laboratory>, ILaboratoryRe
 
     public async Task<IEnumerable<Laboratory>> GetByProfileAsync(string profile)
     {
-        // У EF Core LINQ запит до List<string> транслюється в SQL-запит до таблиці,
-        // яка містить дані профілів.
         return await _dbSet
             .Where(l => l.Profile.Contains(profile))
             .ToListAsync();

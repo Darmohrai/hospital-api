@@ -1,6 +1,4 @@
-﻿// frontend/js/auth.js
-
-document.addEventListener('DOMContentLoaded', () => {
+﻿document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
 
@@ -8,29 +6,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const registerPassword = document.getElementById('register-password');
     const registerUsername = document.getElementById('register-username');
 
-    // 1. Очищення помилки для ПАРОЛЯ
     if (registerPassword) {
         registerPassword.addEventListener('input', function() {
             this.setCustomValidity('');
         });
     }
 
-    // 2. Очищення помилки для ЛОГІНА
     if (registerUsername) {
         registerUsername.addEventListener('input', function() {
             this.setCustomValidity('');
         });
     }
 
-    // 3. ✅ ОЧИЩЕННЯ ПОМИЛКИ ДЛЯ EMAIL (Виправлення вашої проблеми)
     if (registerEmail) {
         registerEmail.addEventListener('input', function() {
-            // Як тільки юзер змінює пошту — прибираємо блокування
             this.setCustomValidity('');
         });
     }
-    
-    // --- Виконуємо тільки якщо на сторінці логін або реєстрація
+
     if (loginForm || registerForm) {
         if (isLoggedIn()) {
             window.location.href = 'index.html';
@@ -41,11 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (registerForm) registerForm.addEventListener('submit', handleRegister);
     }
 
-    initForgotPassword(); // Ініціалізація модалки Forgot Password
+    initForgotPassword();
 });
 
-// =================== ЛОГІН ===================
-// =================== ЛОГІН ===================
 async function handleLogin(event) {
     event.preventDefault();
 
@@ -67,26 +58,20 @@ async function handleLogin(event) {
             showToast('Вхід успішний!', 'success');
             setTimeout(() => window.location.href = 'index.html', 500);
         } else {
-            // Це малоймовірний сценарій, якщо API працює правильно,
-            // але про всяк випадок обробляємо вручну
             throw new Error('Неправильний логін або пароль');
         }
 
     } catch (error) {
         errorEl.style.display = 'block';
 
-        // ПЕРЕВІРКА: Якщо сервер повернув 401 (Unauthorized)
         if (error.message && (error.message.includes('Unauthorized') || error.message.includes('401'))) {
             errorEl.textContent = 'Неправильний логін або пароль';
         } else {
-            // Для всіх інших помилок показуємо оригінальне повідомлення або заглушку
             errorEl.textContent = error.message || 'Помилка логіну.';
         }
     }
 }
 
-// =================== РЕЄСТРАЦІЯ (ОНОВЛЕНО) ===================
-// =================== РЕЄСТРАЦІЯ (ОНОВЛЕНО З ПЕРЕВІРКОЮ ПАРОЛЯ) ===================
 async function handleRegister(event) {
     event.preventDefault();
 
@@ -99,10 +84,8 @@ async function handleRegister(event) {
 
     const messageEl = document.getElementById('register-message');
 
-    // 1. ОЧИЩЕННЯ ПОМИЛОК
-    // Скидаємо старі помилки перед новою спробою
     usernameInput.setCustomValidity('');
-    emailInput.setCustomValidity(''); // Додано очищення для email
+    emailInput.setCustomValidity('');
     passwordInput.setCustomValidity('');
     roleInputs.forEach(input => input.setCustomValidity(''));
 
@@ -111,7 +94,6 @@ async function handleRegister(event) {
         messageEl.textContent = '';
     }
 
-    // 2. ВАЛІДАЦІЯ USERNAME (Тільки латиниця)
     const usernameRegex = /^[a-zA-Z0-9]+$/;
     if (!usernameRegex.test(usernameInput.value)) {
         usernameInput.setCustomValidity('Логін може містити тільки англійські літери та цифри.');
@@ -119,7 +101,6 @@ async function handleRegister(event) {
         return;
     }
 
-    // 3. ВАЛІДАЦІЯ ПАРОЛЯ
     const password = passwordInput.value;
     let passwordError = '';
 
@@ -139,7 +120,6 @@ async function handleRegister(event) {
         return;
     }
 
-    // 4. ВАЛІДАЦІЯ РОЛІ
     if (!selectedRole) {
         roleInputs[0].setCustomValidity('Будь ласка, оберіть тип реєстрації');
         roleInputs[0].reportValidity();
@@ -171,33 +151,26 @@ async function handleRegister(event) {
     } catch (error) {
         console.error(error);
 
-        let handled = false; // Прапорець: чи обробили ми помилку специфічно?
+        let handled = false;
 
-        // --- ОБРОБКА СПЕЦИФІЧНИХ ПОМИЛОК ВІД СЕРВЕРА ---
         if (Array.isArray(error)) {
-
-            // 1. Перевірка на дублікат Email
             const emailErr = error.find(e => e.code === 'DuplicateEmail' || e.description.toLowerCase().includes('email'));
             if (emailErr) {
                 emailInput.setCustomValidity('Цей email вже зареєстрований. Спробуйте увійти.');
-                emailInput.reportValidity(); // Показує хмаринку на полі Email
+                emailInput.reportValidity();
                 handled = true;
             }
 
-            // 2. Перевірка на дублікат Логіну (Username)
-            // Робимо це тільки якщо з поштою все ок
             if (!handled) {
                 const userErr = error.find(e => e.code === 'DuplicateUserName' || e.description.toLowerCase().includes('user'));
                 if (userErr) {
                     usernameInput.setCustomValidity('Це ім\'я користувача вже зайняте.');
-                    usernameInput.reportValidity(); // Показує хмаринку на полі Username
+                    usernameInput.reportValidity();
                     handled = true;
                 }
             }
         }
 
-        // --- ЯКЩО ЦЕ ІНША ПОМИЛКА ---
-        // Якщо ми не знайшли специфічної помилки поля, показуємо загальне повідомлення
         if (!handled) {
             let errorText = 'Помилка реєстрації.';
 
@@ -217,7 +190,6 @@ async function handleRegister(event) {
     }
 }
 
-// =================== ФОРГОТ ПАРОЛЬ ===================
 function initForgotPassword() {
     const forgotPasswordLink = document.getElementById('forgotPasswordLink');
     if (!forgotPasswordLink) return;
@@ -260,7 +232,6 @@ function initForgotPassword() {
     });
 }
 
-// =================== TOAST ===================
 function showToast(message, type = 'info') {
     const container = document.querySelector('.toast-container');
     if (!container) return;
@@ -285,10 +256,9 @@ function showToast(message, type = 'info') {
     toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
 }
 
-// =================== JWT & AUTH HELPERS ===================
 function logout() {
     localStorage.removeItem('jwtToken');
-    window.location.href = 'index.html';
+    window.location.href = '/index.html';
 }
 
 function isLoggedIn() {

@@ -13,9 +13,6 @@ public class BedRepository : GenericRepository<Bed>, IBedRepository
 
     public async Task<IEnumerable<Bed>> GetAvailableBedsAsync()
     {
-        // ✅ ЖАДІБНЕ ЗАВАНТАЖЕННЯ:
-        // Ми просимо EF підтягнути всі пов'язані дані,
-        // які потрібні фронтенду (Room -> Department -> Building -> Hospital)
         return await _context.Beds
             .Where(b => b.PatientId == null)
             .Include(b => b.Room)
@@ -36,7 +33,7 @@ public class BedRepository : GenericRepository<Bed>, IBedRepository
     {
         return await _dbSet
             .Where(b => b.RoomId == roomId)
-            .Include(b => b.Room) // "Жадібне" завантаження пов'язаної кімнати
+            .Include(b => b.Room)
             .ToListAsync();
     }
 }

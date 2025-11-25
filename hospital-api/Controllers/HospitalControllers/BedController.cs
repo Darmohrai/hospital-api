@@ -17,7 +17,6 @@ public class BedController : ControllerBase
         _bedService = bedService;
     }
 
-    // Отримати всі ліжка
     [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetAll()
@@ -26,7 +25,6 @@ public class BedController : ControllerBase
         return Ok(beds);
     }
 
-    // Отримати ліжко за ID
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
@@ -36,7 +34,6 @@ public class BedController : ControllerBase
         return Ok(bed);
     }
 
-    // Додати нове ліжко
     [Authorize(Roles = "Operator, Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Bed bed)
@@ -45,7 +42,6 @@ public class BedController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = bed.Id }, bed);
     }
 
-    // Оновити ліжко
     [Authorize(Roles = "Operator, Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] Bed bed)
@@ -55,7 +51,6 @@ public class BedController : ControllerBase
         return NoContent();
     }
 
-    // Видалити ліжко
     [Authorize(Roles = "Operator, Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
@@ -64,7 +59,6 @@ public class BedController : ControllerBase
         return NoContent();
     }
 
-    // Отримати доступні ліжка
     [AllowAnonymous]
     [HttpGet("available")]
     public async Task<IActionResult> GetAvailable()
@@ -73,7 +67,6 @@ public class BedController : ControllerBase
         return Ok(beds);
     }
 
-    // Отримати зайняті ліжка
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("occupied")]
     public async Task<IActionResult> GetOccupied()
@@ -82,7 +75,6 @@ public class BedController : ControllerBase
         return Ok(beds);
     }
 
-    // Отримати ліжка за ID палати
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("room/{roomId}")]
     public async Task<IActionResult> GetByRoom(int roomId)

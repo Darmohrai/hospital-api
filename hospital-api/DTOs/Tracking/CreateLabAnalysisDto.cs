@@ -8,7 +8,7 @@ public class CreateLabAnalysisDto
     public DateTime AnalysisDate { get; set; }
 
     [Required]
-    public string AnalysisType { get; set; } = string.Empty; // Напр., "Біохімічний"
+    public string AnalysisType { get; set; } = string.Empty;
 
     [Required]
     public int PatientId { get; set; }
@@ -16,6 +16,5 @@ public class CreateLabAnalysisDto
     [Required]
     public int LaboratoryId { get; set; }
     
-    // Результат аналізу
     public string ResultSummary { get; set; } = string.Empty;
 }

@@ -22,9 +22,6 @@ public class LaboratoryController : ControllerBase
         _context = context;
     }
 
-    /// <summary>
-    /// Отримує список всіх лабораторій...
-    /// </summary>
     [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetAll()
@@ -36,7 +33,7 @@ public class LaboratoryController : ControllerBase
             {
                 l.Id,
                 l.Name,
-                l.Profile, // <-- Повертаємо як є (List<string>)
+                l.Profile,
                 Hospitals = l.Hospitals.Select(h => new { h.Id, h.Name }).ToList(),
                 Clinics = l.Clinics.Select(c => new { c.Id, c.Name }).ToList()
             })
@@ -45,9 +42,6 @@ public class LaboratoryController : ControllerBase
         return Ok(laboratories);
     }
 
-    /// <summary>
-    /// Отримує лабораторію за ID.
-    /// </summary>
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
@@ -59,8 +53,6 @@ public class LaboratoryController : ControllerBase
             {
                 l.Id,
                 l.Name,
-                // ✅ ОНОВЛЕНО:
-                // Більше не об'єднуємо в рядок. Повертаємо список.
                 Profile = l.Profile, 
                 HospitalIds = l.Hospitals.Select(h => h.Id).ToList(),
                 ClinicIds = l.Clinics.Select(c => c.Id).ToList()
@@ -73,9 +65,6 @@ public class LaboratoryController : ControllerBase
         return Ok(laboratory);
     }
 
-    /// <summary>
-    /// Створює нову лабораторію.
-    /// </summary>
     [Authorize(Roles = "Operator, Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateLaboratoryDto dto)
@@ -83,12 +72,9 @@ public class LaboratoryController : ControllerBase
         var laboratory = new Laboratory
         {
             Name = dto.Name,
-            // ✅ ОНОВЛЕНО:
-            // Просто присвоюємо список. Більше ніяких .Split()
             Profile = dto.Profile 
         };
 
-        // ... (решта коду для Hospitals та Clinics без змін)
         if (dto.HospitalIds.Any())
         {
             var hospitals = await _context.Hospitals
@@ -107,9 +93,6 @@ public class LaboratoryController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = laboratory.Id }, laboratory);
     }
 
-    /// <summary>
-    /// Оновлює існуючу лабораторію.
-    /// </summary>
     [Authorize(Roles = "Operator, Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] CreateLaboratoryDto dto)
@@ -122,13 +105,9 @@ public class LaboratoryController : ControllerBase
         if (entityToUpdate == null)
             return NotFound();
 
-        // Оновлюємо прості властивості
         entityToUpdate.Name = dto.Name;
-        // ✅ ОНОВЛЕНО:
-        // Просто присвоюємо список.
         entityToUpdate.Profile = dto.Profile;
 
-        // ... (решта коду для Hospitals та Clinics без змін)
         var selectedHospitals = await _context.Hospitals
             .Where(h => dto.HospitalIds.Contains(h.Id)).ToListAsync();
         entityToUpdate.Hospitals = selectedHospitals;
@@ -138,12 +117,9 @@ public class LaboratoryController : ControllerBase
 
         await _laboratoryService.UpdateAsync(entityToUpdate); 
         
-        return NoContent(); // Успіх
+        return NoContent();
     }
 
-    /// <summary>
-    /// Видаляє лабораторію...
-    /// </summary>
     [Authorize(Roles = "Operator, Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)

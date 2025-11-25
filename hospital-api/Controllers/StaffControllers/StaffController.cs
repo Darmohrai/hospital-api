@@ -1,5 +1,4 @@
-﻿using hospital_api.Models.StaffAggregate;
-using hospital_api.Services.Interfaces.StaffServices;
+﻿using hospital_api.Services.Interfaces.StaffServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,7 +6,7 @@ namespace hospital_api.Controllers.StaffControllers;
 
 [Authorize]
 [ApiController]
-[Route("api/staff")] // Спрощений та більш чіткий маршрут
+[Route("api/staff")]
 public class StaffController : ControllerBase
 {
     private readonly IStaffService _staffService;
@@ -17,9 +16,6 @@ public class StaffController : ControllerBase
         _staffService = staffService;
     }
 
-    /// <summary>
-    /// Отримує список всього персоналу (всіх типів).
-    /// </summary>
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAll()
@@ -28,9 +24,6 @@ public class StaffController : ControllerBase
         return Ok(staff);
     }
 
-    /// <summary>
-    /// Отримує співробітника за його ID.
-    /// </summary>
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
@@ -42,9 +35,6 @@ public class StaffController : ControllerBase
         return Ok(staff);
     }
 
-    /// <summary>
-    /// Видаляє співробітника за його ID.
-    /// </summary>
     [Authorize(Roles = "Operator, Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
@@ -56,9 +46,6 @@ public class StaffController : ControllerBase
         return NoContent();
     }
 
-    /// <summary>
-    /// Отримує всіх співробітників, що працюють у вказаній клініці.
-    /// </summary>
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("clinic/{clinicId}")]
     public async Task<IActionResult> GetByClinic(int clinicId)
@@ -67,9 +54,6 @@ public class StaffController : ControllerBase
         return Ok(staff);
     }
 
-    /// <summary>
-    /// Отримує всіх співробітників, що працюють у вказаній лікарні.
-    /// </summary>
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("hospital/{hospitalId}")]
     public async Task<IActionResult> GetByHospital(int hospitalId)
@@ -78,9 +62,6 @@ public class StaffController : ControllerBase
         return Ok(staff);
     }
 
-    /// <summary>
-    /// Отримує співробітників з досвідом роботи не менше вказаної кількості років.
-    /// </summary>
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("experienced")]
     public async Task<IActionResult> GetExperienced([FromQuery] int minYears)
@@ -89,9 +70,6 @@ public class StaffController : ControllerBase
         return Ok(staff);
     }
 
-    /// <summary>
-    /// Розраховує річний бонус для співробітника.
-    /// </summary>
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}/annual-bonus")]
     public async Task<IActionResult> GetAnnualBonus(int id)
@@ -103,11 +81,4 @@ public class StaffController : ControllerBase
 
         return Ok(new { StaffId = id, AnnualBonus = result.Data });
     }
-
-    // ❌ Методи Create та Update були видалені, оскільки вони не можуть
-    // коректно працювати з абстрактним класом Staff.
-    // Створення та оновлення відбувається через специфічні контролери:
-    // POST /api/staff/support (в SupportStaffController)
-    // POST /api/hospitals/{id}/neurologists (в NeurologistController)
-    // і так далі.
 }

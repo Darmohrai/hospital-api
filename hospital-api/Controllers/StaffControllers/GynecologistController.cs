@@ -8,7 +8,7 @@ namespace hospital_api.Controllers.StaffControllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/staff/gynecologists")] // Більш чіткий маршрут
+    [Route("api/staff/gynecologists")]
     public class GynecologistController : ControllerBase
     {
         private readonly IGynecologistService _gynecologistService;
@@ -18,9 +18,6 @@ namespace hospital_api.Controllers.StaffControllers
             _gynecologistService = gynecologistService;
         }
 
-        /// <summary>
-        /// Отримує список всіх гінекологів.
-        /// </summary>
         [Authorize(Roles = "Authorized, Operator, Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -29,9 +26,6 @@ namespace hospital_api.Controllers.StaffControllers
             return Ok(gynecologists);
         }
 
-        /// <summary>
-        /// Отримує гінеколога за його ID.
-        /// </summary>
         [Authorize(Roles = "Authorized, Operator, Admin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -43,9 +37,6 @@ namespace hospital_api.Controllers.StaffControllers
             return Ok(gynecologist);
         }
 
-        /// <summary>
-        /// Створює нового гінеколога.
-        /// </summary>
         [Authorize(Roles = "Operator, Admin")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateGynecologistDto dto)
@@ -66,9 +57,6 @@ namespace hospital_api.Controllers.StaffControllers
             return CreatedAtAction(nameof(GetById), new { id = result.Data!.Id }, result.Data);
         }
 
-        /// <summary>
-        /// Оновлює дані існуючого гінеколога.
-        /// </summary>
         [Authorize(Roles = "Operator, Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Gynecologist gynecologist)
@@ -84,9 +72,6 @@ namespace hospital_api.Controllers.StaffControllers
             return NoContent();
         }
 
-        /// <summary>
-        /// Видаляє гінеколога за його ID.
-        /// </summary>
         [Authorize(Roles = "Operator, Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
@@ -99,9 +84,6 @@ namespace hospital_api.Controllers.StaffControllers
             return NoContent();
         }
 
-        /// <summary>
-        /// Отримує гінекологів з кількістю операцій не менше вказаної.
-        /// </summary>
         [Authorize(Roles = "Authorized, Operator, Admin")]
         [HttpGet("min-operations/{count}")]
         public async Task<IActionResult> GetByMinimumOperationCount(int count)
@@ -110,9 +92,6 @@ namespace hospital_api.Controllers.StaffControllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Отримує профіль гінеколога у вигляді текстового звіту.
-        /// </summary>
         [Authorize(Roles = "Authorized, Operator, Admin")]
         [HttpGet("{id}/profile-summary")]
         public async Task<IActionResult> GetProfileSummary(int id)

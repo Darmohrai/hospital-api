@@ -10,7 +10,6 @@ public interface IDoctorService
     Task<IEnumerable<Doctor>> GetByDegreeAsync(AcademicDegree degree);
     Task<IEnumerable<Doctor>> GetByTitleAsync(AcademicTitle title);
         
-    // --- Специфічна бізнес-логіка ---
     Task<IEnumerable<Doctor>> GetWithHazardPayAsync();
     Task<IEnumerable<Doctor>> GetWithExtendedVacationAsync();
     

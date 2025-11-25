@@ -1,15 +1,13 @@
-﻿// Глобальні змінні для зручності
-const doctorSpecialties = {
+﻿const doctorSpecialties = {
     "Surgeon": "Хірург",
     "Neurologist": "Невролог",
-    "Ophthalmologist": "Окуліст", // (Офтальмолог)
+    "Ophthalmologist": "Окуліст",
     "Dentist": "Стоматолог",
     "Radiologist": "Рентгенолог",
     "Gynecologist": "Гінеколог",
     "Cardiologist": "Кардіолог"
 };
 
-// Використовуємо числові ключі для внутрішньої логіки
 const academicDegrees = {
     0: "Немає",
     1: "Кандидат наук",
@@ -22,18 +20,15 @@ const academicTitles = {
     2: "Професор"
 };
 
-// Змінна для зберігання ролі
 let currentUserRole = null;
-let doctorModal = null; // Зберігаємо екземпляр Bootstrap Modal
-let employmentModal = null; // Модальне вікно для працевлаштування
-let allHospitals = []; // Кеш для списку лікарень
-let allClinics = []; // Кеш для списку клінік
-let allDoctors = []; // Кеш для списку лікарів
+let doctorModal = null;
+let employmentModal = null;
+let allHospitals = [];
+let allClinics = [];
+let allDoctors = [];
 
-// Змінна для поточного запиту
 let currentDoctorQuery = '/api/staff/doctors';
 
-// Змінні для динамічних полів
 let modalSpecialtySelect = null;
 let modalDegreeSelect = null;
 let modalTitleSelect = null;
@@ -41,30 +36,23 @@ let dynamicHazardPayFields = null;
 let dynamicExtendedVacationFields = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Ініціалізація модальних вікон
     doctorModal = new bootstrap.Modal(document.getElementById('doctor-modal'));
     employmentModal = new bootstrap.Modal(document.getElementById('employment-modal'));
 
-    // 1. Перевірка ролі та налаштування UI
     setupUIBasedOnRole();
 
-    // 2. Заповнення випадаючих списків
     populateSelects();
 
-    // 3. Завантаження всіх лікарів при старті
     loadDoctors(currentDoctorQuery);
 
-    // 4. Завантажуємо лікарні та клініки
     loadInstitutions();
 
-    // Отримуємо елементи динамічної форми
     modalSpecialtySelect = document.getElementById('doctor-specialty');
     modalDegreeSelect = document.getElementById('doctor-degree');
     modalTitleSelect = document.getElementById('doctor-title');
     dynamicHazardPayFields = document.getElementById('dynamic-hazard-pay-fields');
     dynamicExtendedVacationFields = document.getElementById('dynamic-extended-vacation-fields');
 
-    // 5. Налаштування обробників подій
     document.getElementById('filter-btn').addEventListener('click', applyFilters);
     document.getElementById('create-doctor-btn').addEventListener('click', openCreateModal);
     document.getElementById('doctor-form').addEventListener('submit', handleFormSubmit);
@@ -82,21 +70,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-/**
- * ✅ ВАЖЛИВО: Ця функція виправляє проблему з "None"
- * Перетворює рядки з API ("None", "Candidate") у числа (0, 1, 2)
- */
 function normalizeEnum(value) {
     if (typeof value === 'number') return value;
     if (!value) return 0;
 
     const v = value.toString();
-    // Перевірка для Ступенів та Звань
     if (v === "0" || v === "None") return 0;
     if (v === "1" || v === "Candidate" || v === "AssociateProfessor") return 1;
     if (v === "2" || v === "Doctor" || v === "Professor") return 2;
 
-    return 0; // За замовчуванням 0
+    return 0;
 }
 
 function setupUIBasedOnRole() {
@@ -109,7 +92,6 @@ function setupUIBasedOnRole() {
 
 function populateSelects() {
     populateSelectOptions('filter-specialty', doctorSpecialties, "Усі");
-    // Використовуємо об'єкти academicDegrees/Titles напряму
     populateEnumSelect('filter-degree', academicDegrees, "Усі");
     populateEnumSelect('filter-title', academicTitles, "Усі");
 
@@ -130,7 +112,7 @@ function populateEnumSelect(selectId, options, defaultOptionText = null) {
     const select = document.getElementById(selectId);
     select.innerHTML = defaultOptionText ? `<option value="">${defaultOptionText}</option>` : '';
     for (const [key, value] of Object.entries(options)) {
-        select.innerHTML += `<option value="${key}">${value}</option>`; // key тут буде "0", "1", "2"
+        select.innerHTML += `<option value="${key}">${value}</option>`;
     }
 }
 
@@ -182,7 +164,6 @@ async function renderTable(doctors) {
                 actionsHtml += `<button class="btn btn-danger btn-sm" data-id="${doctor.id}" data-action="delete" title="Видалити">Видал.</button>`;
             }
 
-            // ✅ ВИПРАВЛЕНО: Нормалізуємо значення перед відображенням
             const degreeLevel = normalizeEnum(doctor.academicDegree);
             const titleLevel = normalizeEnum(doctor.academicTitle);
 
@@ -303,7 +284,7 @@ function openCreateModal() {
     document.getElementById('doctor-specialty').disabled = false;
     document.getElementById('doctor-degree').value = "0";
 
-    updateTitleOptions(); // Скидає звання
+    updateTitleOptions();
 
     document.getElementById('doctor-hazard-pay').value = '1.0';
     document.getElementById('doctor-extended-vacation').value = '0';
@@ -323,13 +304,11 @@ async function handleEdit(id) {
         document.getElementById('doctor-specialty').value = doctor.specialty;
         document.getElementById('doctor-experience').value = doctor.workExperienceYears;
 
-        // ✅ ВИПРАВЛЕНО: Нормалізуємо значення перед встановленням в select
         const degreeVal = normalizeEnum(doctor.academicDegree);
         const titleVal = normalizeEnum(doctor.academicTitle);
 
         document.getElementById('doctor-degree').value = degreeVal.toString();
 
-        // Оновлюємо доступні звання перед встановленням
         updateTitleOptions();
         document.getElementById('doctor-title').value = titleVal.toString();
 
@@ -421,15 +400,12 @@ function updateTitleOptions() {
     const degree = parseInt(modalDegreeSelect.value || 0, 10);
     modalTitleSelect.innerHTML = `<option value="0">${academicTitles[0]}</option>`;
 
-    if (degree >= 1) modalTitleSelect.innerHTML += `<option value="1">${academicTitles[1]}</option>`; // Доцент
-    if (degree === 2) modalTitleSelect.innerHTML += `<option value="2">${academicTitles[2]}</option>`; // Професор
+    if (degree >= 1) modalTitleSelect.innerHTML += `<option value="1">${academicTitles[1]}</option>`;
+    if (degree === 2) modalTitleSelect.innerHTML += `<option value="2">${academicTitles[2]}</option>`;
 
-    // Якщо поточне значення недоступне, скидаємо
     const options = Array.from(modalTitleSelect.options).map(o => o.value);
     if (!options.includes(modalTitleSelect.value)) modalTitleSelect.value = "0";
 }
-
-// --- ПРАЦЕВЛАШТУВАННЯ ---
 
 async function loadInstitutions() {
     try {
@@ -461,9 +437,6 @@ function handleEmploymentTypeChange() {
     container.style.display = type ? 'block' : 'none';
 }
 
-/**
- * ✅ ВИПРАВЛЕНО: Логіка сумісництва з використанням normalizeEnum
- */
 async function handleEmploymentFormSubmit(event) {
     event.preventDefault();
     showEmploymentError(null);
@@ -482,16 +455,13 @@ async function handleEmploymentFormSubmit(event) {
 
     const employments = doctor.employments || [];
 
-    // 1. Перевірка дублікатів
     if (employments.some(e => (type === 'hospital' && e.hospitalId === instId) || (type === 'clinic' && e.clinicId === instId))) {
         return showEmploymentError("Лікар вже працює в цьому закладі.");
     }
 
-    // 2. Логіка сумісництва
-    // ✅ Перетворюємо "None"/"Professor" у 0/2 для коректного порівняння
     const titleLevel = normalizeEnum(doctor.academicTitle);
 
-    if (titleLevel === 0) { // Немає звання
+    if (titleLevel === 0) {
         if (type === 'hospital' && employments.some(e => e.hospitalId)) {
             return showEmploymentError("Без звання можна працювати лише в одній лікарні.");
         }
@@ -499,7 +469,6 @@ async function handleEmploymentFormSubmit(event) {
             return showEmploymentError("Без звання можна працювати лише в одній поліклініці.");
         }
     }
-    // Якщо titleLevel >= 1, обмежень немає
 
     try {
         await apiFetch('/api/employment', {

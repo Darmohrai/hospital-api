@@ -1,5 +1,4 @@
-﻿/* css/style.css */
-html {
+﻿html {
     font-size: 14px;
 }
 
@@ -14,29 +13,21 @@ html {
     min-height: 100%;
 }
 
-/*
-  --- ВАЖЛИВЕ ВИПРАВЛЕННЯ ---
-  Ми додаємо 'padding-top' до body.
-  Це змусить наш '<main>' контент початися *після* хедера.
-  70px - це приблизна висота стандартного Bootstrap navbar.
-*/
 body {
-    margin-bottom: 60px; /* Відступ для футера, як у тебе було */
-    padding-top: 70px;   /* <-- НАШЕ ВИПРАВЛЕННЯ */
-    background-color: #f8f9fa; /* Світлий фон */
+    margin-bottom: 60px;
+    padding-top: 70px;
+    background-color: #f8f9fa;
 }
 
-/* Стилі для форм логіну та реєстрації */
 .form-container {
     max-width: 450px;
-    margin: 3rem auto; /* Зменшив відступ, щоб виглядало краще */
+    margin: 3rem auto;
     padding: 2rem;
     background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-/* Стилі для головного контенту */
 .content-area {
     padding: 2rem;
     background-color: #ffffff;
@@ -44,7 +35,6 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-/* Допоміжні класи */
 .text-danger {
     color: #dc3545 !important;
 }
@@ -53,7 +43,6 @@ body {
     color: #198754 !important;
 }
 
-/* Дозволяє модалкам працювати поверх інших */
 .modal-backdrop {
     z-index: 1040 !important;
 }
@@ -62,7 +51,6 @@ body {
     z-index: 1050 !important;
 }
 
-/* Спецклас, який ми будемо вмикати під час відкриття дочірньої модалки */
 .modal-static-fix {
     z-index: 1060 !important;
 }

@@ -88,8 +88,72 @@
             <p id="guest-message" class="mt-2"></p>
         </div>
 
-        <div id="public-content">
-            <p>Тут може бути загальна інформація про лікарні, публічні новини тощо.</p>
+        <div class="mb-4 text-center">
+            <h1 class="display-6">Цифрова медицина в Україні</h1>
+            <p class="text-muted">Тренди, факти та ідеї для розвитку вашої MedSystem</p>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle-fill me-2"></i> Цікаві факти</h5>
+            </div>
+            <div class="card-body">
+                <div class="accordion" id="accordionFacts">
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#fact1">
+                                <strong>1. eHealth — Гігантська база даних</strong>
+                            </button>
+                        </h2>
+                        <div id="fact1" class="accordion-collapse collapse show" data-bs-parent="#accordionFacts">
+                            <div class="accordion-body">
+                                Українська система eHealth має дворівневу архітектуру: <strong>ЦБД</strong> (Центральна база даних, яку адмініструє держава) та <strong>МІС</strong> (приватні медичні інформаційні системи, як ваша). В системі вже зареєстровано понад <span class="badge bg-success">35 млн</span> пацієнтів.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fact2">
+                                <strong>2. "Гроші ходять за пацієнтом" (НСЗУ)</strong>
+                            </button>
+                        </h2>
+                        <div id="fact2" class="accordion-collapse collapse" data-bs-parent="#accordionFacts">
+                            <div class="accordion-body">
+                                Фінансування лікарень тепер залежить не від ліжко-місць, а від наданих послуг. Національна служба здоров'я (НСЗУ) платить за кожну підписану декларацію та проведену процедуру.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fact3">
+                                <strong>3. Микола Амосов — IT-піонер</strong>
+                            </button>
+                        </h2>
+                        <div id="fact3" class="accordion-collapse collapse" data-bs-parent="#accordionFacts">
+                            <div class="accordion-body">
+                                Легендарний хірург Микола Амосов був також кібернетиком. Ще у 1960-х роках він намагався створити перші алгоритми штучного інтелекту для діагностики, випереджаючи свій час на десятиліття.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fact4">
+                                <strong>4. Електронні рецепти</strong>
+                            </button>
+                        </h2>
+                        <div id="fact4" class="accordion-collapse collapse" data-bs-parent="#accordionFacts">
+                            <div class="accordion-body">
+                                Паперові рецепти відходять у минуле. Пацієнт отримує SMS з 16-значним кодом, який фармацевт перевіряє в системі. Це основа програми "Доступні ліки".
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
         </div>
 
     </div>

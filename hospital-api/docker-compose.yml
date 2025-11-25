@@ -1,0 +1,28 @@
+﻿services:
+  db:
+    image: postgres:15-alpine
+    container_name: hospital-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_password_123
+      POSTGRES_DB: HospitalDB
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hospital-api-container
+    ports:
+      - "8080:8080"
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=HospitalDB;Username=postgres;Password=postgres_password_123"
+      ASPNETCORE_ENVIRONMENT: Development
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:

@@ -11,12 +11,11 @@ public class HospitalRepository : GenericRepository<Hospital>, IHospitalReposito
     {
     }
 
-    // Переоприділяємо GetByIdAsync, щоб включати зв’язки
     public async Task<Hospital?> GetByIdAsync(int id)
     {
         return await _context.Hospitals
-            .Include(h => h.Buildings)   // Завантажуємо корпуси
-            .Include(h => h.Departments) // ✅ ВИПРАВЛЕНО: Завантажуємо відділення
+            .Include(h => h.Buildings)
+            .Include(h => h.Departments)
             .FirstOrDefaultAsync(h => h.Id == id);
     }
 }

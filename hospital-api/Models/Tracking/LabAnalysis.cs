@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using hospital_api.Models.LaboratoryAggregate;
 using hospital_api.Models.PatientAggregate;
@@ -15,9 +14,7 @@ public class LabAnalysis
     public DateTime AnalysisDate { get; set; }
 
     [Required]
-    public string AnalysisType { get; set; } = string.Empty; // Напр., "Біохімічний", "Загальний аналіз крові"
-
-    // --- Зв'язки ---
+    public string AnalysisType { get; set; } = string.Empty;
 
     [Required]
     [ForeignKey(nameof(Patient))]
@@ -29,8 +26,5 @@ public class LabAnalysis
     public int LaboratoryId { get; set; }
     public Laboratory Laboratory { get; set; } = null!;
     
-    // Можна додати ID лікаря, який направив на аналіз (опціонально)
-    // public int? ReferrerDoctorId { get; set; }
-    
-    public string ResultSummary { get; set; } = string.Empty; // (опціонально)
+    public string ResultSummary { get; set; } = string.Empty;
 }

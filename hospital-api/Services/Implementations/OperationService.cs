@@ -13,7 +13,6 @@ public class OperationService : IOperationService
         _operationRepository = operationRepository;
     }
 
-    // --- CRUD ---
     public async Task<Operation?> GetByIdAsync(int id)
     {
         return await _operationRepository.GetByIdAsync(id);
@@ -50,7 +49,6 @@ public class OperationService : IOperationService
         await _operationRepository.DeleteAsync(id);
     }
 
-    // --- Специфічні методи ---
     public async Task<IEnumerable<Operation>> GetByPatientIdAsync(int patientId)
     {
         return await _operationRepository.GetByPatientIdAsync(patientId);

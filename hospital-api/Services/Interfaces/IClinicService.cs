@@ -16,24 +16,12 @@ public interface IClinicService
     Task UpdateAsync(Clinic clinic);
     Task DeleteAsync(int id);
 
-    /// <summary>
-    /// Призначає клініку до вказаної лікарні.
-    /// </summary>
     Task<ServiceResponse<Clinic>> AssignHospitalAsync(int clinicId, int hospitalId);
 
-    /// <summary>
-    /// Працевлаштовує існуючого співробітника в клініку.
-    /// </summary>
     Task<ServiceResponse<Employment>> AddStaffToClinicAsync(int clinicId, int staffId);
-        
-    /// <summary>
-    /// Додає нового пацієнта до клініки.
-    /// </summary>
+    
     Task<ServiceResponse<Patient>> AddPatientAsync(int clinicId, Patient patient);
 
-    /// <summary>
-    /// Направляє пацієнта з клініки до лікарні з потрібною спеціалізацією.
-    /// </summary>
     Task<ServiceResponse<Hospital>> ReferPatientToHospitalAsync(int patientId, HospitalSpecialization requiredSpecialization);
     
     Task<IEnumerable<ClinicDto>> GetAllDtosAsync();

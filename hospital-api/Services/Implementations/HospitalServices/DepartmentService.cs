@@ -13,7 +13,6 @@ public class DepartmentService : IDepartmentService
         _departmentRepository = departmentRepository;
     }
 
-    // --- CRUD ---
     public async Task<Department?> GetByIdAsync(int id)
     {
         return await _departmentRepository.GetByIdAsync(id);
@@ -39,7 +38,6 @@ public class DepartmentService : IDepartmentService
         await _departmentRepository.DeleteAsync(id);
     }
 
-    // --- Специфічні методи ---
     public async Task<Department?> GetByNameAsync(string name)
     {
         return await _departmentRepository.GetByNameAsync(name);

@@ -4,7 +4,7 @@ namespace hospital_api.Models.StaffAggregate.DoctorAggregate;
 
 public class Dentist : Doctor
 {
-    public List<Operation> Operations { get; set; } = new(); // тільки якщо роблять операції
+    public List<Operation> Operations { get; set; } = new();
 
     public int OperationCount
     {

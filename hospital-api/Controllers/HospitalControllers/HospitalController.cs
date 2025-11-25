@@ -55,7 +55,6 @@ public class HospitalController : ControllerBase
         return NoContent();
     }
 
-    // [AllowAnonymous]
     [Authorize(Roles = "Operator, Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)

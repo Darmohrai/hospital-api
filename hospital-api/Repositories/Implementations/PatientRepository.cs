@@ -54,10 +54,10 @@ public class PatientRepository : GenericRepository<Patient>, IPatientRepository
         return await _context.Patients
             .Include(p => p.Clinic)
             .Include(p => p.Hospital)
-            .Include(p => p.AssignedDoctor) // Лікар
-            .Include(p => p.Bed) // Ліжко
-            .ThenInclude(b => b.Room) // Палата
-            .ThenInclude(r => r.Department) // Відділення
+            .Include(p => p.AssignedDoctor)
+            .Include(p => p.Bed)
+            .ThenInclude(b => b.Room)
+            .ThenInclude(r => r.Department)
             .AsNoTracking()
             .ToListAsync();
     }

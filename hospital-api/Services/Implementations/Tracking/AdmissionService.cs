@@ -19,7 +19,6 @@ public class AdmissionService : IAdmissionService
 
     public async Task<Admission> CreateAsync(CreateAdmissionDto dto)
     {
-        // ВАЛІДАЦІЯ: Перевіряємо, чи пацієнт вже не госпіталізований
         var activeAdmission = (await _admissionRepo.FindByConditionAsync(
             a => a.PatientId == dto.PatientId && a.DischargeDate == null
         )).FirstOrDefault();
@@ -36,7 +35,7 @@ public class AdmissionService : IAdmissionService
             HospitalId = dto.HospitalId,
             AttendingDoctorId = dto.AttendingDoctorId,
             DepartmentId = dto.DepartmentId,
-            DischargeDate = null // Явно вказуємо, що пацієнт не виписаний
+            DischargeDate = null
         };
 
         await _admissionRepo.AddAsync(admission);
@@ -47,7 +46,7 @@ public class AdmissionService : IAdmissionService
     {
         var admission = await _admissionRepo.GetByIdAsync(admissionId);
         if (admission == null)
-            return null; // Не знайдено
+            return null;
         
         if (admission.DischargeDate != null)
             throw new InvalidOperationException("Цей пацієнт вже виписаний.");
@@ -66,7 +65,6 @@ public class AdmissionService : IAdmissionService
         if (existing == null)
             return false;
         
-        // Додаткова логіка: не давати видаляти активні госпіталізації?
         if (existing.DischargeDate == null)
             throw new InvalidOperationException("Неможливо видалити активну госпіталізацію. Спочатку випишіть пацієнта.");
 

@@ -17,7 +17,6 @@ public class DepartmentController : ControllerBase
         _departmentService = departmentService;
     }
 
-    // Отримати всі відділення
     [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetAll()
@@ -26,7 +25,6 @@ public class DepartmentController : ControllerBase
         return Ok(departments);
     }
 
-    // Отримати відділення за ID
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
@@ -36,7 +34,6 @@ public class DepartmentController : ControllerBase
         return Ok(department);
     }
 
-    // Додати нове відділення
     [Authorize(Roles = "Operator, Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Department department)
@@ -45,7 +42,6 @@ public class DepartmentController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = department.Id }, department);
     }
 
-    // Оновити відділення
     [Authorize(Roles = "Operator, Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] Department department)
@@ -55,7 +51,6 @@ public class DepartmentController : ControllerBase
         return NoContent();
     }
 
-    // Видалити відділення
     [Authorize(Roles = "Operator, Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
@@ -64,7 +59,6 @@ public class DepartmentController : ControllerBase
         return NoContent();
     }
 
-    // Отримати відділення за назвою
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("name/{name}")]
     public async Task<IActionResult> GetByName(string name)
@@ -74,7 +68,6 @@ public class DepartmentController : ControllerBase
         return Ok(department);
     }
 
-    // Отримати відділення за спеціалізацією
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("specialization/{specialization}")]
     public async Task<IActionResult> GetBySpecialization(string specialization)
@@ -83,7 +76,6 @@ public class DepartmentController : ControllerBase
         return Ok(departments);
     }
 
-    // Отримати відділення за ID будівлі разом із кімнатами
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("building/{buildingId}/with-rooms")]
     public async Task<IActionResult> GetByBuildingWithRooms(int buildingId)

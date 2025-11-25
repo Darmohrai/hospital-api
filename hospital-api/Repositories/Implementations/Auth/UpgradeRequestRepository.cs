@@ -1,10 +1,7 @@
 ﻿using hospital_api.Data;
 using hospital_api.Models.Auth;
 using hospital_api.Repositories.Interfaces.Auth;
-using Microsoft.EntityFrameworkCore; // Потрібен для Include та Where
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace hospital_api.Repositories.Implementations.Auth;
 

@@ -19,8 +19,6 @@ public class PatientController : ControllerBase
         _patientService = patientService;
     }
 
-    // --- CRUD ---
-
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAll()
@@ -44,7 +42,6 @@ public class PatientController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            // Подивись на помилки валідації тут
             return BadRequest(ModelState);
         }
         await _patientService.AddAsync(patient);
@@ -67,9 +64,7 @@ public class PatientController : ControllerBase
         await _patientService.DeleteAsync(id);
         return NoContent();
     }
-
-    // --- Специфічні методи ---
-
+    
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("name")]
     public async Task<IActionResult> GetByFullName([FromQuery] string fullName)
@@ -118,9 +113,6 @@ public class PatientController : ControllerBase
         return Ok(patients);
     }
     
-    /// <summary>
-    /// Призначає пацієнта на вказане ліжко.
-    /// </summary>
     [Authorize(Roles = "Operator, Admin")]
     [HttpPost("{patientId}/assign-bed/{bedId}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -143,9 +135,6 @@ public class PatientController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Звільняє ліжко, яке займає пацієнт.
-    /// </summary>
     [Authorize(Roles = "Operator, Admin")]
     [HttpPost("{patientId}/unassign-bed")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -168,9 +157,6 @@ public class PatientController : ControllerBase
         }
     }
     
-    /// <summary>
-    /// (Запит №4) Отримує список пацієнтів лікарні, відділення або палати.
-    /// </summary>
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("list-by-location")]
     [ProducesResponseType(typeof(IEnumerable<PatientDetailsDto>), StatusCodes.Status200OK)]
@@ -183,9 +169,6 @@ public class PatientController : ControllerBase
         return Ok(patients);
     }
     
-    /// <summary>
-    /// (Запит №12) Отримує повну медичну історію (анамнез) пацієнта.
-    /// </summary>
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{patientId}/history")]
     [ProducesResponseType(typeof(PatientHistoryDto), StatusCodes.Status200OK)]
@@ -221,7 +204,7 @@ public class PatientController : ControllerBase
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(ex.Message); // Повертаємо 400, якщо логіка не дозволяє
+            return BadRequest(ex.Message);
         }
     }
 

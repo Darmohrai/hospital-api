@@ -8,8 +8,6 @@ namespace hospital_api.Services.Implementations.Tracking;
 public class AppointmentService : IAppointmentService
 {
     private readonly IAppointmentRepository _appointmentRepo;
-    // Ми можемо додати репозиторії пацієнтів/лікарів для валідації,
-    // але для простоти CRUD-операцій поки обійдемось без них.
 
     public AppointmentService(IAppointmentRepository appointmentRepo)
     {
@@ -54,7 +52,6 @@ public class AppointmentService : IAppointmentService
         if (dto.ClinicId == null && dto.HospitalId == null)
             throw new System.ArgumentException("Необхідно вказати ClinicId або HospitalId.");
 
-        // Оновлюємо поля
         existing.VisitDateTime = dto.VisitDateTime;
         existing.PatientId = dto.PatientId;
         existing.DoctorId = dto.DoctorId;

@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Керування: Лікарні</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- ✅ Іконки Bootstrap для кнопок "додати/видалити" -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../css/style.css">
     <style>
-        /* Стиль для дерева структури */
         .structure-controls {
             display: flex;
             align-items: center;
@@ -17,35 +15,31 @@
         }
 
         .structure-controls .form-control {
-            flex-grow: 1; /* Поле вводу займає вільне місце */
+            flex-grow: 1;
         }
 
         .accordion-header {
-            /* Обов'язково для позиціонування .btn-group */
             position: relative;
         }
 
         .accordion-button {
-            /* ✅ ВИПРАВЛЕНО: Збільшуємо відступ, щоб кнопки помістились */
             padding-right: 8rem;
         }
 
         .accordion-button::after {
-            /* Стандартна стрілка акордеону */
             z-index: 1;
         }
 
         .accordion-header .btn-group {
-            /* ✅ ВИПРАВЛЕНО: Позиціонуємо кнопки ЛІВІШЕ від стрілки */
             position: absolute;
-            right: 1.5rem; /* Посуваємо лівіше */
+            right: 1.5rem;
             top: 50%;
             transform: translateY(-50%);
-            z-index: 2; /* Вище за стрілку */
+            z-index: 2;
         }
 
         .accordion-body {
-            padding-left: 1.5rem; /* Візуальний відступ для вкладеності */
+            padding-left: 1.5rem;
         }
     </style>
 </head>

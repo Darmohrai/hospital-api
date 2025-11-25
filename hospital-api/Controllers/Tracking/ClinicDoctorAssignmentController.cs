@@ -17,9 +17,6 @@ public class ClinicDoctorAssignmentController : ControllerBase
         _service = service;
     }
 
-    /// <summary>
-    /// Отримує всі призначення (лікарів) для пацієнта.
-    /// </summary>
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("by-patient/{patientId}")]
     public async Task<IActionResult> GetByPatient(int patientId)
@@ -27,9 +24,6 @@ public class ClinicDoctorAssignmentController : ControllerBase
         return Ok(await _service.GetAssignmentsForPatientAsync(patientId));
     }
 
-    /// <summary>
-    /// Отримує всі призначення (пацієнтів) для лікаря.
-    /// </summary>
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("by-doctor/{doctorId}")]
     public async Task<IActionResult> GetByDoctor(int doctorId)
@@ -37,9 +31,6 @@ public class ClinicDoctorAssignmentController : ControllerBase
         return Ok(await _service.GetAssignmentsForDoctorAsync(doctorId));
     }
 
-    /// <summary>
-    /// Призначає лікаря пацієнту в клініці.
-    /// </summary>
     [Authorize(Roles = "Operator, Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] ClinicDoctorAssignmentDto dto)
@@ -47,7 +38,7 @@ public class ClinicDoctorAssignmentController : ControllerBase
         try
         {
             var assignment = await _service.CreateAsync(dto);
-            return Ok(assignment); // Повертаємо 200 OK замість 201, оскільки немає "GetById"
+            return Ok(assignment);
         }
         catch (Exception ex)
         {
@@ -55,9 +46,6 @@ public class ClinicDoctorAssignmentController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Видаляє призначення лікаря пацієнту в клініці.
-    /// </summary>
     [Authorize(Roles = "Operator, Admin")]
     [HttpDelete]
     public async Task<IActionResult> Delete(

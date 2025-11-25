@@ -1,23 +1,15 @@
-﻿// frontend/manage/tracking.js
-
-// Глобальні змінні (кеш)
-let currentUserRole = null;
+﻿let currentUserRole = null;
 let trackingModal = null;
 let allClinics = [];
 let allHospitals = [];
-let allDoctors = []; // Очікується, що містить .employments
-let allPatients = []; // Очікується, що містить .clinicId та .hospitalId
+let allDoctors = [];
+let allPatients = [];
 
-// Глобальні змінні (дані)
 let allAppointments = [];
 let allAdmissions = [];
 let allOperations = [];
 
-/**
- * Головна функція, що виконується при завантаженні сторінки
- */
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Перевірка залежностей
     if (typeof apiFetch === 'undefined') {
         console.error("КРИТИЧНА ПОМИЛКА: 'apiFetch' не знайдено.");
         alert("Помилка: Не вдалося завантажити API модуль. Перезавантажте сторінку.");
@@ -29,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Ініціалізація модального вікна
     const modalEl = document.getElementById('tracking-modal');
     if (modalEl) {
         trackingModal = new bootstrap.Modal(modalEl);
@@ -40,17 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
 });
 
-/**
- * Перевіряє роль користувача та налаштовує UI
- */
 function setupUIBasedOnRole() {
-    currentUserRole = getUserRole(); // Функція з auth.js
+    currentUserRole = getUserRole();
 
     if (currentUserRole === 'Admin' || currentUserRole === 'Operator') {
         const btnGroup = document.getElementById('create-buttons-group');
         if (btnGroup) btnGroup.style.display = 'block';
 
-        // Показуємо колонки "Дії" для всіх таблиць
         const headers = ['actions-header-app', 'actions-header-adm', 'actions-header-op'];
         headers.forEach(id => {
             const el = document.getElementById(id);
@@ -59,11 +46,7 @@ function setupUIBasedOnRole() {
     }
 }
 
-/**
- * Налаштування обробників подій
- */
 function setupEventListeners() {
-    // Кнопки "Створити"
     const btnApp = document.getElementById('create-appointment-btn');
     if (btnApp) btnApp.addEventListener('click', () => openCreateModal('appointment'));
 
@@ -73,28 +56,20 @@ function setupEventListeners() {
     const btnOp = document.getElementById('create-operation-btn');
     if (btnOp) btnOp.addEventListener('click', () => openCreateModal('operation'));
 
-    // Форма
     const form = document.getElementById('tracking-form');
     if (form) form.addEventListener('submit', handleFormSubmit);
 
-    // Каскадні дропдауни
     document.getElementById('tracking-patient')?.addEventListener('change', handlePatientChange);
     document.getElementById('tracking-location')?.addEventListener('change', handleLocationChange);
     document.getElementById('tracking-hospital')?.addEventListener('change', handleHospitalChange);
 
-    // Обробники кліків на таблицях (делегування)
     document.getElementById('appointments-table-body')?.addEventListener('click', (e) => handleTableClick(e, 'appointment'));
     document.getElementById('admissions-table-body')?.addEventListener('click', (e) => handleTableClick(e, 'admission'));
     document.getElementById('operations-table-body')?.addEventListener('click', (e) => handleTableClick(e, 'operation'));
 }
 
-
-/**
- * Завантажує всі необхідні початкові дані (кеш)
- */
 async function loadInitialData() {
     try {
-        // 1. Завантажуємо кеш (пацієнти, лікарі, локації)
         const [patients, doctors, clinics, hospitals] = await Promise.all([
             apiFetch('/api/patient/all-with-associations'),
             apiFetch('/api/staff/doctors'),
@@ -107,7 +82,6 @@ async function loadInitialData() {
         allClinics = clinics || [];
         allHospitals = hospitals || [];
 
-        // Заповнюємо головний список пацієнтів
         const patientSelect = document.getElementById('tracking-patient');
         if (patientSelect) {
             patientSelect.innerHTML = '<option value="">Оберіть пацієнта...</option>';
@@ -116,7 +90,6 @@ async function loadInitialData() {
             });
         }
 
-        // Заповнюємо список лікарень (для госпіталізації)
         const hospitalSelect = document.getElementById('tracking-hospital');
         if (hospitalSelect) {
             hospitalSelect.innerHTML = '<option value="">Оберіть лікарню...</option>';
@@ -125,7 +98,6 @@ async function loadInitialData() {
             });
         }
 
-        // 2. Завантажуємо дані для таблиць
         const [appointments, admissions, operations] = await Promise.all([
             apiFetch('/api/appointment'),
             apiFetch('/api/admission'),
@@ -136,17 +108,12 @@ async function loadInitialData() {
         allAdmissions = admissions || [];
         allOperations = operations || [];
 
-        // 3. Рендеримо таблиці
         renderAllTables();
 
     } catch (error) {
         showError(`Не вдалося завантажити дані: ${error.message}`);
     }
 }
-
-// ===================================================================
-// ЛОГІКА РЕНДЕРИНГУ ТАБЛИЦЬ
-// ===================================================================
 
 function renderAllTables() {
     renderAppointmentsTable(allAppointments);
@@ -280,18 +247,10 @@ function renderOperationsTable(data) {
     });
 }
 
-// ===================================================================
-// ЛОГІКА МОДАЛЬНОГО ВІКНА ТА ФОРМ
-// ===================================================================
-
-/**
- * Відкриває модальне вікно для СТВОРЕННЯ
- */
 function openCreateModal(mode) {
     showModalError(null);
     document.getElementById('tracking-form').reset();
 
-    // Скидаємо 'required' та 'disabled'
     document.querySelectorAll('#tracking-form [required]').forEach(el => el.required = false);
     document.querySelectorAll('#tracking-form input, #tracking-form select').forEach(el => el.disabled = false);
 
@@ -300,32 +259,26 @@ function openCreateModal(mode) {
 
     setupModalForMode(mode);
 
-    // Скидаємо залежні дропдауни
     resetLocationSelect(true);
     resetDoctorSelect(true);
 
     trackingModal.show();
 }
 
-/**
- * Асинхронно відкриває модальне вікно для РЕДАГУВАННЯ
- */
 async function handleEdit(id, mode) {
     showModalError(null);
     document.getElementById('tracking-form').reset();
     document.getElementById('tracking-id').value = id;
     document.getElementById('tracking-mode').value = mode;
 
-    // Скидаємо disabled перед налаштуванням
     document.querySelectorAll('#tracking-form input, #tracking-form select').forEach(el => el.disabled = false);
 
-    setupModalForMode(mode, true); // true = isEdit
+    setupModalForMode(mode, true);
 
     try {
         const endpoint = getEndpoint(mode);
         const item = await apiFetch(`${endpoint}/${id}`);
 
-        // Заповнюємо пацієнта (і запускаємо каскад)
         document.getElementById('tracking-patient').value = item.patientId;
         await handlePatientChange();
 
@@ -339,7 +292,6 @@ async function handleEdit(id, mode) {
             document.getElementById('tracking-summary').value = item.summary;
 
         } else if (mode === 'admission') {
-            // ✅ ЛОГІКА ВИПИСКИ (DISCHARGE)
             document.getElementById('modal-title').textContent = `Виписати пацієнта`;
             document.getElementById('tracking-hospital').value = item.hospitalId;
             await handleHospitalChange();
@@ -347,22 +299,17 @@ async function handleEdit(id, mode) {
             document.getElementById('tracking-doctor').value = item.attendingDoctorId;
             document.getElementById('tracking-datetime').value = toLocalISOString(new Date(item.admissionDate));
 
-            // Блокуємо поля, які не можна змінювати при виписці
             document.getElementById('tracking-patient').disabled = true;
             document.getElementById('tracking-hospital').disabled = true;
             document.getElementById('tracking-doctor').disabled = true;
-            document.getElementById('tracking-datetime').disabled = true; // Дата госпіталізації
+            document.getElementById('tracking-datetime').disabled = true;
 
-            // Дата виписки
             if (item.dischargeDate) {
                 document.getElementById('tracking-dischargedate').value = toLocalISOString(new Date(item.dischargeDate));
             } else {
-                // Якщо ще не виписаний, ставимо поточний час
                 document.getElementById('tracking-dischargedate').value = toLocalISOString(new Date());
             }
-            // Робимо дату виписки обов'язковою
             document.getElementById('tracking-dischargedate').required = true;
-
 
         } else if (mode === 'operation') {
             const locationValue = item.clinicId ? `clinic-${item.clinicId}` : `hospital-${item.hospitalId}`;
@@ -381,14 +328,9 @@ async function handleEdit(id, mode) {
     }
 }
 
-
-/**
- * Налаштовує вигляд модального вікна (поля, заголовки)
- */
 function setupModalForMode(mode, isEdit = false) {
     const titlePrefix = isEdit ? 'Редагувати' : 'Створити';
 
-    // Отримуємо всі керовані поля
     const patientSelect = document.getElementById('tracking-patient');
     const locationSelect = document.getElementById('tracking-location');
     const hospitalSelect = document.getElementById('tracking-hospital');
@@ -396,15 +338,12 @@ function setupModalForMode(mode, isEdit = false) {
     const datetimeInput = document.getElementById('tracking-datetime');
     const opTypeInput = document.getElementById('tracking-optype');
 
-    // Ховаємо всі специфічні групи полів
     document.querySelectorAll('.form-group-specific').forEach(el => el.style.display = 'none');
 
-    // Скидаємо 'required' для специфічних полів
     locationSelect.required = false;
     hospitalSelect.required = false;
     opTypeInput.required = false;
 
-    // Загальні поля
     patientSelect.disabled = isEdit;
     patientSelect.required = true;
     doctorSelect.required = true;
@@ -413,7 +352,6 @@ function setupModalForMode(mode, isEdit = false) {
     document.getElementById('form-group-patient').style.display = 'block';
     document.getElementById('form-group-doctor').style.display = 'block';
     document.getElementById('form-group-datetime').style.display = 'block';
-
 
     if (mode === 'appointment') {
         document.getElementById('modal-title').textContent = `${titlePrefix} запис на прийом`;
@@ -430,7 +368,6 @@ function setupModalForMode(mode, isEdit = false) {
 
         document.getElementById('form-group-hospital').style.display = 'block';
 
-        // Поле виписки показуємо завжди в режимі admission
         document.getElementById('form-group-dischargedate').style.display = 'block';
 
         hospitalSelect.required = true;
@@ -447,10 +384,6 @@ function setupModalForMode(mode, isEdit = false) {
     }
 }
 
-// ===================================================================
-// ЛОГІКА КАСКАДНИХ ДРОПДАУНІВ
-// ===================================================================
-
 function handlePatientChange() {
     const patientId = document.getElementById('tracking-patient').value;
     resetLocationSelect();
@@ -466,9 +399,7 @@ function handlePatientChange() {
 
     const locationSelect = document.getElementById('tracking-location');
 
-    // Безпечна перевірка clinicId та hospitalId
     if (patient.clinicId) {
-        // Якщо об'єкт clinic не підвантажився, шукаємо в allClinics
         const clinic = patient.clinic || allClinics.find(c => c.id === patient.clinicId);
         if (clinic) {
             locationSelect.innerHTML += `<option value="clinic-${clinic.id}">${clinic.name} (Поліклініка)</option>`;
@@ -522,7 +453,6 @@ function handleHospitalChange() {
     populateDoctorSelect(availableDoctors);
 }
 
-
 function populateDoctorSelect(doctors) {
     const doctorSelect = document.getElementById('tracking-doctor');
     if (doctors.length === 0) {
@@ -536,14 +466,6 @@ function populateDoctorSelect(doctors) {
     });
 }
 
-
-// ===================================================================
-// ЛОГІКА ЗБЕРЕЖЕННЯ / ВИДАЛЕННЯ
-// ===================================================================
-
-/**
- * Обробник відправки форми (Створення / Оновлення)
- */
 async function handleFormSubmit(event) {
     event.preventDefault();
     showModalError(null);
@@ -551,7 +473,6 @@ async function handleFormSubmit(event) {
     const id = document.getElementById('tracking-id').value;
     const mode = document.getElementById('tracking-mode').value;
 
-    // ✅ СПЕЦІАЛЬНА ЛОГІКА ДЛЯ ВИПИСКИ (DISCHARGE)
     if (mode === 'admission' && id) {
         const dischargeDateInput = document.getElementById('tracking-dischargedate').value;
         if (!dischargeDateInput) {
@@ -568,7 +489,6 @@ async function handleFormSubmit(event) {
 
             allAdmissions = await apiFetch('/api/admission');
             renderAdmissionsTable(allAdmissions);
-            // Оновити статус пацієнтів, бо хтось звільнився
             allPatients = await apiFetch('/api/patient/all-with-associations');
 
         } catch (error) {
@@ -577,8 +497,6 @@ async function handleFormSubmit(event) {
         }
         return;
     }
-
-    // --- СТАНДАРТНА ЛОГІКА ДЛЯ ІНШИХ ТИПІВ ---
 
     const method = id ? 'PUT' : 'POST';
     let endpoint = getEndpoint(mode);
@@ -589,7 +507,7 @@ async function handleFormSubmit(event) {
         dto = buildDto(mode);
         if (id) dto.id = parseInt(id, 10);
     } catch (error) {
-        showModalError(error.message); // Тут буде українізована помилка з buildDto
+        showModalError(error.message);
         return;
     }
 
@@ -597,7 +515,6 @@ async function handleFormSubmit(event) {
         await apiFetch(endpoint, { method: method, body: JSON.stringify(dto) });
         trackingModal.hide();
 
-        // Оновлюємо дані в таблицях
         if (mode === 'appointment') {
             allAppointments = await apiFetch('/api/appointment');
             renderAppointmentsTable(allAppointments);
@@ -616,9 +533,6 @@ async function handleFormSubmit(event) {
     }
 }
 
-/**
- * Збирає DTO з форми
- */
 function buildDto(mode) {
     const patientId = parseInt(document.getElementById('tracking-patient').value, 10);
     if (!patientId) throw new Error("Пацієнт не обраний.");
@@ -650,7 +564,6 @@ function buildDto(mode) {
         const hospitalId = parseInt(document.getElementById('tracking-hospital').value, 10);
         if (!hospitalId) throw new Error("Лікарня не обрана.");
 
-        // При створенні нової госпіталізації дата виписки зазвичай null
         const dischargeDate = document.getElementById('tracking-dischargedate').value;
 
         return {
@@ -685,9 +598,6 @@ function buildDto(mode) {
     throw new Error('Внутрішня помилка: Невідомий режим форми.');
 }
 
-/**
- * Обробник кліків на кнопках в таблиці
- */
 function handleTableClick(event, mode) {
     const target = event.target.closest('button');
     if (!target) return;
@@ -705,9 +615,6 @@ function handleTableClick(event, mode) {
     }
 }
 
-/**
- * Видалення запису
- */
 async function handleDelete(id, mode) {
     if (!confirm('Ви впевнені, що хочете видалити цей запис?')) {
         return;
@@ -717,7 +624,6 @@ async function handleDelete(id, mode) {
         let endpoint = getEndpoint(mode);
         await apiFetch(`${endpoint}/${id}`, { method: 'DELETE' });
 
-        // Перезавантажуємо дані
         if (mode === 'appointment') {
             allAppointments = await apiFetch('/api/appointment');
             renderAppointmentsTable(allAppointments);
@@ -734,11 +640,6 @@ async function handleDelete(id, mode) {
         showError(`Не вдалося видалити: ${error.message}`);
     }
 }
-
-
-// ===================================================================
-// ДОПОМІЖНІ ФУНКЦІЇ
-// ===================================================================
 
 function getEndpoint(mode) {
     if (mode === 'appointment') return '/api/appointment';
@@ -757,14 +658,11 @@ function resetDoctorSelect(showDefault = false) {
     select.innerHTML = showDefault ? '<option value="">Спочатку оберіть місце</option>' : '<option value="">Оберіть лікаря...</option>';
 }
 
-// Конвертує дату в формат, який розуміє <input type="datetime-local">
 function toLocalISOString(date) {
     const offset = date.getTimezoneOffset() * 60000;
     const localISOTime = (new Date(date - offset)).toISOString().slice(0, 16);
     return localISOTime;
 }
-
-// --- Функції показу помилок ---
 
 function showError(message) {
     const errorEl = document.getElementById('error-alert');

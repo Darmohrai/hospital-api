@@ -9,7 +9,6 @@ public class HospitalDto
     public string Name { get; set; } = string.Empty;
     public string Address { get; set; } = string.Empty;
     
-    
     public List<Building> Buildings { get; set; }
     
     public List<Department> Departments { get; set; }

@@ -1,9 +1,7 @@
-﻿// Глобальні змінні для кешування списків
-let allHospitals = [];
+﻿let allHospitals = [];
 let allClinics = [];
 let allDoctors = [];
 
-// Константи спеціалізацій (мають збігатися з бекендом)
 const specialties = [
     "Surgeon", "Neurologist", "Ophthalmologist", "Dentist", "Radiologist", "Gynecologist", "Cardiologist"
 ];
@@ -21,23 +19,16 @@ const supportRoles = {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Перевірка авторизації
     const role = getUserRole();
     if (!role) {
         window.location.href = 'login.html';
         return;
     }
 
-    // Завантаження допоміжних даних (Dropdowns)
     await loadCommonData();
-
-    // Налаштування слухачів подій для всіх форм
     setupEventListeners();
 });
 
-/**
- * Завантажує списки лікарень, клінік та лікарів для фільтрів
- */
 async function loadCommonData() {
     try {
         const [hospitals, clinics, doctors] = await Promise.all([
@@ -57,16 +48,13 @@ async function loadCommonData() {
 }
 
 function populateDropdowns() {
-    // Заповнення лікарень
     document.querySelectorAll('.select-hospital').forEach(select => {
-        // Зберігаємо перший option (плейсхолдер)
         const placeholder = select.firstElementChild;
         select.innerHTML = '';
         select.appendChild(placeholder);
         allHospitals.forEach(h => select.innerHTML += `<option value="${h.id}">${h.name}</option>`);
     });
 
-    // Заповнення клінік
     document.querySelectorAll('.select-clinic').forEach(select => {
         const placeholder = select.firstElementChild;
         select.innerHTML = '';
@@ -74,7 +62,6 @@ function populateDropdowns() {
         allClinics.forEach(c => select.innerHTML += `<option value="${c.id}">${c.name}</option>`);
     });
 
-    // Заповнення лікарів
     document.querySelectorAll('.select-doctor').forEach(select => {
         const placeholder = select.firstElementChild;
         select.innerHTML = '';
@@ -82,7 +69,6 @@ function populateDropdowns() {
         allDoctors.forEach(d => select.innerHTML += `<option value="${d.id}">${d.fullName} (${d.specialty})</option>`);
     });
 
-    // Заповнення спеціальностей
     document.querySelectorAll('.select-specialty').forEach(select => {
         const placeholder = select.firstElementChild;
         select.innerHTML = '';
@@ -92,37 +78,26 @@ function populateDropdowns() {
 }
 
 function setupEventListeners() {
-    // 1. Daily Appointments
     bindForm('form-daily-app', '/api/report/daily-appointments', renderDailyApp);
 
-    // 2. Hospital Capacity
     bindForm('form-hospital-cap', (formData) => `/api/report/hospital-capacity/${formData.get('hospitalId')}`, renderHospitalCap, 'GET', true);
 
-    // 3. Laboratory Report
     bindForm('form-lab', '/api/report/laboratory-report', renderLabReport);
 
-    // 5. Patient Operations
     bindForm('form-pat-ops', '/api/report/patient-operations', renderPatientOps);
 
-    // 6. Patients by Specialty
     bindForm('form-patients-spec', '/api/report/patients-by-clinic-specialty', renderPatientList);
 
-    // 7. Inpatient Report
     bindForm('form-inpatient', '/api/report/inpatient-report', renderPatientList);
 
-    // 8. Doctor Report (Extended)
     bindForm('form-doc-filter', '/api/report/doctor-report', renderDoctorReport);
 
-    // 9. Doctor Operations Count
     bindForm('form-doc-ops', '/api/report/doctor-operation-report', renderDoctorReport);
 
-    // 10. Support Staff
     bindForm('form-support-staff', '/api/report/support-staff-report', renderSupportStaff);
 
-    // 11. Doctor Fatality Rate
     bindForm('form-doc-fatal', '/api/report/doctor-performance-report', renderDoctorPerformance);
 
-    // 13. Department Occupancy (Cascade logic)
     const hospitalSelect = document.getElementById('trigger-dept-load');
     const deptSelect = document.getElementById('dept-select');
 
@@ -133,7 +108,6 @@ function setupEventListeners() {
         if (!hospId) return;
 
         try {
-            // Отримуємо деталі лікарні, щоб дістати відділення
             const hospital = await apiFetch(`/api/hospital/${hospId}`);
             let departments = [];
             for (const building of hospital.buildings) {
@@ -158,17 +132,9 @@ function setupEventListeners() {
     bindForm('form-dept-occupancy', (formData) => `/api/report/department-occupancy/${formData.get('departmentId')}`, renderDeptOccupancy, 'GET', true);
 }
 
-/**
- * Універсальна функція для прив'язки форми до API
- * @param {string} formId ID форми
- * @param {string|function} endpoint URL або функція, що повертає URL
- * @param {function} renderFunc Функція для відображення результату
- * @param {string} method HTTP метод (зазвичай GET для звітів)
- * @param {boolean} isUrlDynamic Чи генерується URL динамічно на основі даних форми
- */
 function bindForm(formId, endpoint, renderFunc, method = 'GET', isUrlDynamic = false) {
     const form = document.getElementById(formId);
-    const resultDiv = document.getElementById(formId.replace('form-', 'res-')); // Convention: res-ID
+    const resultDiv = document.getElementById(formId.replace('form-', 'res-'));
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -182,7 +148,6 @@ function bindForm(formId, endpoint, renderFunc, method = 'GET', isUrlDynamic = f
         if (isUrlDynamic) {
             url = endpoint(formData);
         } else {
-            // Будуємо Query String
             const params = new URLSearchParams();
             for (const pair of formData.entries()) {
                 if (pair[1]) params.append(pair[0], pair[1]);
@@ -199,8 +164,6 @@ function bindForm(formId, endpoint, renderFunc, method = 'GET', isUrlDynamic = f
         }
     });
 }
-
-// === ФУНКЦІЇ ВІДОБРАЖЕННЯ (RENDERERS) ===
 
 function renderDailyApp(data, container) {
     if (!data) return;
@@ -336,7 +299,6 @@ function renderDoctorPerformance(data, container) {
         container.innerHTML = '<div class="text-muted">Дані відсутні.</div>';
         return;
     }
-    // Сортуємо за % летальності (від більшого)
     data.sort((a, b) => b.fatalityRatePercent - a.fatalityRatePercent);
 
     let html = `<table class="table table-sm"><thead><tr><th>Лікар</th><th>Операцій</th><th>Летальних</th><th>%</th></tr></thead><tbody>`;

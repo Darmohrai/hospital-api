@@ -1,6 +1,5 @@
 ﻿namespace hospital_api.DTOs.Reports;
 
-// DTO для Запиту №11
 public class DoctorPerformanceDto
 {
     public int DoctorId { get; set; }

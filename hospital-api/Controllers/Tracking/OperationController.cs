@@ -18,8 +18,6 @@ public class OperationController : ControllerBase
         _operationService = operationService;
     }
 
-    // --- CRUD ---
-
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAll()
@@ -37,7 +35,6 @@ public class OperationController : ControllerBase
         return Ok(operation);
     }
 
-    // ✅ ОНОВЛЕНО: Використання CreateOperationDto
     [Authorize(Roles = "Operator, Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateOperationDto dto)
@@ -47,7 +44,6 @@ public class OperationController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        // Мапінг DTO на модель
         var operation = new Operation
         {
             Date = dto.Date,
@@ -60,11 +56,9 @@ public class OperationController : ControllerBase
         };
 
         await _operationService.AddAsync(operation);
-        // Повертаємо повний об'єкт операції, який був доданий (включаючи Id)
         return CreatedAtAction(nameof(Get), new { id = operation.Id }, operation);
     }
 
-    // ✅ ОНОВЛЕНО: Використання CreateOperationDto
     [Authorize(Roles = "Operator, Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] CreateOperationDto dto)
@@ -74,14 +68,12 @@ public class OperationController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        // 1. Отримуємо існуючу операцію
         var existingOperation = await _operationService.GetByIdAsync(id);
         if (existingOperation == null)
         {
             return NotFound();
         }
 
-        // 2. Оновлюємо поля з DTO
         existingOperation.Date = dto.Date;
         existingOperation.Type = dto.Type;
         existingOperation.IsFatal = dto.IsFatal;
@@ -90,7 +82,6 @@ public class OperationController : ControllerBase
         existingOperation.HospitalId = dto.HospitalId;
         existingOperation.ClinicId = dto.ClinicId;
 
-        // 3. Зберігаємо оновлену модель
         await _operationService.UpdateAsync(existingOperation);
         return NoContent();
     }
@@ -100,7 +91,6 @@ public class OperationController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        // Перевіряємо, чи існує запис, перш ніж видаляти
         var existingOperation = await _operationService.GetByIdAsync(id);
         if (existingOperation == null)
         {
@@ -110,9 +100,7 @@ public class OperationController : ControllerBase
         await _operationService.DeleteAsync(id);
         return NoContent();
     }
-
-    // --- Специфічні методи ---
-
+    
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("patient/{patientId}")]
     public async Task<IActionResult> GetByPatient(int patientId)

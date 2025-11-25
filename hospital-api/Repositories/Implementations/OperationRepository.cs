@@ -59,7 +59,6 @@ public class OperationRepository : GenericRepository<Operation>, IOperationRepos
             .ToListAsync();
     }
     
-    // ✅ НОВА РЕАЛІЗАЦІЯ
     public async Task<IEnumerable<Operation>> GetAllWithAssociationsAsync()
     {
         return await _context.Operations

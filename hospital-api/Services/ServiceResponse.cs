@@ -6,7 +6,6 @@ public class ServiceResponse<T>
     public bool IsSuccess { get; set; } = true;
     public string ErrorMessage { get; set; } = string.Empty;
 
-    // Статичні методи для зручного створення екземплярів
     public static ServiceResponse<T> Success(T data)
     {
         return new ServiceResponse<T> { Data = data };

@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using hospital_api.Models.StaffAggregate.DoctorAggregate;
 
 namespace hospital_api.Models.StaffAggregate;
 

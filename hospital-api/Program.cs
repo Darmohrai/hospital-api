@@ -28,22 +28,17 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- 1. Налаштування бази даних (DbContext) ---
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// --- 2. Додаємо Identity ---
-// --- 2. Додаємо Identity з налаштуваннями ---
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
     {
-        // ✅ ВМИКАЄМО ПЕРЕВІРКУ УНІКАЛЬНОСТІ EMAIL
         options.User.RequireUniqueEmail = true; 
     })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-// --- 3. Налаштування JWT ---
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -59,20 +54,16 @@ builder.Services.AddAuthentication(options =>
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
-            // RoleClaimType = "role",
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
         };
     });
 
-// ✅ ЦЕЙ БЛОК НАЛАШТОВУЄ КОНТРОЛЕРИ І ДЛЯ VIEWS, І ДЛЯ API
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(options =>
     {
-        // Дозволяє коректно обробляти цикли в об'єктах
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         
-        // Дозволяє API приймати "Surgery" замість '0' для Enum
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
@@ -88,7 +79,6 @@ builder.Services.AddCors(options =>
         });
 });
 
-// --- 4. Реєстрація репозиторіїв (Dependency Injection) ---
 
 #region Repositories
 
@@ -113,7 +103,6 @@ builder.Services.AddScoped<IUpgradeRequestRepository, UpgradeRequestRepository>(
 
 #endregion
 
-// --- 5. Реєстрація сервісів ---
 
 #region Services
 
@@ -145,30 +134,29 @@ builder.Services.AddScoped<IEmploymentService, EmploymentService>();
 
 #endregion
 
-// --- 6. API та Swagger ---
-
-// ❌ ВИДАЛЕНО ДУБЛЮЮЧИЙ БЛОК: builder.Services.AddControllers().AddJsonOptions(...)
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// --- 7. Middleware ---
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
 app.UseRouting();
 app.UseCors(MyAllowSpecificOrigins);
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-// --- 8. Ініціалізація бази даних і ролей ---
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
+app.MapFallbackToFile("index.html");
+
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -178,10 +166,8 @@ using (var scope = app.Services.CreateScope())
         var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-        // Якщо у тебе є DbInitializer
         await DbInitializer.Initialize(context, userManager, roleManager);
 
-        // Якщо хочеш автоматично створити ролі:
         string[] roleNames = { "Admin", "Operator", "Authorized", "Guest" };
         foreach (var roleName in roleNames)
         {

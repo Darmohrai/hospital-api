@@ -1,7 +1,6 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.AspNetCore.Identity; // Потрібно для зв'язку з User
+using Microsoft.AspNetCore.Identity;
 
 namespace hospital_api.Models.Auth;
 
@@ -12,8 +11,8 @@ public class UpgradeRequest
 
     [Required]
     [ForeignKey(nameof(User))]
-    public string UserId { get; set; } = string.Empty; // ID користувача (з AspNetUsers)
-    public IdentityUser User { get; set; } = null!; // Навігаційна властивість
+    public string UserId { get; set; } = string.Empty;
+    public IdentityUser User { get; set; } = null!;
 
     public DateTime RequestDate { get; set; } = DateTime.UtcNow;
     
@@ -24,7 +23,7 @@ public class UpgradeRequest
 
 public enum RequestStatus
 {
-    Pending,  // Очікує розгляду
-    Approved, // Затверджено
-    Rejected  // Відхилено
+    Pending,
+    Approved,
+    Rejected
 }

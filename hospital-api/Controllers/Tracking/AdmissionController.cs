@@ -34,9 +34,6 @@ public class AdmissionController : ControllerBase
         return Ok(admission);
     }
 
-    /// <summary>
-    /// Госпіталізувати пацієнта.
-    /// </summary>
     [Authorize(Roles = "Operator, Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateAdmissionDto dto)
@@ -52,14 +49,10 @@ public class AdmissionController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Виписати пацієнта (встановити дату виписки).
-    /// </summary>
     [Authorize(Roles = "Operator, Admin")]
     [HttpPut("{id}/discharge")]
     public async Task<IActionResult> Discharge(int id, [FromQuery] DateTime? dischargeDate)
     {
-        // Якщо дату не вказано, використовуємо поточний час
         var date = dischargeDate ?? DateTime.UtcNow; 
         try
         {
@@ -75,9 +68,6 @@ public class AdmissionController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Видалити запис про госпіталізацію (тільки для вже виписаних).
-    /// </summary>
     [Authorize(Roles = "Operator, Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)

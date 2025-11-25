@@ -5,14 +5,6 @@ namespace hospital_api.Services.Interfaces;
 
 public interface IReportService
 {
-    /// <summary>
-    /// Отримує кількість пацієнтів, прийнятих за вказаний день,
-    /// згідно з заданими фільтрами. (Запит №1)
-    /// </summary>
-    /// <param name="date">Дата звіту</param>
-    /// <param name="doctorId">ID конкретного лікаря (опціонально)</param>
-    /// <param name="clinicId">ID поліклініки (опціонально)</param>
-    /// <param name="specialty">Профіль лікаря (опціонально)</param>
     Task<AppointmentCountDto> GetDailyAppointmentCountAsync(DateTime date, int? doctorId, int? clinicId,
         string? specialty);
 

@@ -52,9 +52,7 @@ public class ClinicDoctorAssignmentRepository : IClinicDoctorAssignmentRepositor
             .Include(a => a.Clinic)
             .ToListAsync();
     }
-
-    // --- Реалізація методів IRepository, які мають сенс ---
-
+    
     public async Task<IEnumerable<ClinicDoctorAssignment>> GetAllAsync()
     {
         return await _context.ClinicDoctorAssignments.AsNoTracking().ToListAsync();
@@ -70,11 +68,8 @@ public class ClinicDoctorAssignmentRepository : IClinicDoctorAssignmentRepositor
         return await _context.ClinicDoctorAssignments.Where(expression).ToListAsync();
     }
     
-    // --- Методи IRepository, які не мають сенсу для цієї моделі ---
-
     public Task<ClinicDoctorAssignment?> GetByIdAsync(int id)
     {
-        // Цей метод не можна реалізувати, оскільки немає єдиного Id
         throw new NotSupportedException("This entity has a composite key. Use specific 'Get' methods.");
     }
 
@@ -85,15 +80,12 @@ public class ClinicDoctorAssignmentRepository : IClinicDoctorAssignmentRepositor
 
     public Task UpdateAsync(ClinicDoctorAssignment entity)
     {
-        // Оновлення M:M зв'язку - це зазвичай видалення + додавання,
-        // але якщо сама сутність зв'язку має поля, то:
         _context.ClinicDoctorAssignments.Update(entity);
         return _context.SaveChangesAsync();
     }
 
     public Task DeleteAsync(int id)
     {
-        // Цей метод не можна реалізувати
         throw new NotSupportedException("This entity has a composite key. Use 'RemoveAssignmentAsync'.");
     }
 }

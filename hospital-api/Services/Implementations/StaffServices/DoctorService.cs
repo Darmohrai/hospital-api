@@ -11,7 +11,6 @@ public class DoctorService : IDoctorService
 {
     private readonly IStaffRepository _staffRepository;
 
-    // ✅ Конструктор тепер чистий і має лише одну залежність!
     public DoctorService(IStaffRepository staffRepository)
     {
         _staffRepository = staffRepository;
@@ -21,8 +20,6 @@ public class DoctorService : IDoctorService
     {
         return await _staffRepository.GetAll().OfType<Doctor>().ToListAsync();
     }
-    
-    
 
     public async Task<Doctor?> GetByIdAsync(int id)
     {
@@ -54,18 +51,14 @@ public class DoctorService : IDoctorService
             .ToListAsync();
     }
 
-    // --- Специфічна бізнес-логіка ---
-
-    // ✅ Ефективний метод, що робить ОДИН запит до БД
     public async Task<IEnumerable<Doctor>> GetWithHazardPayAsync()
     {
         return await _staffRepository.GetAll()
-            .Where(s => s is Dentist || s is Radiologist) // Фільтруємо на рівні базового класу
-            .OfType<Doctor>() // Конвертуємо результат у лікарів
+            .Where(s => s is Dentist || s is Radiologist)
+            .OfType<Doctor>()
             .ToListAsync();
     }
 
-    // ✅ Ефективний метод, що робить ОДИН запит до БД
     public async Task<IEnumerable<Doctor>> GetWithExtendedVacationAsync()
     {
         return await _staffRepository.GetAll()
@@ -76,34 +69,25 @@ public class DoctorService : IDoctorService
 
     public async Task<IEnumerable<Doctor>> GetAllAsync(string? specialty, AcademicDegree? degree, AcademicTitle? title)
     {
-        // Починаємо запит як IQueryable<Doctor>
         IQueryable<Doctor> query = _staffRepository.GetAll()
             .OfType<Doctor>()
             .Include(d => d.Employments); 
-
-        // --- ✅ ФІНАЛЬНА ЛОГІКА ФІЛЬТРАЦІЇ ---
-    
+        
         if (!string.IsNullOrEmpty(specialty))
         {
-            // ✅ ВИПРАВЛЕННЯ:
-            // Використовуємо .ToUpper() - це перекладається в SQL (UPPER(...))
-            // Додаємо перевірку d.Specialty != null для уникнення помилок з null
             string specialtyUpper = specialty.ToUpper();
             query = query.Where(d => d.Specialty != null && d.Specialty.ToUpper() == specialtyUpper);
         }
 
         if (degree.HasValue)
         {
-            // Просто застосовуємо .Where
             query = query.Where(d => d.AcademicDegree == degree.Value);
         }
 
         if (title.HasValue)
         {
-            // Просто застосовуємо .Where
             query = query.Where(d => d.AcademicTitle == title.Value);
         }
-        // --- Кінець логіки фільтрації ---
 
         return await query.ToListAsync();
     }

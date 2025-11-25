@@ -1,9 +1,7 @@
-﻿using hospital_api.Models.StaffAggregate; // <-- ✅ ДОДАЙ ЦЕЙ USING
-using System.Collections.Generic;
+﻿using hospital_api.Models.StaffAggregate;
 
 namespace hospital_api.DTOs.Reports;
 
-// DTO для Запиту №8
 public class DoctorReportDto
 {
     public int TotalCount { get; set; }

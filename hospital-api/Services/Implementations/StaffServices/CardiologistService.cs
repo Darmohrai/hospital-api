@@ -35,7 +35,7 @@ public class CardiologistService : ICardiologistService
             return ServiceResponse<Cardiologist>.Fail("Cardiologist's full name is required.");
         }
 
-        cardiologist.Specialty = "Cardiologist"; // Забезпечуємо правильність спеціальності
+        cardiologist.Specialty = "Cardiologist";
         await _staffRepository.AddAsync(cardiologist);
         return ServiceResponse<Cardiologist>.Success(cardiologist);
     }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace hospital_api.DTOs.Tracking;
 
@@ -14,7 +13,6 @@ public class CreateAppointmentDto
     [Required]
     public int DoctorId { get; set; }
 
-    // Місце візиту (має бути щось одне)
     public int? ClinicId { get; set; }
     public int? HospitalId { get; set; }
     

@@ -1,6 +1,5 @@
 ﻿using hospital_api.DTOs.Reports;
 using hospital_api.Models.StaffAggregate;
-using hospital_api.Models.StaffAggregate.DoctorAggregate;
 using hospital_api.Repositories.Interfaces;
 using hospital_api.Repositories.Interfaces.HospitalRepo;
 using hospital_api.Repositories.Interfaces.StaffRepo;
@@ -70,30 +69,25 @@ public class ReportService : IReportService
             date = DateTime.SpecifyKind(date, DateTimeKind.Utc);
         }
 
-        // Використовуємо GetAll() + Include(), щоб завантажити лікаря
         var query = _appointmentRepo.GetAll()
             .Include(a => a.Doctor)
             .Where(a => a.VisitDateTime.Date == date.Date);
 
         var filterDescription = $"Звіт за {date.ToShortDateString()}";
 
-        // Сценарій 1: Конкретний лікар
         if (doctorId.HasValue)
         {
             query = query.Where(a => a.DoctorId == doctorId.Value);
             var doctor = await _staffRepo.GetByIdAsync(doctorId.Value);
             filterDescription += $", Лікар: {doctor?.FullName ?? "Невідомий"}";
         }
-        // Сценарій 2: Поліклініка
         else if (clinicId.HasValue)
         {
             query = query.Where(a => a.ClinicId == clinicId.Value);
             filterDescription += $", Поліклініка ID: {clinicId.Value}";
 
-            // Сценарій 3: Поліклініка + Профіль
             if (!string.IsNullOrEmpty(specialty))
             {
-                // ✅ ВИПРАВЛЕНО: Використовуємо OfType<Doctor>() замість EF.Property
                 var doctorIdsInClinicWithSpecialty = await _staffRepo.GetAll()
                     .OfType<Doctor>()
                     .Where(s => s.Employments.Any(e => e.ClinicId == clinicId.Value) && s.Specialty == specialty)
@@ -108,10 +102,8 @@ public class ReportService : IReportService
                 filterDescription += ", Всі лікарі";
             }
         }
-        // Сценарій 4: Тільки профіль (у всіх закладах)
         else if (!string.IsNullOrEmpty(specialty))
         {
-            // ✅ ВИПРАВЛЕНО: Використовуємо OfType<Doctor>()
             var doctorIdsWithSpecialty = await _staffRepo.GetAll()
                 .OfType<Doctor>()
                 .Where(s => s.Specialty == specialty)
@@ -149,7 +141,6 @@ public class ReportService : IReportService
 
     public async Task<HospitalCapacityReportDto> GetHospitalCapacityReportAsync(int hospitalId)
     {
-        // Код без змін
         var hospital = await _hospitalRepo.GetByIdAsync(hospitalId);
         if (hospital == null)
             throw new KeyNotFoundException("Hospital not found.");
@@ -276,7 +267,6 @@ public class ReportService : IReportService
         if (startDate.Kind == DateTimeKind.Unspecified) startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
         if (endDate.Kind == DateTimeKind.Unspecified) endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
 
-        // GetAllWithAssociationsAsync вже включає Doctor, Clinic, Hospital
         var allOperations = await _operationRepo.GetAllWithAssociationsAsync();
 
         var filteredOps = allOperations
@@ -314,14 +304,12 @@ public class ReportService : IReportService
 
     public async Task<IEnumerable<PatientListDto>> GetPatientsByClinicAndSpecialtyAsync(int clinicId, string specialty)
     {
-        // ✅ ВИПРАВЛЕНО: Використовуємо OfType<Doctor>() для безпечного доступу до Specialty
         var doctorIdsWithSpecialty = await _staffRepo.GetAll()
             .OfType<Doctor>()
             .Where(d => d.Specialty == specialty)
             .Select(s => s.Id)
             .ToListAsync();
 
-        // Решта логіки залишається незмінною
         var assignments = await _clinicAssignmentRepo.FindByConditionAsync(
             a => a.ClinicId == clinicId &&
                  doctorIdsWithSpecialty.Contains(a.DoctorId)
@@ -390,7 +378,6 @@ public class ReportService : IReportService
     {
         var filterDescription = "Звіт по лікарях. ";
 
-        // ✅ ВИПРАВЛЕНО: Починаємо одразу з OfType<Doctor>(), щоб працювати з лікарями
         var query = _staffRepo.GetAll().OfType<Doctor>();
 
         if (hospitalId.HasValue)
@@ -460,7 +447,6 @@ public class ReportService : IReportService
     {
         var filterDescription = $"Звіт по лікарях з >= {minOperationCount} операціями. ";
 
-        // ✅ ВИПРАВЛЕНО: Використовуємо OfType<Doctor>()
         var query = _staffRepo.GetAll().OfType<Doctor>();
 
         if (hospitalId.HasValue)
@@ -484,20 +470,16 @@ public class ReportService : IReportService
             filterDescription += $"Профіль: {specialty}. ";
         }
 
-        // Завантажуємо ID лікарів, що підходять
         var doctorIds = await query.Select(d => d.Id).ToListAsync();
 
-        // Отримуємо операції для цих лікарів
         var operations = await _operationRepo.FindByConditionAsync(op => doctorIds.Contains(op.DoctorId));
 
-        // Рахуємо
         var operationCounts = operations
             .GroupBy(op => op.DoctorId)
             .ToDictionary(group => group.Key, group => group.Count());
 
-        // Фільтруємо список лікарів (завантажуємо повні дані тих, хто пройшов по ліміту)
         var finalDoctors = await query
-            .Where(d => doctorIds.Contains(d.Id)) // (Фактично redundant, але безпечно)
+            .Where(d => doctorIds.Contains(d.Id))
             .ToListAsync();
             
         finalDoctors = finalDoctors
@@ -529,7 +511,6 @@ public class ReportService : IReportService
     {
         var filterDescription = $"Звіт по обслуговуючому персоналу. Роль: {role}. ";
 
-        // ✅ ВИПРАВЛЕНО: Використовуємо OfType<SupportStaff>()
         var supportStaffQuery = _staffRepo.GetAll().OfType<SupportStaff>();
 
         supportStaffQuery = supportStaffQuery.Where(s => s.Role == role);
@@ -582,7 +563,6 @@ public class ReportService : IReportService
 
         var operations = operationsQuery.ToList();
 
-        // ✅ ВИПРАВЛЕНО: Використовуємо OfType<Doctor>() і фільтр по спеціальності
         var operatingDoctorIds = await _staffRepo.GetAll()
             .OfType<Doctor>()
             .Where(d => d.Specialty == "Surgeon" || d.Specialty == "Dentist" || d.Specialty == "Gynecologist")
@@ -598,18 +578,6 @@ public class ReportService : IReportService
                 int fatal = g.Count(op => op.IsFatal);
                 double rate = (total > 0) ? ((double)fatal / total) * 100 : 0;
 
-                // Оскільки g.Key - це Staff (через навігаційну властивість Operation.Doctor),
-                // нам треба переконатися, що ми можемо взяти Specialty.
-                // Але ми вже відфільтрували за operatingDoctorIds, тому це точно Doctor.
-                // Найбезпечніше - взяти з БД або зробити Cast, якщо об'єкт завантажений як Doctor.
-                // Тут для спрощення візьмемо Specialty через dynamic або припущення,
-                // але оскільки g.Key завантажений через EF Include, він може бути проксі Staff.
-                // Краще знайти лікаря з кешу або явно.
-                // У цьому контексті g.Key.GetType().Name поверне тип (Surgeon і т.д.).
-
-                // Спробуємо отримати спеціальність через рефлексію або хак, оскільки Staff не має її.
-                // Але найкраще - просто відобразити ім'я, а спеціальність ми вже знаємо з фільтра.
-                // Або використати операцію Cast, якщо об'єкт в пам'яті.
                 var doctor = g.Key as Doctor;
 
                 return new DoctorPerformanceDto
@@ -630,7 +598,6 @@ public class ReportService : IReportService
 
     public async Task<DepartmentOccupancyReportDto> GetDepartmentOccupancyReportAsync(int departmentId)
     {
-        // Без змін
         var department = await _departmentRepo.GetByIdAsync(departmentId);
         if (department == null)
             throw new KeyNotFoundException("Department not found.");

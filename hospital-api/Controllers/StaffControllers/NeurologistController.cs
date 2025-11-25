@@ -18,7 +18,6 @@ public class NeurologistController : ControllerBase
         _neurologistService = neurologistService;
     }
 
-    // Отримати всіх невропатологів
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAll()
@@ -27,7 +26,6 @@ public class NeurologistController : ControllerBase
         return Ok(neurologists);
     }
 
-    // Отримати невропатолога за ID
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
@@ -39,7 +37,6 @@ public class NeurologistController : ControllerBase
         return Ok(neurologist);
     }
 
-    // Додати нового невропатолога
     [Authorize(Roles = "Operator, Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateNeurologistDto neurologistDto)
@@ -54,7 +51,6 @@ public class NeurologistController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = result.Data.Id }, result.Data);
     }
 
-// Оновити невропатолога
     [Authorize(Roles = "Operator, Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] Neurologist neurologist)
@@ -65,8 +61,7 @@ public class NeurologistController : ControllerBase
         await _neurologistService.UpdateNeurologistAsync(neurologist);
         return NoContent();
     }
-
-// Видалити невропатолога
+    
     [Authorize(Roles = "Operator, Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
@@ -75,7 +70,6 @@ public class NeurologistController : ControllerBase
         return NoContent();
     }
 
-// Отримати невропатологів з розширеною відпусткою більше заданих днів
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("extended-vacation/{minDays}")]
     public async Task<IActionResult> GetByExtendedVacationDays(int minDays)
@@ -84,7 +78,6 @@ public class NeurologistController : ControllerBase
         return Ok(result);
     }
 
-// Отримати профіль невропатолога у вигляді текстового звіту
     [Authorize(Roles = "Authorized, Operator, Admin")]
     [HttpGet("{id}/profile-summary")]
     public async Task<IActionResult> GetProfileSummary(int id)

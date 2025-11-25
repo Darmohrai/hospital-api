@@ -31,4 +31,40 @@
       </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <None Include="wwwroot\admin.html" />
+      <None Include="wwwroot\css\style.css" />
+      <None Include="wwwroot\index.html" />
+      <None Include="wwwroot\js\admin.js" />
+      <None Include="wwwroot\js\api.js" />
+      <None Include="wwwroot\js\auth.js" />
+      <None Include="wwwroot\js\main.js" />
+      <None Include="wwwroot\js\reports.js" />
+      <None Include="wwwroot\login.html" />
+      <None Include="wwwroot\manage\clinics.html" />
+      <None Include="wwwroot\manage\clinics.js" />
+      <None Include="wwwroot\manage\doctors.html" />
+      <None Include="wwwroot\manage\doctors.js" />
+      <None Include="wwwroot\manage\hospitals.html" />
+      <None Include="wwwroot\manage\hospitals.js" />
+      <None Include="wwwroot\manage\laboratories.html" />
+      <None Include="wwwroot\manage\laboratories.js" />
+      <None Include="wwwroot\manage\patients.html" />
+      <None Include="wwwroot\manage\patients.js" />
+      <None Include="wwwroot\manage\query.html" />
+      <None Include="wwwroot\manage\query.js" />
+      <None Include="wwwroot\manage\support-staff.html" />
+      <None Include="wwwroot\manage\support-staff.js" />
+      <None Include="wwwroot\manage\tracking.html" />
+      <None Include="wwwroot\manage\tracking.js" />
+      <None Include="wwwroot\register.html" />
+      <None Include="wwwroot\reports.html" />
+      <None Include="wwwroot\reset-password.html" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\js\site.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\site.css" />
+    </ItemGroup>
+
 </Project>

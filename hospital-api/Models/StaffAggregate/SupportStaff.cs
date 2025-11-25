@@ -1,7 +1,4 @@
-﻿using hospital_api.Models.ClinicAggregate;
-using hospital_api.Models.HospitalAggregate;
-
-namespace hospital_api.Models.StaffAggregate;
+﻿namespace hospital_api.Models.StaffAggregate;
 
 public class SupportStaff : Staff
 {

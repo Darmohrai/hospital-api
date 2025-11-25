@@ -10,7 +10,7 @@ using hospital_api.Models.StaffAggregate.DoctorAggregate;
 using hospital_api.Models.Tracking;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking; // <-- Додайте цей using
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace hospital_api.Data
 {
@@ -51,32 +51,23 @@ namespace hospital_api.Data
             
             builder.Entity<IdentityUser>(entity =>
             {
-                // 2. Видалення поля телефонного номера
                 entity.Ignore(u => u.PhoneNumber);
                 entity.Ignore(u => u.PhoneNumberConfirmed);
 
-                // 3. Видалення поля для двофакторної автентифікації
                 entity.Ignore(u => u.TwoFactorEnabled);
 
-                // 4. Видалення полів, пов'язаних із блокуванням (якщо не потрібні)
                 entity.Ignore(u => u.LockoutEnabled);
                 entity.Ignore(u => u.LockoutEnd);
                 entity.Ignore(u => u.AccessFailedCount);
 
-                // 5. Видалення поля для оптимістичного паралелізму
                 entity.Ignore(u => u.ConcurrencyStamp);
             });
 
-            // 1. Базова таблиця (Staff)
             builder.Entity<Staff>().ToTable("Staffs"); 
     
-            // 2. Середній рівень успадкування (успадковує від Staff)
-            // Зберігає лише спільні поля для Doctors/SupportStaffs
             builder.Entity<Doctor>().ToTable("Doctors");
             builder.Entity<SupportStaff>().ToTable("SupportStaffs");
     
-            // 3. Конкретні класи (успадковують від Doctor/SupportStaff)
-            // Зберігають унікальні поля (наприклад, ExtendedVacationDays)
             builder.Entity<Cardiologist>().ToTable("Cardiologists");
             builder.Entity<Dentist>().ToTable("Dentists");
             builder.Entity<Gynecologist>().ToTable("Gynecologists");
@@ -89,16 +80,13 @@ namespace hospital_api.Data
             {
                 entity.HasOne(e => e.Staff).WithMany(s => s.Employments).HasForeignKey(e => e.StaffId);
 
-                // ✅ ВИПРАВЛЕНО:
                 entity.HasOne(e => e.Hospital).WithMany(h => h.Employments).HasForeignKey(e => e.HospitalId)
                     .OnDelete(DeleteBehavior.SetNull); 
 
-                // ✅ ВИПРАВЛЕНО:
                 entity.HasOne(e => e.Clinic).WithMany(c => c.Employments).HasForeignKey(e => e.ClinicId)
                     .OnDelete(DeleteBehavior.SetNull); 
             });
 
-            // ✅ ВИПРАВЛЕНО: Додано ValueComparer для коректної роботи зі списком enum'ів
             builder.Entity<Hospital>()
                 .Property(h => h.Specializations)
                 .HasConversion(
@@ -111,35 +99,31 @@ namespace hospital_api.Data
                     c => c.ToList()));
 
             builder.Entity<Patient>()
-                .HasOne(p => p.Bed) // У Пацієнта є одне Ліжко
-                .WithOne(b => b.Patient) // У Ліжка є один Пацієнт
-                .HasForeignKey<Bed>(b => b.PatientId) // Зовнішній ключ знаходиться в Bed
+                .HasOne(p => p.Bed)
+                .WithOne(b => b.Patient)
+                .HasForeignKey<Bed>(b => b.PatientId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            // ✅ НОВИЙ БЛОК: Налаштування композитного ключа для M:M
             builder.Entity<ClinicDoctorAssignment>(entity =>
             {
-                // Встановлюємо композитний первинний ключ
                 entity.HasKey(cda => new { cda.PatientId, cda.DoctorId, cda.ClinicId });
 
-                // Оскільки ми не додавали List<> у навігаційні властивості (в Patient, Staff, Clinic),
-                // ми налаштовуємо зв'язок M:M таким чином:
                 entity.HasOne(cda => cda.Patient)
-                    .WithMany() // У Patient немає List<ClinicDoctorAssignment>
+                    .WithMany()
                     .HasForeignKey(cda => cda.PatientId);
 
                 entity.HasOne(cda => cda.Doctor)
-                    .WithMany() // У Staff немає List<ClinicDoctorAssignment>
+                    .WithMany()
                     .HasForeignKey(cda => cda.DoctorId);
 
                 entity.HasOne(cda => cda.Clinic)
-                    .WithMany() // У Clinic немає List<ClinicDoctorAssignment>
+                    .WithMany()
                     .HasForeignKey(cda => cda.ClinicId);
             });
 
             builder.Entity<UpgradeRequest>()
                 .HasOne(r => r.User)
-                .WithMany() // У IdentityUser немає навігаційної властивості
+                .WithMany()
                 .HasForeignKey(r => r.UserId);
         }
     }

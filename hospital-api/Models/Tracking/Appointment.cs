@@ -13,8 +13,6 @@ public class Appointment
 
     [Required] public DateTime VisitDateTime { get; set; }
 
-    // --- Зв'язки ---
-
     [Required]
     [ForeignKey(nameof(Patient))]
     public int PatientId { get; set; }
@@ -25,15 +23,13 @@ public class Appointment
     [ForeignKey(nameof(Doctor))]
     public int DoctorId { get; set; }
 
-    public Staff Doctor { get; set; } = null!; // Використовуємо Staff, оскільки це загальний зв'язок
+    public Staff Doctor { get; set; } = null!;
 
-    // Місце візиту (може бути або клініка, або лікарня)
     [ForeignKey(nameof(Clinic))] public int? ClinicId { get; set; }
     public Clinic? Clinic { get; set; }
 
     [ForeignKey(nameof(Hospital))] public int? HospitalId { get; set; }
     public Hospital? Hospital { get; set; }
 
-    // Нотатки лікаря за результатами візиту
     public string Summary { get; set; } = string.Empty;
 }

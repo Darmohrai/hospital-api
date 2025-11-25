@@ -18,13 +18,6 @@ public class ReportController : ControllerBase
         _reportService = reportService;
     }
 
-    /// <summary>
-    /// (Запит №1) Отримує кількість прийнятих пацієнтів за день.
-    /// </summary>
-    /// <param name="date">Дата (напр., '2025-10-20')</param>
-    /// <param name="doctorId">Фільтр: ID конкретного лікаря</param>
-    /// <param name="clinicId">Фільтр: ID поліклініки</param>
-    /// <param name="specialty">Фільтр: Профіль лікаря (напр., 'Surgeon')</param>
     [HttpGet("daily-appointments")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetDailyAppointmentCount(
@@ -33,16 +26,12 @@ public class ReportController : ControllerBase
         [FromQuery] int? clinicId,
         [FromQuery] string? specialty)
     {
-        // Встановлюємо час на початок дня, щоб врахувати всі візити за цю дату
         var reportDate = date.Date;
 
         var report = await _reportService.GetDailyAppointmentCountAsync(reportDate, doctorId, clinicId, specialty);
         return Ok(report);
     }
 
-    /// <summary>
-    /// (Запит №2) Отримує звіт про місткість лікарні (палати, ліжка).
-    /// </summary>
     [HttpGet("hospital-capacity/{hospitalId}")]
     [ProducesResponseType(typeof(HospitalCapacityReportDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -59,9 +48,6 @@ public class ReportController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// (Запит №3) Звіт про середню кількість обстежень у лабораторіях.
-    /// </summary>
     [HttpGet("laboratory-report")]
     [ProducesResponseType(typeof(LaboratoryReportDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetLaboratoryReport(
@@ -77,9 +63,6 @@ public class ReportController : ControllerBase
         return Ok(report);
     }
 
-    /// <summary>
-    /// (Запит №5) Отримує список пацієнтів, яким проводили операції.
-    /// </summary>
     [HttpGet("patient-operations")]
     [ProducesResponseType(typeof(IEnumerable<PatientOperationDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPatientOperationReport(
@@ -100,10 +83,6 @@ public class ReportController : ControllerBase
         return Ok(report);
     }
 
-    /// <summary>
-    /// (Запит №6) Отримує пацієнтів, які лікуються у лікаря вказаного профілю
-    /// у вказаній поліклініці.
-    /// </summary>
     [HttpGet("patients-by-clinic-specialty")]
     [ProducesResponseType(typeof(IEnumerable<PatientListDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPatientsByClinicAndSpecialty(
@@ -117,10 +96,6 @@ public class ReportController : ControllerBase
         return Ok(patients);
     }
 
-    /// <summary>
-    /// (Запит №7) Отримує пацієнтів, які пройшли стаціонарне лікування
-    /// (були виписані) за вказаний період.
-    /// </summary>
     [HttpGet("inpatient-report")]
     [ProducesResponseType(typeof(IEnumerable<PatientListDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetInpatientReport(
@@ -136,9 +111,6 @@ public class ReportController : ControllerBase
         return Ok(patients);
     }
 
-    /// <summary>
-    /// (Запит №8) Отримує звіт по лікарях з розширеними фільтрами.
-    /// </summary>
     [HttpGet("doctor-report")]
     [ProducesResponseType(typeof(DoctorReportDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetDoctorReport(
@@ -157,11 +129,7 @@ public class ReportController : ControllerBase
                 title);
         return Ok(report);
     }
-
-    /// <summary>
-    /// (Запит №9) Отримує звіт по лікарях, які виконали
-    /// певну кількість операцій.
-    /// </summary>
+    
     [HttpGet("doctor-operation-report")]
     [ProducesResponseType(typeof(DoctorReportDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetDoctorOperationReport(
@@ -178,13 +146,10 @@ public class ReportController : ControllerBase
         return Ok(report);
     }
 
-    /// <summary>
-    /// (Запит №10) Отримує звіт по обслуговуючому персоналу.
-    /// </summary>
     [HttpGet("support-staff-report")]
     [ProducesResponseType(typeof(SupportStaffReportDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetSupportStaffReport(
-        [FromQuery] SupportRole role, // Enum: 'Nurse', 'Orderly', 'Cleaner'
+        [FromQuery] SupportRole role,
         [FromQuery] int? hospitalId,
         [FromQuery] int? clinicId)
     {
@@ -195,9 +160,6 @@ public class ReportController : ControllerBase
         return Ok(report);
     }
     
-    /// <summary>
-    /// (Запит №11) Отримує рейтинг лікарів за відсотком летальних операцій.
-    /// </summary>
     [HttpGet("doctor-performance-report")]
     [ProducesResponseType(typeof(IEnumerable<DoctorPerformanceDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetDoctorPerformanceReport(
@@ -211,9 +173,6 @@ public class ReportController : ControllerBase
         return Ok(report);
     }
     
-    /// <summary>
-    /// (Запит №13) Отримує звіт про завантаженість палат у відділенні.
-    /// </summary>
     [HttpGet("department-occupancy/{departmentId}")]
     [ProducesResponseType(typeof(DepartmentOccupancyReportDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

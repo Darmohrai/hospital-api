@@ -13,7 +13,6 @@ public class LaboratoryService : ILaboratoryService
         _laboratoryRepository = laboratoryRepository;
     }
 
-    // --- CRUD ---
     public async Task<Laboratory?> GetByIdAsync(int id)
     {
         return await _laboratoryRepository.GetByIdAsync(id);
@@ -50,7 +49,6 @@ public class LaboratoryService : ILaboratoryService
         await _laboratoryRepository.DeleteAsync(id);
     }
 
-    // --- Специфічні методи ---
     public async Task<IEnumerable<Laboratory>> GetByProfileAsync(string profile)
     {
         return await _laboratoryRepository.GetByProfileAsync(profile);

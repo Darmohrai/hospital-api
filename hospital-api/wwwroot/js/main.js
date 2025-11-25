@@ -1,118 +1,80 @@
-﻿// js/main.js
-
-// Цей код виконається, коли будь-яка сторінка, що його підключила, завантажиться
-document.addEventListener('DOMContentLoaded', () => {
+﻿document.addEventListener('DOMContentLoaded', () => {
     setupSharedUI();
 });
 
-/**
- * Головна функція для налаштування *спільних* елементів UI (хедер, меню)
- */
 function setupSharedUI() {
-
-    // Перевіряємо, чи користувач залогінений
     if (isLoggedIn()) {
-        // --- Користувач ЗАЛОГІНЕНИЙ ---
-
-        // 1. Ховаємо кнопки "Увійти" / "Реєстрація"
         const anonymousLinks = document.getElementById('anonymous-links');
         if (anonymousLinks) {
             anonymousLinks.style.display = 'none';
         }
 
-        // 2. Показуємо блок "Вітаємо"
         const authBlock = document.getElementById('authenticated-user');
         if (authBlock) {
             authBlock.style.display = 'block';
         }
 
-        // 3. Встановлюємо ім'я користувача
         const userGreeting = document.getElementById('user-greeting');
         if (userGreeting) {
             userGreeting.textContent = `Вітаємо, ${getUserName()}!`;
         }
 
-        // 4. "Вішаємо" обробник на кнопку "Вийти"
         const logoutButton = document.getElementById('logout-button');
         if (logoutButton) {
-            logoutButton.addEventListener('click', logout); // (функція з auth.js)
+            logoutButton.addEventListener('click', logout);
         }
 
-        // 5. Отримуємо роль, щоб показати/сховати меню
-        const role = getUserRole(); // (функція з auth.js)
+        const role = getUserRole();
 
-        // 6. Керуємо меню залежно від ролі
-
-        // --- Меню навігації ---
         const navReports = document.getElementById('nav-reports');
         const navCrud = document.getElementById('nav-crud');
         const navAdmin = document.getElementById('nav-admin');
 
         switch (role) {
             case 'Guest':
-                // "Гість" не бачить нічого, окрім кнопки "Вийти"
                 break;
 
             case 'Authorized':
-                // "Авторизований" бачить меню "Звіти"
                 if (navReports) navReports.style.display = 'block';
                 break;
 
             case 'Operator':
-                // "Оператор" бачить "Звіти" та "Керування даними"
                 if (navReports) navReports.style.display = 'block';
                 if (navCrud) navCrud.style.display = 'block';
                 break;
 
             case 'Admin':
-                // "Адмін" бачить УСЕ
                 if (navReports) navReports.style.display = 'block';
                 if (navCrud) navCrud.style.display = 'block';
                 if (navAdmin) navAdmin.style.display = 'block';
                 break;
         }
 
-        // --- Специфічний контент (ТІЛЬКИ для index.html) ---
-        // Ми перевіряємо, чи ці елементи взагалі є на сторінці
         const guestContent = document.getElementById('guest-content');
         const publicContent = document.getElementById('public-content');
 
         if (role === 'Guest' && guestContent && publicContent) {
-            // "Гість" бачить спеціальний блок
             guestContent.style.display = 'block';
-            publicContent.style.display = 'none'; // Ховаємо публічний
+            publicContent.style.display = 'none';
 
-            // "Вішаємо" обробник на кнопку запиту
             const upgradeButton = document.getElementById('request-upgrade-button');
             if (upgradeButton) {
                 upgradeButton.addEventListener('click', handleUpgradeRequest);
             }
         }
 
-    } else {
-        // --- Користувач АНОНІМНИЙ ---
-        // Всі меню ролей (navReports, navCrud, navAdmin) вже приховані
-        // Блок "Вітаємо" (authenticated-user) прихований
-        // Кнопки "Увійти"/"Реєстрація" (anonymous-links) видимі
-        // Все працює за замовчуванням.
     }
 }
 
-/**
- * Обробник для кнопки "Гостя" "Подати запит на доступ"
- * (Ця функція буде викликана ТІЛЬКИ з index.html)
- */
 async function handleUpgradeRequest() {
     const msgEl = document.getElementById('guest-message');
     const button = document.getElementById('request-upgrade-button');
 
-    if (!msgEl || !button) return; // Додаткова перевірка
+    if (!msgEl || !button) return;
 
-    button.disabled = true; // Блокуємо кнопку
+    button.disabled = true;
 
     try {
-        // Ендпоінт з твого AuthController
-        // Він вимагає [Authorize(Roles = "Guest")]
         await apiFetch('/api/auth/request-upgrade', { method: 'POST' });
 
         msgEl.textContent = 'Запит успішно надіслано адміністратору.';
@@ -120,7 +82,7 @@ async function handleUpgradeRequest() {
     } catch (error) {
         msgEl.textContent = `Помилка: ${error.message}`;
         msgEl.className = 'text-danger mt-2';
-        button.disabled = false; // Дозволяємо спробувати ще
+        button.disabled = false;
     }
 }
 
@@ -128,7 +90,7 @@ async function loadNavigation() {
     const header = document.querySelector('header');
     if (!header) return;
 
-    const role = getUserRole(); // Функція з auth.js
+    const role = getUserRole();
 
     let navLinks = `
         <li class="nav-item">
@@ -139,7 +101,6 @@ async function loadNavigation() {
     let authLinks = '';
 
     if (role) {
-        // Користувач залогінений
         if (role === 'Admin' || role === 'Operator' || role === 'Authorized') {
             navLinks += `
                 <li class="nav-item">
@@ -178,7 +139,6 @@ async function loadNavigation() {
             </div>
         `;
     } else {
-        // Анонімний користувач
         authLinks = `
             <div id="anonymous-links">
                 <a href="/login.html" class="btn btn-outline-light me-2">Увійти</a>
@@ -208,9 +168,8 @@ async function loadNavigation() {
 
     header.innerHTML = navHtml;
 
-    // Додаємо обробник для кнопки "Вийти", якщо вона є
     const logoutButton = document.getElementById('logout-button');
     if (logoutButton) {
-        logoutButton.addEventListener('click', logout); // logout() з auth.js
+        logoutButton.addEventListener('click', logout);
     }
 }

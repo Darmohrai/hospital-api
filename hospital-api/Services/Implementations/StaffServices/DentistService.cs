@@ -30,7 +30,7 @@ public class DentistService : IDentistService
 
     public async Task<ServiceResponse<Dentist>> CreateAsync(Dentist dentist)
     {
-        dentist.Specialty = "Dentist"; // Встановлюємо спеціальність
+        dentist.Specialty = "Dentist";
         await _staffRepository.AddAsync(dentist);
         return ServiceResponse<Dentist>.Success(dentist);
     }

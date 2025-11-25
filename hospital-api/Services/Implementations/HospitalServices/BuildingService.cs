@@ -13,7 +13,6 @@ public class BuildingService : IBuildingService
         _buildingRepository = buildingRepository;
     }
 
-    // --- CRUD ---
     public async Task<Building?> GetByIdAsync(int id)
     {
         return await _buildingRepository.GetByIdAsync(id);
@@ -40,7 +39,6 @@ public class BuildingService : IBuildingService
         await _buildingRepository.DeleteAsync(id);
     }
 
-    // --- Специфічні методи ---
     public async Task<Building?> GetByNameAsync(string name)
     {
         return await _buildingRepository.GetByNameAsync(name);

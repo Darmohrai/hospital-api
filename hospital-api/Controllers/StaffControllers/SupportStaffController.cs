@@ -9,7 +9,7 @@ namespace hospital_api.Controllers.StaffControllers;
 
 [Authorize]
 [ApiController]
-[Route("api/staff/support")] // Більш чіткий базовий маршрут
+[Route("api/staff/support")]
 public class SupportStaffController : ControllerBase
 {
     private readonly ISupportStaffService _service;
@@ -23,7 +23,6 @@ public class SupportStaffController : ControllerBase
         _employmentRepository = employmentRepository;
     }
 
-    // GET: api/staff/support
     [HttpGet]
     public async Task<ActionResult<IEnumerable<SupportStaff>>> GetAll()
     {
@@ -31,8 +30,6 @@ public class SupportStaffController : ControllerBase
         return Ok(staff);
     }
 
-    // GET: api/staff/support/{id}
-    // Оновлено: повертає розширені дані для форми редагування
     [HttpGet("{id}")]
     public async Task<ActionResult<object>> GetById(int id)
     {
@@ -42,24 +39,20 @@ public class SupportStaffController : ControllerBase
             return NotFound($"Support staff with ID {id} not found.");
         }
 
-        // Отримуємо місце роботи, щоб заповнити форму на фронтенді
         var employments = await _employmentRepository.GetEmploymentsByStaffIdAsync(id);
         var activeEmployment = employments.FirstOrDefault();
 
-        // Повертаємо анонімний об'єкт з додатковими полями
         return Ok(new 
         {
             staff.Id,
             staff.FullName,
             staff.Role,
             staff.WorkExperienceYears,
-            // Додаємо ID прив'язок
             HospitalId = activeEmployment?.HospitalId,
             ClinicId = activeEmployment?.ClinicId
         });
     }
 
-    // POST: api/staff/support
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateSupportStaffDto dto)
     {
@@ -75,8 +68,6 @@ public class SupportStaffController : ControllerBase
 
         try
         {
-            //
-            // Передаємо нові параметри у сервіс
             await _service.CreateAsync(staff, dto.HospitalId, dto.ClinicId);
             
             return CreatedAtAction(nameof(GetById), new { id = staff.Id }, staff);
@@ -87,7 +78,6 @@ public class SupportStaffController : ControllerBase
         }
     }
 
-    // PUT: api/staff/support/{id}
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] CreateSupportStaffDto dto)
     {
@@ -98,15 +88,12 @@ public class SupportStaffController : ControllerBase
         if (existingStaff == null)
             return NotFound();
 
-        // Оновлюємо поля моделі
         existingStaff.FullName = dto.FullName;
         existingStaff.Role = dto.Role;
         existingStaff.WorkExperienceYears = dto.WorkExperienceYears;
 
         try
         {
-            //
-            // Передаємо нові параметри у сервіс для оновлення зв'язків
             await _service.UpdateAsync(existingStaff, dto.HospitalId, dto.ClinicId);
             return NoContent();
         }
@@ -116,7 +103,6 @@ public class SupportStaffController : ControllerBase
         }
     }
 
-    // DELETE: api/staff/support/{id}
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -130,7 +116,6 @@ public class SupportStaffController : ControllerBase
         return NoContent();
     }
 
-    // GET: api/staff/support/role/{role}
     [HttpGet("role/{role}")]
     public async Task<ActionResult<IEnumerable<SupportStaff>>> GetByRole(SupportRole role)
     {
@@ -138,7 +123,6 @@ public class SupportStaffController : ControllerBase
         return Ok(staff);
     }
 
-    // GET: api/staff/support/{id}/profile-summary
     [HttpGet("{id}/profile-summary")]
     public async Task<ActionResult<string>> GetProfileSummary(int id)
     {

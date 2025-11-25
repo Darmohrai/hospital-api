@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using hospital_api.Data;
 
 namespace hospital_api.Data
 {
@@ -16,7 +15,6 @@ namespace hospital_api.Data
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
             var connectionString = configuration.GetConnectionString("DefaultConnection");
 
-            // ✅ ВИПРАВЛЕНО: Використовуємо правильний провайдер для PostgreSQL
             builder.UseNpgsql(connectionString);
 
             return new ApplicationDbContext(builder.Options);
