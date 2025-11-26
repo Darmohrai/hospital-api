@@ -111,24 +111,29 @@ function updateHospitalOptions() {
 
     hospitalSelect.innerHTML = '<option value="">Не госпіталізовано (Амбулаторно)</option>';
 
-    const reqSpec = specValue !== "" ? parseInt(specValue, 10) : null;
+    const reqSpecId = specValue !== "" ? parseInt(specValue, 10) : null;
+
+    // !!! ВИПРАВЛЕННЯ: Отримуємо строкову назву спеціалізації (наприклад "Surgeon")
+    // тому що API повертає масив рядків, а не чисел.
+    const reqSpecString = reqSpecId !== null ? specIdToKey[reqSpecId] : null;
+
     const selectedClinic = allClinics.find(c => c.id === clinicId);
 
     let allowedHospitals = [];
 
-    if (reqSpec === null) {
+    if (reqSpecString === null) {
         allowedHospitals = allHospitals;
     } else {
         if (selectedClinic && selectedClinic.hospitalId) {
             const linkedHospital = allHospitals.find(h => h.id === selectedClinic.hospitalId);
 
-            if (linkedHospital && linkedHospital.specializations && linkedHospital.specializations.includes(reqSpec)) {
+            if (linkedHospital && linkedHospital.specializations && linkedHospital.specializations.includes(reqSpecString)) {
                 allowedHospitals.push(linkedHospital);
             } else {
-                allowedHospitals = allHospitals.filter(h => h.specializations && h.specializations.includes(reqSpec));
+                allowedHospitals = allHospitals.filter(h => h.specializations && h.specializations.includes(reqSpecString));
             }
         } else {
-            allowedHospitals = allHospitals.filter(h => h.specializations && h.specializations.includes(reqSpec));
+            allowedHospitals = allHospitals.filter(h => h.specializations && h.specializations.includes(reqSpecString));
         }
     }
 

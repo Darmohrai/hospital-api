@@ -40,7 +40,21 @@ function setupSharedUI() {
 
             case 'Operator':
                 if (navReports) navReports.style.display = 'block';
-                if (navCrud) navCrud.style.display = 'block';
+                if (navCrud) {
+                    navCrud.style.display = 'block';
+                    const sqlLink = navCrud.querySelector('a[href*="query.html"]');
+                    if (sqlLink) {
+                        const li = sqlLink.closest('li');
+                        if (li) {
+                            li.style.display = 'none';
+
+                            const prevLi = li.previousElementSibling;
+                            if (prevLi && prevLi.querySelector('.dropdown-divider')) {
+                                prevLi.style.display = 'none';
+                            }
+                        }
+                    }
+                }
                 break;
 
             case 'Admin':

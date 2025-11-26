@@ -1,19 +1,42 @@
-﻿let allHospitals = [];
-let allClinics = [];
-let allDoctors = [];
+﻿const doctorSpecialties = {
+    "Surgeon": "Хірург",
+    "Neurologist": "Невролог",
+    "Ophthalmologist": "Окуліст",
+    "Dentist": "Стоматолог",
+    "Radiologist": "Рентгенолог",
+    "Gynecologist": "Гінеколог",
+    "Cardiologist": "Кардіолог"
+};
+
+function getSpecialtyTranslation(specialtyEn) {
+    if (!specialtyEn) return "";
+
+    if (doctorSpecialties[specialtyEn]) {
+        return doctorSpecialties[specialtyEn];
+    }
+
+    const key = Object.keys(doctorSpecialties).find(k => k.toLowerCase() === specialtyEn.toLowerCase());
+    if (key) {
+        return doctorSpecialties[key];
+    }
+
+    return specialtyEn;
+}
 
 const specialties = [
     "Surgeon", "Neurologist", "Ophthalmologist", "Dentist", "Radiologist", "Gynecologist", "Cardiologist"
 ];
 
+let allHospitals = [];
+let allClinics = [];
+let allDoctors = [];
+
 const academicDegrees = {
     "None": "Немає", "Candidate": "Кандидат наук", "Doctor": "Доктор наук"
 };
-
 const academicTitles = {
     "None": "Немає", "AssociateProfessor": "Доцент", "Professor": "Професор"
 };
-
 const supportRoles = {
     0: "Медсестра", 1: "Санітар", 2: "Прибиральник"
 };
@@ -36,6 +59,7 @@ async function loadCommonData() {
             apiFetch('/api/clinic'),
             apiFetch('/api/staff/doctors')
         ]);
+
         allHospitals = hospitals || [];
         allClinics = clinics || [];
         allDoctors = doctors || [];
@@ -66,68 +90,72 @@ function populateDropdowns() {
         const placeholder = select.firstElementChild;
         select.innerHTML = '';
         select.appendChild(placeholder);
-        allDoctors.forEach(d => select.innerHTML += `<option value="${d.id}">${d.fullName} (${d.specialty})</option>`);
+        allDoctors.forEach(d => {
+            const specUA = getSpecialtyTranslation(d.specialty);
+            select.innerHTML += `<option value="${d.id}">${d.fullName} (${specUA})</option>`;
+        });
     });
 
     document.querySelectorAll('.select-specialty').forEach(select => {
         const placeholder = select.firstElementChild;
         select.innerHTML = '';
         select.appendChild(placeholder);
-        specialties.forEach(s => select.innerHTML += `<option value="${s}">${s}</option>`);
+        specialties.forEach(s => {
+            const specUA = getSpecialtyTranslation(s);
+            select.innerHTML += `<option value="${s}">${specUA}</option>`;
+        });
     });
 }
 
 function setupEventListeners() {
     bindForm('form-daily-app', '/api/report/daily-appointments', renderDailyApp);
-
     bindForm('form-hospital-cap', (formData) => `/api/report/hospital-capacity/${formData.get('hospitalId')}`, renderHospitalCap, 'GET', true);
-
     bindForm('form-lab', '/api/report/laboratory-report', renderLabReport);
-
     bindForm('form-pat-ops', '/api/report/patient-operations', renderPatientOps);
-
     bindForm('form-patients-spec', '/api/report/patients-by-clinic-specialty', renderPatientList);
-
     bindForm('form-inpatient', '/api/report/inpatient-report', renderPatientList);
-
     bindForm('form-doc-filter', '/api/report/doctor-report', renderDoctorReport);
-
     bindForm('form-doc-ops', '/api/report/doctor-operation-report', renderDoctorReport);
-
     bindForm('form-support-staff', '/api/report/support-staff-report', renderSupportStaff);
-
     bindForm('form-doc-fatal', '/api/report/doctor-performance-report', renderDoctorPerformance);
 
     const hospitalSelect = document.getElementById('trigger-dept-load');
     const deptSelect = document.getElementById('dept-select');
 
-    hospitalSelect.addEventListener('change', async () => {
-        deptSelect.innerHTML = '<option value="">Завантаження...</option>';
-        deptSelect.disabled = true;
-        const hospId = hospitalSelect.value;
-        if (!hospId) return;
+    if (hospitalSelect) {
+        hospitalSelect.addEventListener('change', async () => {
+            deptSelect.innerHTML = '<option value="">Завантаження...</option>';
+            deptSelect.disabled = true;
 
-        try {
-            const hospital = await apiFetch(`/api/hospital/${hospId}`);
-            let departments = [];
-            for (const building of hospital.buildings) {
-                const result = await apiFetch(`/api/hospital/department/building/${building.id}/with-rooms`);
-                departments = departments.concat(result);
+            const hospId = hospitalSelect.value;
+            if (!hospId) return;
+
+            try {
+                const hospital = await apiFetch(`/api/hospital/${hospId}`);
+                let departments = [];
+
+                if (hospital.buildings) {
+                    for (const building of hospital.buildings) {
+                        const result = await apiFetch(`/api/hospital/department/building/${building.id}/with-rooms`);
+                        departments = departments.concat(result);
+                    }
+                }
+
+                deptSelect.innerHTML = '<option value="">Оберіть відділення</option>';
+                if (departments && departments.length > 0) {
+                    departments.forEach(d => {
+                        deptSelect.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+                    });
+                    deptSelect.disabled = false;
+                } else {
+                    deptSelect.innerHTML = '<option value="">Відділень немає</option>';
+                }
+            } catch (e) {
+                console.error(e);
+                deptSelect.innerHTML = '<option value="">Помилка завантаження</option>';
             }
-            deptSelect.innerHTML = '<option value="">Оберіть відділення</option>';
-            if (departments && departments.length > 0) {
-                departments.forEach(d => {
-                    deptSelect.innerHTML += `<option value="${d.id}">${d.name}</option>`;
-                });
-                deptSelect.disabled = false;
-            } else {
-                deptSelect.innerHTML = '<option value="">Відділень немає</option>';
-            }
-        } catch (e) {
-            console.error(e);
-            deptSelect.innerHTML = '<option value="">Помилка завантаження</option>';
-        }
-    });
+        });
+    }
 
     bindForm('form-dept-occupancy', (formData) => `/api/report/department-occupancy/${formData.get('departmentId')}`, renderDeptOccupancy, 'GET', true);
 }
@@ -135,6 +163,8 @@ function setupEventListeners() {
 function bindForm(formId, endpoint, renderFunc, method = 'GET', isUrlDynamic = false) {
     const form = document.getElementById(formId);
     const resultDiv = document.getElementById(formId.replace('form-', 'res-'));
+
+    if (!form) return;
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -167,7 +197,13 @@ function bindForm(formId, endpoint, renderFunc, method = 'GET', isUrlDynamic = f
 
 function renderDailyApp(data, container) {
     if (!data) return;
-    let html = `<h6>${data.filterDescription}</h6>
+
+    let desc = data.filterDescription;
+    for (const [en, ua] of Object.entries(doctorSpecialties)) {
+        desc = desc.replace(en, ua);
+    }
+
+    let html = `<h6>${desc}</h6>
                 <p class="lead">Всього пацієнтів: <strong>${data.patientCount}</strong></p>`;
 
     if (data.countByDoctor && data.countByDoctor.length > 0) {
@@ -260,16 +296,25 @@ function renderPatientList(data, container) {
 }
 
 function renderDoctorReport(data, container) {
-    let html = `<p>${data.filterDescription}</p><p>Знайдено лікарів: <strong>${data.totalCount}</strong></p>`;
+    // Переклад опису фільтру
+    let desc = data.filterDescription;
+    for (const [en, ua] of Object.entries(doctorSpecialties)) {
+        desc = desc.replace(en, ua);
+    }
+
+    let html = `<p>${desc}</p><p>Знайдено лікарів: <strong>${data.totalCount}</strong></p>`;
+
     if (data.doctors && data.doctors.length > 0) {
         html += `<table class="table table-sm"><thead><tr><th>ПІБ</th><th>Спец.</th><th>Стаж</th><th>Звання</th></tr></thead><tbody>`;
         data.doctors.forEach(d => {
-            console.log(d)
             const degree = academicDegrees[d.academicDegree] || '-';
             const title = academicTitles[d.academicTitle] || '-';
+            // Переклад спеціальності в таблиці
+            const specUA = getSpecialtyTranslation(d.specialty);
+
             html += `<tr>
                         <td>${d.fullName}</td>
-                        <td>${d.specialty}</td>
+                        <td>${specUA}</td>
                         <td>${d.workExperienceYears} р.</td>
                         <td><small>${degree} / ${title}</small></td>
                      </tr>`;
@@ -300,12 +345,13 @@ function renderDoctorPerformance(data, container) {
         return;
     }
     data.sort((a, b) => b.fatalityRatePercent - a.fatalityRatePercent);
-
     let html = `<table class="table table-sm"><thead><tr><th>Лікар</th><th>Операцій</th><th>Летальних</th><th>%</th></tr></thead><tbody>`;
     data.forEach(d => {
         let color = d.fatalityRatePercent > 5 ? 'text-danger fw-bold' : 'text-success';
+        const specUA = getSpecialtyTranslation(d.specialty);
+
         html += `<tr>
-                    <td>${d.doctorFullName}<br><small class="text-muted">${d.specialty}</small></td>
+                    <td>${d.doctorFullName}<br><small class="text-muted">${specUA}</small></td>
                     <td>${d.totalOperations}</td>
                     <td>${d.fatalOperations}</td>
                     <td class="${color}">${d.fatalityRatePercent.toFixed(1)}%</td>

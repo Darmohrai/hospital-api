@@ -51,12 +51,17 @@ async function apiFetch(endpoint, options = {}) {
             let errorMessage = 'Виникла невідома помилка під час запиту.';
 
             if (errorData) {
-                if (errorData.title) errorMessage = errorData.title;
-                if (errorData.detail) errorMessage += `: ${errorData.detail}`;
+                if (errorData.message) {
+                    errorMessage = errorData.message;
+                }
+                else {
+                    if (errorData.title) errorMessage = errorData.title;
+                    if (errorData.detail) errorMessage += `: ${errorData.detail}`;
 
-                if (errorData.errors) {
-                    const validationErrors = Object.values(errorData.errors).flat().join(', ');
-                    errorMessage = `Перевірте введені дані: ${validationErrors}`;
+                    if (errorData.errors) {
+                        const validationErrors = Object.values(errorData.errors).flat().join(', ');
+                        errorMessage = `Перевірте введені дані: ${validationErrors}`;
+                    }
                 }
             } else {
                 errorMessage = `Помилка сервера: ${response.status} ${response.statusText}`;
@@ -73,6 +78,7 @@ async function apiFetch(endpoint, options = {}) {
         return response.json();
 
     } catch (error) {
+        
         if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
             console.error('Network Error:', error);
             throw new Error("Не вдалося з'єднатися з сервером. Перевірте підключення до інтернету або спробуйте пізніше.");

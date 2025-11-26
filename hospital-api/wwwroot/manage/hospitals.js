@@ -400,17 +400,7 @@
                     <i class="bi bi-heart-pulse me-2"></i> Відділення: ${dept.name} (${SPEC_TRANSLATIONS[dept.specialization] || dept.specialization})
                 </button>
                 <div class="btn-group position-absolute top-50 end-0 translate-middle-y me-2" style="z-index: 5;">
-                    <button class="btn btn-sm btn-outline-primary" 
-                            data-action="edit-department" 
-                            data-id="${dept.id}" 
-                            data-name="${dept.name}"
-                            data-specialization="${dept.specialization}"
-                            data-building-id="${buildingId}"
-                            data-bs-toggle="modal" 
-                            data-bs-target="#edit-department-modal"
-                            title="Редагувати Відділення">
-                        <i class="bi bi-pencil"></i>
-                    </button>
+                  
                     <button class="btn btn-sm btn-outline-success" data-action="add-room" data-department-id="${dept.id}" title="Додати Палату">
                         <i class="bi bi-plus-lg"></i>
                     </button>
@@ -584,8 +574,7 @@
 
         addDepartmentSpecSelect.innerHTML = '<option value="" disabled selected>Оберіть...</option>';
         currentHospitalData.specializations.forEach(spec => {
-            addDepartmentSpecSelect.innerHTML += `<option value="${spec}">${spec}</option>`;
-        });
+            addDepartmentSpecSelect.innerHTML += `<option value="${spec}">${SPEC_TRANSLATIONS[spec] || spec}</option>`;        });
         addDepartmentModal.show();
     }
 
@@ -629,8 +618,7 @@
         editDepartmentSpecSelect.innerHTML = '<option value="" disabled>Оберіть...</option>';
         currentHospitalData.specializations.forEach(spec => {
             const selected = (spec === dataset.specialization) ? 'selected' : '';
-            editDepartmentSpecSelect.innerHTML += `<option value="${spec}" ${selected}>${spec}</option>`;
-        });
+            editDepartmentSpecSelect.innerHTML += `<option value="${spec}" ${selected}>${SPEC_TRANSLATIONS[spec] || spec}</option>`;        });
     }
 
     async function handleEditDepartmentSubmit(event) {

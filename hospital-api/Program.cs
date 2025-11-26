@@ -147,6 +147,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseRouting();
+app.UseMiddleware<hospital_api.ExceptionHandlingMiddleware>();
 app.UseCors(MyAllowSpecificOrigins);
 app.UseAuthentication();
 app.UseAuthorization();
